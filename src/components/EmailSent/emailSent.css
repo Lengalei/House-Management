@@ -1,0 +1,71 @@
+.email-sent {
+  height: 100vh;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: black;
+  z-index: -100;
+  background-image: url('/loginbg3.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .content {
+    text-align: center;
+    padding: 20px;
+    background-color: wheat; /* White background */
+    border-radius: 50px 0px 50px 0px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid crimson;
+    height: 50%;
+    width: 50%;
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #333; /* Dark text color */
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #666; /* Medium gray text color */
+    }
+
+    a {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #aecc06; /* Bootstrap blue */
+      color: #fff; /* White text color */
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: 15px;
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      a {
+        font-size: 1rem;
+        padding: 8px 16px;
+      }
+    }
+  }
+}

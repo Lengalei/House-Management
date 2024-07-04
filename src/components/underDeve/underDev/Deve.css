@@ -1,0 +1,77 @@
+/*Not Found*/
+/* src/components/NotFound.css */
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #121212;
+  border-radius: 25px;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+.not-found h1 {
+  font-size: 10rem;
+  margin: 0;
+  color: #ff4081;
+}
+
+.not-found p {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.not-found-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.not-found-circle {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ff4081;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.not-found-circle-secondary {
+  margin-left: 10px;
+  border-color: #40ff81;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.not-found .home-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 2px solid #ff4081;
+  border-radius: 25px;
+  text-decoration: none;
+  color: #ff4081;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.not-found .home-link:hover {
+  background-color: #ff4081;
+  color: #121212;
+}
