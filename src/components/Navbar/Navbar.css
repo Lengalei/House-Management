@@ -1,0 +1,113 @@
+.navbar {
+  position: fixed;
+  height: 10vh;
+  top: 0;
+  width: 100%;
+  background-color: black;
+  border-bottom: .5px solid var(--primary-color);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  z-index: 1000;
+}
+
+.navbar-logo {
+  width: 60px;
+  height: 60px;
+}
+.navbar-logo img{
+    width: 100%;
+    height: 100%;
+
+}
+.navbar-center {
+  display: flex;
+  color: var(--primary-color);
+  gap: 20px;
+}
+
+.navbar-center svg {
+  cursor: pointer;
+}
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: black;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #575757;}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+
+
+
+
+
+/* sidebar */
+.sidebar {
+  top: 60px; /* Adjust based on the height of your navbar */
+  left: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #000;
+  color: white;
+  padding-top: 80px;
+  
+}
+.h2{
+    padding: 10px 15px;
+    font-size: 18px;
+}
+.sidebar a {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #fff;
+  display: block;
+}
+
+.sidebar a:hover {
+  background-color: #575757;
+}
+
+.h{
+  width: 80%;
+  background-color: var(--primary-color);
+ margin: 0 auto;
+ height: .2px;
+}
