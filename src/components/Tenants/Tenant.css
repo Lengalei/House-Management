@@ -1,0 +1,136 @@
+.tenant{
+    width: 100%;
+    display: flex;
+   
+}
+.registration{
+    padding-top: 100px;
+    padding-left: 30px;
+}
+.form{
+    border-radius: 10px;
+    background-color: var(--yellow);
+    color: var(--primary-color);
+}
+form{
+    width: 500px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 40px;
+}
+.forminput{
+    display: flex;
+    flex-direction: column;
+}
+.forminput span{
+    color: brown;
+}
+input{
+    width: 200px;
+    height: 40px;
+    border-radius: 20px;
+    background: white;
+  border: 1px solid var(--primary-color);
+}
+
+
+
+
+
+
+
+
+
+
+/* list all */
+:root {
+  --primary-color: #0066FF;
+}
+.summary2{
+    display: flex;
+}
+.tenantslist{
+    padding-top: 100px;
+    margin: 0 auto;
+}
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.table-container {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.tenant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tenant-table th, .tenant-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.tenant-table th {
+  background-color: #333;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tenant-table tbody tr:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+.tenant-table tbody tr:hover {
+  background-color: #ddd;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  padding: 5px 10px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background-color: darkblue;
+}
+
+.delete-btn {
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: darkred;
+}
+
+@media (max-width: 768px) {
+  .tenant-table th, .tenant-table td {
+    padding: 8px 10px;
+  }
+
+  .edit-btn, .delete-btn {
+    padding: 5px;
+    font-size: 14px;
+  }
+}
