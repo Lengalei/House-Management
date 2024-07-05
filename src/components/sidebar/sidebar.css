@@ -1,0 +1,70 @@
+/* sidebar */
+:root {
+  --primary-color: #0066ff;
+}
+
+.sidebar {
+  top: 60px; /* Adjust based on the height of your navbar */
+  left: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #000;
+  color: white;
+  padding-top: 80px;
+}
+
+.h2 {
+  padding: 10px 15px;
+  font-size: 18px;
+}
+
+.sidebar a,
+.sidebar .dash {
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar a:hover,
+.sidebar .dash:hover {
+  background-color: #575757;
+}
+
+.icon {
+  margin-right: 10px;
+  color: var(--primary-color);
+}
+
+.h {
+  width: 80%;
+  background-color: var(--primary-color);
+  margin: 0 auto;
+  height: 0.2px;
+}
+
+.dropdown-content {
+  display: none;
+  background-color: #000;
+  padding-left: 20px;
+}
+
+.dropdown-content a {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+.dropdown-content a:hover {
+  background-color: #575757;
+}
+
+.dropdown .caret {
+  margin-left: auto;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}

@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import "./Navbar.css";
-import { FaBell, FaEnvelope, FaCaretDown } from "react-icons/fa";
+import { useState } from 'react';
+import './Navbar.css';
+import { FaBell, FaEnvelope, FaCaretDown } from 'react-icons/fa';
 
 const Navbar = ({ userName }) => {
-    
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -12,7 +11,9 @@ const Navbar = ({ userName }) => {
 
   return (
     <div className="navbar">
-      <div className="navbar-logo"><img src="/houselogo1.png" alt="" /></div>
+      <div className="navbar-logo">
+        <img src="/houselogo1.png" alt="" />
+      </div>
       <div className="navbar-center">
         <FaBell size={20} />
         <FaEnvelope size={20} />
@@ -22,7 +23,7 @@ const Navbar = ({ userName }) => {
         <span>Hi, John </span>
         <div className="dropdown">
           <button className="dropbtn" onClick={toggleDropdown}>
-        <FaCaretDown />
+            <FaCaretDown />
           </button>
           {dropdownOpen && (
             <div className="dropdown-content">

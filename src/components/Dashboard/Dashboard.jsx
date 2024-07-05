@@ -1,8 +1,7 @@
-import React from 'react'
-import Navbar from '../Navbar/Navbar'
-import Sidebar from '../Navbar/Sidebar'
-import { FaHouseUser } from "react-icons/fa";
-import "./Dashboard.css";
+import { FaHouseUser } from 'react-icons/fa';
+import './Dashboard.css';
+import Navbar from '../Navbar/Navbar';
+import Sidebar from '../sidebar/Sidebar';
 
 function Dashboard() {
   return (
@@ -56,4 +55,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard
+export default Dashboard;

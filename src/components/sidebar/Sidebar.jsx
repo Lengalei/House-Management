@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "./Navbar.css";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../Navbar/Navbar.css';
 import {
   FaTachometerAlt,
   FaBell,
@@ -13,7 +13,7 @@ import {
   FaKey,
   FaCog,
   FaCaretDown,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 
 const Sidebar = () => {
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
@@ -32,13 +32,13 @@ const Sidebar = () => {
       <div className="overview">
         <div className="h2">Overview</div>
         <hr className="h" />
-        <Link to="dashboard" className="dash">
+        <Link to="/" className="dash">
           <FaTachometerAlt className="icon" /> Dashboard
         </Link>
-        <Link to="notifications" className="dash">
+        <Link to="/notifications" className="dash">
           <FaBell className="icon" /> Notifications
         </Link>
-        <Link to="messages" className="dash">
+        <Link to="/messages" className="dash">
           <FaEnvelope className="icon" /> Messages
         </Link>
       </div>
@@ -48,15 +48,15 @@ const Sidebar = () => {
         <hr className="h" />
         <div className="dropdown">
           <div className="dash" onClick={toggleTenantDropdown}>
-            <FaUsers className="icon" /> Tenants{" "}
+            <FaUsers className="icon" /> Tenants{' '}
             <FaCaretDown className="caret" />
           </div>
           {tenantDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="register-tenant" className="dash">
+              <Link to="/registerTenant" className="dash">
                 Register Tenant
               </Link>
-              <Link to="list-tenants" className="dash">
+              <Link to="/listAllTenants" className="dash">
                 List All
               </Link>
             </div>
@@ -64,24 +64,24 @@ const Sidebar = () => {
         </div>
         <div className="dropdown">
           <div className="dash" onClick={toggleLandlordDropdown}>
-            <FaUserTie className="icon" /> Landlords{" "}
+            <FaUserTie className="icon" /> Landlords{' '}
             <FaCaretDown className="caret" />
           </div>
           {landlordDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="register-landlord" className="dash">
+              <Link to="/register-landlord" className="dash">
                 Register Landlord
               </Link>
-              <Link to="list-landlords" className="dash">
+              <Link to="/list-landlords" className="dash">
                 List All
               </Link>
             </div>
           )}
         </div>
-        <Link to="assign-house" className="dash">
+        <Link to="/assign-house" className="dash">
           <FaHouseUser className="icon" /> Assign House
         </Link>
-        <Link to="add-landlord" className="dash">
+        <Link to="/add-landlord" className="dash">
           <FaUserPlus className="icon" /> Add Landlord
         </Link>
       </div>
@@ -89,13 +89,13 @@ const Sidebar = () => {
       <div className="management">
         <h4 className="h2">Your Details</h4>
         <hr className="h" />
-        <Link to="personal-info" className="dash">
+        <Link to="/personal-info" className="dash">
           <FaInfoCircle className="icon" /> Personal Information
         </Link>
-        <Link to="change-password" className="dash">
+        <Link to="/change-password" className="dash">
           <FaKey className="icon" /> Change Password
         </Link>
-        <Link to="profile-settings" className="dash">
+        <Link to="/profile-settings" className="dash">
           <FaCog className="icon" /> Profile Settings
         </Link>
       </div>
