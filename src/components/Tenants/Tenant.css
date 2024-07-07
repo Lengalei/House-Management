@@ -1,59 +1,63 @@
-.tenant{
-    width: 100%;
-    display: flex;
-   
+.tenant {
+  width: 100%;
+  display: flex;
+  border: 1px solid crimson;
 }
-.registration{
-    padding-top: 100px;
-    padding-left: 30px;
+.registration {
+  padding-top: 100px;
+  padding-left: 30px;
 }
-.form{
-    border-radius: 10px;
-    background-color: var(--yellow);
-    color: var(--primary-color);
+.form {
+  border-radius: 10px;
+  background-color: var(--yellow);
+  color: var(--primary-color);
 }
-form{
-    width: 500px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 40px;
+form {
+  width: 500px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 40px;
 }
-.forminput{
-    display: flex;
-    flex-direction: column;
+.forminput {
+  display: flex;
+  flex-direction: column;
 }
-.forminput span{
-    color: brown;
+.forminput span {
+  color: brown;
 }
 input{
     width: 200px;
     height: 40px;
     border-radius: 20px;
     background: white;
-    color: black;
   border: 1px solid var(--primary-color);
+  text-align: center;
+  color: #333;
+}
+.btn {
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-
-
-
-
-
-
-
-
+.btn:hover {
+  background-color: darkred;
+}
 
 /* list all */
 :root {
-  --primary-color: #0066FF;
+  --primary-color: #0066ff;
 }
-.summary2{
-    display: flex;
+.summary2 {
+  display: flex;
 }
-.tenantslist{
-    padding-top: 100px;
-    margin: 0 auto;
+.tenantslist {
+  padding-top: 100px;
+  margin: 0 auto;
 }
 .title {
   font-size: 24px;
@@ -71,7 +75,8 @@ input{
   border-collapse: collapse;
 }
 
-.tenant-table th, .tenant-table td {
+.tenant-table th,
+.tenant-table td {
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
@@ -126,11 +131,13 @@ input{
 }
 
 @media (max-width: 768px) {
-  .tenant-table th, .tenant-table td {
+  .tenant-table th,
+  .tenant-table td {
     padding: 8px 10px;
   }
 
-  .edit-btn, .delete-btn {
+  .edit-btn,
+  .delete-btn {
     padding: 5px;
     font-size: 14px;
   }
