@@ -72,7 +72,7 @@ const Sidebar = () => {
               <Link to="/registerLandlord" className="dash">
                 Register Landlord
               </Link>
-              <Link to="/listLandlords" className="dash">
+              <Link to="/listAllLandlord" className="dash">
                 List All
               </Link>
             </div>
