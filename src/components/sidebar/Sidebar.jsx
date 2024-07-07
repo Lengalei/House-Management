@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Navbar.css";
+import "./sidebar.css";
 import {
   FaTachometerAlt,
   FaBell,
@@ -32,13 +32,13 @@ const Sidebar = () => {
       <div className="overview">
         <div className="h2">Overview</div>
         <hr className="h" />
-        <Link to="dashboard" className="dash">
+        <Link to="/" className="dash">
           <FaTachometerAlt className="icon" /> Dashboard
         </Link>
-        <Link to="notifications" className="dash">
+        <Link to="/notifications" className="dash">
           <FaBell className="icon" /> Notifications
         </Link>
-        <Link to="messages" className="dash">
+        <Link to="/messages" className="dash">
           <FaEnvelope className="icon" /> Messages
         </Link>
       </div>
@@ -53,10 +53,10 @@ const Sidebar = () => {
           </div>
           {tenantDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="register-tenant" className="dash">
+              <Link to="/registerTenant" className="dash">
                 Register Tenant
               </Link>
-              <Link to="list-tenants" className="dash">
+              <Link to="/listAllTenants" className="dash">
                 List All
               </Link>
             </div>
@@ -69,10 +69,10 @@ const Sidebar = () => {
           </div>
           {landlordDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="register-landlord" className="dash">
+              <Link to="/registerLandlord" className="dash">
                 Register Landlord
               </Link>
-              <Link to="list-landlords" className="dash">
+              <Link to="/listLandlords" className="dash">
                 List All
               </Link>
             </div>
