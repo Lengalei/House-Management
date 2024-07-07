@@ -53,10 +53,10 @@ const Sidebar = () => {
           </div>
           {tenantDropdownOpen && (
             <div className="dropdown-content">
-              <Link to="register-tenant" className="dash">
+              <Link to="registertenant" className="dash">
                 Register Tenant
               </Link>
-              <Link to="list-tenants" className="dash">
+              <Link to="listall" className="dash">
                 List All
               </Link>
             </div>
