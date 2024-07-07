@@ -36,31 +36,31 @@ function Tenant() {
                 <label htmlFor="subject">
                   Phone No<span>*</span>
                 </label>
-                <input type="text" id="subject" />
+                <input type="text" id="phone" />
               </div>
               <div className="forminput">
-                <label htmlFor="subject">
+                <label htmlFor="pdate">
                   Placement Date<span>*</span>
                 </label>
-                <input type="text" id="subject" />
+                <input type="date" id="subject" name='pdate'/>
               </div>
               <div className="forminput">
                 <label htmlFor="subject">
                   House Deposit<span>*</span>
                 </label>
-                <input type="text" id="subject" />
+                <input type="currency" id="currency" />
               </div>
               <div className="forminput">
-                <label htmlFor="subject">
+                <label htmlFor="Hnumber">
                   House No<span>*</span>
                 </label>
-                <input type="text" id="subject" />
+                <input type="text" id="Hnumber" name='Hnumber'/>
               </div>
               <div className="forminput">
-                <label htmlFor="subject">
+                <label htmlFor="rent">
                   Rent Payable<span>*</span>
                 </label>
-                <input type="text" id="subject" />
+                <input type="currency" id="rent" name='rent'/>
               </div>
               <div>
                 <button className="btn">Register</button>
