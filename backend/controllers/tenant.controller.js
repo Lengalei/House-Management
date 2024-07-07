@@ -13,6 +13,10 @@ export const registerTenant = async (req, res) => {
     rentPayable,
   } = req.body;
 
+if( !name || !email|| !nationalId|| !phoneNo|| !placementDate|| !houseDeposit|| !houseNo|| !rentPayable){
+      return res.status(400).json({ message: 'Fill In all the details!' });
+  }
+
   try {
     const newTenant = await Tenant.create({
       name,
