@@ -8,6 +8,8 @@ import Tenant from './components/Tenants/Tenant.jsx';
 import Listall from './components/Tenants/Listall.jsx';
 import ListLandlord from './components/LandLord/ListLandlord.jsx';
 import Landlord from './components/LandLord/Landlord.jsx';
+import TenantProfile from './components/Tenants/TenantProfile.jsx';
+import ChangePassword from './components/ChangePassword/ChangePassword.jsx';
 
 function App() {
   return (
@@ -22,7 +24,9 @@ function App() {
             <Route path="/registerTenant" element={<Tenant />} />
             <Route path="/registerLandlord" element={<Landlord />} />
             <Route path="/listAllTenants" element={<Listall />} />
-            <Route path="/listAllLandlord" element={<ListLandlord/>} />
+            <Route path="/tenantProfile/:_id" element={<TenantProfile />} />
+            <Route path="/changePassword" element={<ChangePassword/>} />
+            <Route path="/listAllLandlord" element={<ListLandlord />} />
             <Route path="/*" element={<NotFound />} />
           </Routes>
         </div>
