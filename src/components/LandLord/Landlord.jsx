@@ -1,58 +1,156 @@
-import React from 'react'
-import './Landlord.css'
+import { useState } from "react";
 import "../Tenants/Tenant.css";
-import Navbar from '../Navbar/Navbar'
-import Sidebar from '../sidebar/Sidebar'
+import Navbar from "../Navbar/Navbar";
+import { useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
+import Sidebar from "../sidebar/Sidebar";
 
 function Landlord() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    nationalId: "",
+    phoneNo: "",
+    placementDate: "",
+    houseDeposit: "",
+    houseNo: "",
+    rentPayable: "",
+  });
+  // console.log(formData);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+  const [error, serError] = useState("");
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    serError("");
+    try {
+      const res = await apiRequest.post("/tenants", formData);
+      if (res.status) {
+        console.log("Tenant registered:", res.data);
+        navigate("/listAllTenants");
+      }
+    } catch (err) {
+      console.error("Error registering tenant:", err);
+      serError(err.message);
+    }
+  };
+
   return (
-    <div className="landLord">
+    <div>
       <Navbar />
-      <div className="listLandLord">
+      <div className="tenant">
         <Sidebar />
-        <div className="regitration">
-          <h3>Enter Landlord's Details</h3>
+        <div className="registration">
+          <h3>Input Landlord{`'`}s details to register</h3>
           <div className="form">
-            <form action="">
+            <form onSubmit={handleSubmit}>
               <div className="forminput">
                 <label htmlFor="name">
                   Name <span>*</span>
                 </label>
-                <input type="text" id="name" name="name" />
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
               </div>
               <div className="forminput">
-                <label htmlFor="Email">
+                <label htmlFor="email">
                   Email <span>*</span>
                 </label>
-                <input type="Email" id="Email" name="Email" />
-              </div>
-              <div className="forminput">
-                <label htmlFor="phoneNo">
-                  phoneNo <span>*</span>
-                </label>
-                <input type="number" id="phoneNo" name="phoneNo" />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
               </div>
               <div className="forminput">
                 <label htmlFor="nationalId">
-                  IdNo <span>*</span>
+                  National ID<span>*</span>
                 </label>
-                <input type="number" id="nationalId" name="nationalId" />
+                <input
+                  type="number"
+                  id="nationalId"
+                  name="nationalId"
+                  value={formData.nationalId}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="forminput">
+                <label htmlFor="phoneNo">
+                  Phone No<span>*</span>
+                </label>
+                <input
+                  type="number"
+                  id="phoneNo"
+                  name="phoneNo"
+                  value={formData.phoneNo}
+                  onChange={handleChange}
+                />
               </div>
               <div className="forminput">
                 <label htmlFor="placementDate">
                   Placement Date<span>*</span>
                 </label>
-                <input type="date" id="placementDate" name="placementDate" />
+                <input
+                  type="date"
+                  name="placementDate"
+                  id="placementDate"
+                  value={formData.placementDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="forminput">
+                <label htmlFor="houseDeposit">
+                  House Deposit<span>*</span>
+                </label>
+                <input
+                  type="number"
+                  name="houseDeposit"
+                  id="houseDeposit"
+                  value={formData.houseDeposit}
+                  onChange={handleChange}
+                />
               </div>
               <div className="forminput">
                 <label htmlFor="houseNo">
-                  House No. <span>*</span>
+                  House No<span>*</span>
                 </label>
-                <input type="text" id="houseNo" name="houseNo" />
+                <input
+                  type="text"
+                  name="houseNo"
+                  id="houseNo"
+                  value={formData.houseNo}
+                  onChange={handleChange}
+                />
               </div>
-
-              <button className="btn">Register</button>
+              <div className="forminput">
+                <label htmlFor="rentPayable">
+                  Rent Payable<span>*</span>
+                </label>
+                <input
+                  type="number"
+                  name="rentPayable"
+                  id="rentPayable"
+                  value={formData.rentPayable}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <button className="btn">Register</button>
+              </div>
             </form>
+            {error && <span>{error}</span>}
           </div>
         </div>
       </div>
@@ -60,4 +158,4 @@ function Landlord() {
   );
 }
 
-export default Landlord
+export default Landlord;

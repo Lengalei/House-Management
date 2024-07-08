@@ -140,7 +140,7 @@ const Listall = () => {
                       <td>{tenant.phone || tenant.phoneNo}</td>
                       <td className="actions">
                         <Link
-                          to={`/edit-tenant/${tenant._id}`}
+                          to={`/tenantProfile/${tenant._id}`}
                           className="edit-btn"
                         >
                           Edit Details
