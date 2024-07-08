@@ -54,6 +54,10 @@ input{
 }
 .summary2 {
   display: flex;
+  background-image: linear-gradient(rgba(71, 68, 68, 0.8), rgba(63, 62, 62, 0.8)), url('/housebg.jfif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .tenantslist {
   padding-top: 100px;
@@ -129,6 +133,101 @@ input{
 .delete-btn:hover {
   background-color: darkred;
 }
+.profile{
+  padding-top: 100px;
+  width: 70%;
+  padding-left: 20px;
+  display: flex;
+  gap: 50px;
+  flex-direction: column;
+  align-items: center;
+  
+}
+.personal-details{
+  width: 80%;
+  display: flex;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.user{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 50%;
+  border-right: 1px dotted var(--primary-color);
+}
+.user .profile-image{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid var(--primary-color);
+  overflow: hidden;
+}
+.profile-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: hidden;
+
+}
+.user-details{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  text-align: start;
+  justify-content: center;
+}
+
+.payment{
+  width: 80%;
+  display: flex;
+  gap: 20px;
+}
+.payment-details{
+  width: 400px;
+  height: 100px;
+  display: flex;
+  padding: 20px;
+  background-color: white;
+  flex-direction: column;
+  border-radius: 10px;
+  align-items: center;
+  /* border: 1px solid var(--yellow); */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+.dets{
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+}
+.deposits{
+  display: flex;
+  width: 80%;
+  gap: 20px;
+}
+.deposits .payment-details{
+  height: 200px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (max-width: 768px) {
   .tenant-table th,

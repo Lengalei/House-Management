@@ -92,7 +92,7 @@ const Sidebar = () => {
         <Link to="personal-info" className="dash">
           <FaInfoCircle className="icon" /> Personal Information
         </Link>
-        <Link to="change-password" className="dash">
+        <Link to="changePassword" className="dash">
           <FaKey className="icon" /> Change Password
         </Link>
         <Link to="profile-settings" className="dash">
