@@ -22,7 +22,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>40 Total house</p>
+              <p>60 Total Tenants</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -30,7 +30,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>40 Total house</p>
+              <p>61 Total houses</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -38,7 +38,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>40 Total house</p>
+              <p>45000 Total Monthly earnings</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -46,7 +46,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>40 Total house</p>
+              <p>10 Vacant Houses</p>
             </div>
           </div>
         </div>

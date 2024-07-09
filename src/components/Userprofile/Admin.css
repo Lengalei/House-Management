@@ -1,7 +1,42 @@
 .admin{
     display: flex;
+    
 }
 .profile-details{
-    padding-top: 70px;
+    /* padding-top: 70px; */
     padding-left: 50px;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.personalinfo{
+    width: 50%;
+   
+}
+.profile2{
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+}
+.admin-image{
+    width: 300px;
+    height: 320px;
+}
+.admin-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.change-password{
+    width: 50%;
+}
+.buttons{
+    display: flex;
+    gap: 10px;
+}
+.buttons .btn{
+    width: 150px;
+    height: 40px;
 }
