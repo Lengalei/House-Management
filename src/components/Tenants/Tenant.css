@@ -213,8 +213,17 @@ input{
   height: 200px;
 }
 
-
-
+.details-container{
+  width: 200px;
+  display: flex;
+  gap: 30px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+.details-container button{
+  background-color: transparent;
+  border: none;
+}
 
 
 
