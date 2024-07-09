@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Navbar.css';
+import { Link } from "react-router-dom";
 import { FaBell, FaEnvelope, FaCaretDown } from 'react-icons/fa';
 
 const Navbar = ({ userName }) => {
@@ -27,7 +28,9 @@ const Navbar = ({ userName }) => {
           </button>
           {dropdownOpen && (
             <div className="dropdown-content">
-              <a href="#">Edit Profile</a>
+              <Link to="profileSettings" className="dash">
+               Profile
+              </Link>
               <a href="#">Sign Out</a>
             </div>
           )}
