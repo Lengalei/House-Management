@@ -1,10 +1,15 @@
 import React from 'react'
 import Navbar from '../Navbar/Navbar'
 import Sidebar from '../sidebar/Sidebar'
+import { MdDelete } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
+import { CgPlayListRemove } from "react-icons/cg";
+import { MdOutlineNotListedLocation } from "react-icons/md";
+import { GiHazardSign } from "react-icons/gi";
 
 function TenantProfile() {
   return (
-    <div className='TenantProfile'>
+    <div className="TenantProfile">
       <Navbar />
 
       <div className="summary2">
@@ -71,7 +76,33 @@ function TenantProfile() {
                 </tbody>
               </table>
             </div>
-            <div className="payment-details"></div>
+            <div className="payment-details">
+              <GiHazardSign size={70} color="red" />
+              <div className="details-container">
+                <p>Delete Tenant</p>{" "}
+                <button>
+                  <MdDelete size={20} color="red" />
+                </button>
+              </div>
+              <div className="details-container">
+                <p>Edit Tenant</p>{" "}
+                <button>
+                  <FaEdit size={20} color="var(--primary-color)" />
+                </button>
+              </div>
+              <div className="details-container">
+                <p>Blacklist Tenant</p>{" "}
+                <button>
+                  <CgPlayListRemove size={20} color="black" />
+                </button>
+              </div>
+              <div className="details-container">
+                <p>Whitelist Tenant</p>{" "}
+                <button>
+                  <MdOutlineNotListedLocation size={20} color="var(--yellow)" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
