@@ -89,9 +89,6 @@ const Sidebar = () => {
       <div className="management">
         <h4 className="h2">Your Details</h4>
         <hr className="h" />
-        <Link to="personal-info" className="dash">
-          <FaInfoCircle className="icon" /> Personal Information
-        </Link>
         <Link to="profileSettings" className="dash">
           <FaCog className="icon" /> Profile Settings
         </Link>
