@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
 import './Tenant.css';
-import Navbar from '../Navbar/Navbar';
-import Sidebar from '../sidebar/Sidebar';
 import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,7 +100,7 @@ const Listall = () => {
 
   const handleDelete = async (_id) => {
     try {
-      const res = await apiRequest.delete(`/tenants/${_id}`);
+      const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
       } else {
@@ -114,49 +112,48 @@ const Listall = () => {
   };
 
   return (
-    <div className="list-all">
-      <Navbar />
-      <div className="summary2">
-        <Sidebar />
-        <div className="tenantslist">
-          <h2 className="title">Tenants List</h2>
-          {error && <span>{error}</span>}
-          <div className="table-container">
-            <table className="tenant-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants &&
-                  tenants.map((tenant) => (
-                    <tr key={tenant._id}>
-                      <td>{tenant.name}</td>
-                      <td>{tenant.email}</td>
-                      <td>{tenant.phone || tenant.phoneNo}</td>
-                      <td className="actions">
-                        <Link
-                          to={`/tenantProfile/${tenant._id}`}
-                          className="edit-btn"
-                        >
-                          Edit Details
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(tenant._id)}
-                          className="delete-btn"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+    <div className="summary2">
+      <div className="tenantslist">
+        <h2 className="title">Tenants List</h2>
+        {error && <span>{error}</span>}
+        <div className="table-container">
+          <table className="tenant-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>houseNo</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tenants &&
+                tenants.map((tenant) => (
+                  <tr key={tenant._id}>
+                    <td>{tenant.name}</td>
+                    <td>{tenant.email}</td>
+                    <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
+
+                    <td>{tenant.phone || tenant.phoneNo}</td>
+                    <td className="actions">
+                      <Link
+                        to={`/tenantProfile/${tenant._id}`}
+                        className="edit-btn"
+                      >
+                        More Details
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(tenant._id)}
+                        className="delete-btn"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

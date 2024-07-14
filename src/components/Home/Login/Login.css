@@ -14,6 +14,7 @@
 .login-container {
   width: 350px;
   height: 400px;
+  background-color: wheat;
   backdrop-filter: blur(4px);
   border: 1.5px solid rgb(49, 93, 125);
   display: flex;
@@ -21,6 +22,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  opacity: 0.8;
   gap: 20px;
   border-radius: 15px;
 }
@@ -50,11 +52,25 @@ input {
   cursor: pointer;
   color: crimson;
 }
-.btn {
+.LoginBtn {
   width: 150px;
   height: 35px;
   border-radius: 10px;
   background-color: rgba(10, 10, 10, 0.5);
   border: 1px solid rgb(49, 93, 125);
   font-size: 17px;
+  color: brown;
+  transition: all 300ms ease-in-out;
+}
+.LoginBtn:hover {
+  background-color: coral;
+  cursor: pointer;
+}
+.loginError {
+  color: crimson;
+  background-color: black;
+  width: 200px;
+  text-align: center;
+  height: 5vh;
+  border-radius: 15px;
 }

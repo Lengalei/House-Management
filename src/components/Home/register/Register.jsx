@@ -1,7 +1,7 @@
 import './Register.css';
 import { useState } from 'react';
-import apiRequest from '../../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
+import apiRequest from '../../../lib/apiRequest';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -22,14 +22,8 @@ function Register() {
       });
 
       if (response.status === 200) {
-        const { accessToken, user } = response.data;
-
-        // Store token and username in localStorage
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('username', user.username);
-
-        // Redirect to homepage or another page
-        navigate('/');
+        console.log(response.data);
+        navigate('/login');
       } else {
         setError('Failed to register.');
       }
@@ -68,18 +62,13 @@ function Register() {
             required
           />
 
-          <div className="reset">
-            <p>
-              <input type="checkbox" id="checkbox" /> Remember Me
-            </p>
-          </div>
           <span>
             <h6>
               Already Have an Account? <a href="/login">Login</a>
             </h6>
           </span>
-          {error && <span className="error">{error}</span>}
-          <button type="submit" className="btn">
+          {error && <span className="registerError">{error}</span>}
+          <button type="submit" className="registerBtn">
             Register
           </button>
         </form>

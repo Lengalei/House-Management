@@ -1,42 +1,93 @@
-.admin{
-    display: flex;
-    
-}
-.profile-details{
-    /* padding-top: 70px; */
-    padding-left: 50px;
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.admin {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 
+  /* border: 1px solid crimson; */
 }
-.personalinfo{
-    width: 50%;
-   
+.profile-details {
+  /* padding-top: 70px; */
+  /* padding-left: 50px; */
+  width: 100%;
+  /* margin: 0 auto; */
+  height: 95%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
-.profile2{
-    display: flex;
-    flex-direction: column;
-    height: 200px;
+.personalinfo {
+  width: 50%;
+  height: 100%;
+  /* border: 1px solid rgb(58, 165, 25); */
 }
-.admin-image{
-    width: 300px;
-    height: 320px;
+.profile2 {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
 }
-.admin-image img{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.admin-image {
+  width: 300px;
+  height: 320px;
+  border-radius: 10px;
+  margin-bottom: 5px;
 }
-.change-password{
-    width: 50%;
+.admin-image img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(2px -2px 4px crimson);
+  outline: none;
+  border-radius: 15px;
+  object-fit: cover;
 }
-.buttons{
-    display: flex;
-    gap: 10px;
+.change-password {
+  width: 50%;
+  height: 100%;
 }
-.buttons .btn{
-    width: 150px;
-    height: 40px;
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+.buttons .btn {
+  width: 150px;
+  height: 40px;
+}
+form input {
+  color: black;
+}
+.adminDetails {
+  margin-top: 10px;
+  width: 52%;
+  border-radius: 15px;
+  box-shadow: 2px -2px 4px coral;
+}
+.changePassword {
+  margin-top: 10px;
+  border: 1px solid wheat;
+  border-radius: 15px;
+  box-shadow: 2px -2px 4px coral;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.changePassbtn {
+  width: 150px;
+  height: 40px;
+  border-radius: 16px;
+  outline: none;
+  border: none;
+  background-color: bisque;
+}
+.changePassbtn:hover {
+  cursor: pointer;
+  background-color: brown;
+}
+.ChangePassError {
+  color: crimson;
+  background-color: black;
+  width: 200px;
+  text-align: center;
+  height: 5vh;
+  border-radius: 15px;
 }

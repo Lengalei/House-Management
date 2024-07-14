@@ -5,14 +5,18 @@ import {
   register,
   forgotPassword,
   resetPassword,
+  adminChangePassword,
+  adminUpdateProfile,
 } from '../controllers/auth.controller.js';
 
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-router.post('/logout', logout);
+router.get('/logout', logout);
 router.post('/forgotPassword', forgotPassword); // Add forgot password route
 router.post('/resetPassword', resetPassword); // Add reset password route
+router.put('/adminChangePassword', adminChangePassword); // Add reset password route
+router.put('/adminUpdateProfile/:id', adminUpdateProfile); // Add reset password route
 
 export default router;

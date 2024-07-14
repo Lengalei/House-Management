@@ -1,8 +1,10 @@
 import './Login.css';
 import { useState } from 'react';
-import apiRequest from '../../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
 import ForgotPassword from '../forgotPassword/ForgotPassword';
+import apiRequest from '../../../lib/apiRequest';
+import { useDispatch } from 'react-redux';
+import { setAdmin } from '../../../features/Admin/adminSlice';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -11,6 +13,7 @@ function Login() {
   const [isForgotPassword, setIsForgotPassword] = useState(false); // State to toggle between login and forgot password
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,14 +26,10 @@ function Login() {
         rememberMe: e.target.checkbox.checked, // Pass rememberMe option
       });
 
-      if (response.status === 200) {
-        const { accessToken, user } = response.data;
-
-        // Store token and username in localStorage
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('username', user.username);
-
-        // Redirect to homepage or another page
+      if (response.status) {
+        console.log('logged from login page', response.data);
+        dispatch(setAdmin(response.data));
+        localStorage.setItem('adminData', JSON.stringify(response.data));
         navigate('/');
       } else {
         setError('Failed to login.');
@@ -84,8 +83,8 @@ function Login() {
                 </a>
               </h6>
             </span>
-            {error && <span className="error">{error}</span>}
-            <button type="submit" className="btn">
+            {error && <span className="loginError">{error}!</span>}
+            <button type="submit" className="LoginBtn">
               Login
             </button>
           </form>

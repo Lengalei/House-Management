@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './forgotPassword.css';
-import apiRequest from '../../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
+import apiRequest from '../../../lib/apiRequest';
 
 const ForgotPassword = ({ setIsForgotPassword }) => {
   const [email, setEmail] = useState('');

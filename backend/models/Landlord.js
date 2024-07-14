@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 
-const TenantSchema = new mongoose.Schema(
+const landlordSchema = new mongoose.Schema(
   {
-    // Tenant personal details
     name: {
       type: String,
       required: true,
@@ -13,57 +12,48 @@ const TenantSchema = new mongoose.Schema(
       unique: true,
     },
     nationalId: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
     phoneNo: {
-      type: Number,
+      type: String,
       required: true,
     },
     placementDate: {
       type: Date,
       required: true,
     },
-    // Deposits
-    houseDeposit: {
-      type: Number,
-      required: true,
-    },
-    waterDeposit: {
-      type: Number,
-      required: true,
-    },
-    rentPayable: {
-      type: Number,
-      required: true,
-    },
-    houseNo: {
+    assignedHouseNo: {
       type: String,
       required: true,
     },
-    // Emergency contact
-    emergencyContactNumber: {
+    monthlyPay: {
       type: Number,
+      required: true,
+    },
+    emergencyContactNumber: {
+      type: String,
       required: true,
     },
     emergencyContactName: {
       type: String,
       required: true,
     },
-    // Advanced data
-    whiteListTenant: {
+    blackListLandlord: {
       type: Boolean,
       default: false,
     },
-    blackListTenant: {
+    whiteListLandlord: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-const Tenant = mongoose.model('Tenant', TenantSchema);
+const Landlord = mongoose.model('Landlord', landlordSchema);
 
-export default Tenant;
+export default Landlord;

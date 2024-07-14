@@ -1,0 +1,56 @@
+@mixin sm {
+  @media (max-width: 738px) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (max-width: 1366px) {
+    @content;
+  }
+}
+
+.layout {
+  position: fixed;
+  width: 100%;
+  margin: 0 auto;
+  height: 100vh;
+  // border: 1px solid gold;
+
+  .content {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 85%;
+    margin: 0 auto;
+    height: 95%;
+    overflow: scroll;
+    overflow-x: hidden;
+    // border: 1px solid crimson;
+  }
+}
+.authlayout {
+  position: fixed;
+  width: 100%;
+  margin: 0 auto;
+  height: 100vh;
+  // border: 1px solid gold;
+
+  .content {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    width: 100%;
+    margin: 0 auto;
+    height: 90%;
+    overflow: scroll;
+    overflow-x: hidden;
+    // border: 1px solid crimson;
+  }
+}

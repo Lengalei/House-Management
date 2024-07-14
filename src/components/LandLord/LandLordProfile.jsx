@@ -3,7 +3,7 @@ import { FaEdit } from 'react-icons/fa';
 import { CgPlayListRemove } from 'react-icons/cg';
 import { MdOutlineNotListedLocation } from 'react-icons/md';
 import { GiHazardSign } from 'react-icons/gi';
-import './TenantProfile.scss';
+import './LandLordProfile.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
@@ -11,79 +11,76 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThreeDots } from 'react-loader-spinner';
 
-function TenantProfile() {
+function LandLordProfile() {
   const { _id } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [tenant, setTenant] = useState(null);
+  const [landlord, setlandlord] = useState(null);
 
   useEffect(() => {
-    const fetchTenant = async () => {
+    const fetchlandlord = async () => {
       setLoading(true);
-      const res = await apiRequest(`/tenants/getSingleTenant/${_id}`);
+      const res = await apiRequest(`/landlords/getSingleLandlord/${_id}`);
       if (!res.status) {
         setError(res.data.error);
         toast.error(res.data.error);
       } else {
         console.log(res.data);
-        setTenant(res.data);
-        // toast.success('Tenant data fetched successfully');
+        setlandlord(res.data);
+        // toast.success('landlord data fetched successfully');
       }
       setLoading(false);
     };
-    fetchTenant();
+    fetchlandlord();
   }, [_id]);
 
-  const handleDeleteTenant = async () => {
+  const handleDeletelandlord = async () => {
     setLoading(true);
-    const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
+    const res = await apiRequest.delete(`/landlords/deleteLandlord/${_id}`);
     if (!res.status) {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant deleted!');
+      console.log('landlord deleted!');
 
-      toast.success('Tenant deleted successfully');
+      toast.success('landlord deleted successfully');
       setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
-      }, 1000);
+        navigate(`/landlordProfile/${_id}`);
+      }, 500);
     }
     setLoading(false);
   };
 
-  const handleEditTenant = async () => {
-    console.log(_id);
-    navigate(`/tenant/edit/${_id}`);
+  const handleEditlandlord = async () => {
+    navigate(`/landlord/edit/${_id}`);
   };
 
-  const handleBlackListTenant = async () => {
+  const handleBlackListlandlord = async () => {
     setLoading(true);
-    const res = await apiRequest.patch(`/tenants/blackListTenant/${_id}`);
+    const res = await apiRequest.patch(`/landlords/blackListLandlord/${_id}`);
     if (!res.status) {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant blacklisted!');
-      toast.success('Tenant blacklisted successfully');
-      setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
-      }, 1000);
+      console.log('landlord blacklisted!');
+      toast.success('landlord blacklisted successfully');
+      navigate(`/landlordProfile/${_id}`);
     }
     setLoading(false);
   };
 
-  const handleWhiteListTenant = async () => {
+  const handleWhiteListlandlord = async () => {
     setLoading(true);
-    const res = await apiRequest.patch(`/tenants/whiteListTenant/${_id}`);
+    const res = await apiRequest.patch(`/landlords/whiteListLandlord/${_id}`);
     if (!res.status) {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant whitelisted!');
-      toast.success('Tenant whitelisted successfully');
+      console.log('landlord whitelisted!');
+      toast.success('landlord whitelisted successfully');
       setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
+        navigate(`/landlordProfile/${_id}`);
       }, 1000);
     }
     setLoading(false);
@@ -108,10 +105,10 @@ function TenantProfile() {
           <div className="personal-details">
             <div className="user">
               <div className="profile-image">
-                {tenant?.blackListTenant == true ? (
+                {landlord?.blackListTenant == true ? (
                   <img
                     src={
-                      tenant?.blackListTenant
+                      landlord?.blackListTenant
                         ? '/blacklisted.png'
                         : '/profile1.jfif'
                     }
@@ -119,41 +116,43 @@ function TenantProfile() {
                   />
                 ) : (
                   <img
-                    src={tenant?.profile ? tenant.profile : '/profile1.jfif'}
+                    src={
+                      landlord?.profile ? landlord.profile : '/profile1.jfif'
+                    }
                     alt="profile"
                   />
                 )}
               </div>
 
               <div className="userinfo">
-                <h3>{tenant ? tenant.name : 'Linda Kamau'}</h3>
+                <h3 className="nId">
+                  {landlord ? landlord.name : 'Linda Kamau'}
+                </h3>
 
-                <p>Tenant Id:{tenant ? tenant.nationalId : '1'}</p>
-                <p>
+                <p className="nId">
+                  Landlord Id:{landlord ? landlord.nationalId : '1'}
+                </p>
+                <p className="nId">
                   Joining Date:{' '}
-                  {tenant
-                    ? new Date(tenant.createdAt).toLocaleDateString()
+                  {landlord
+                    ? new Date(landlord.createdAt).toLocaleDateString()
                     : '24-06-2024'}
                 </p>
               </div>
             </div>
             <div className="user-details">
-              <p>
-                Phone {`(+254)`}:{tenant ? tenant.phoneNo : ' 078129324'}
+              <p className="nId">
+                Phone {`(+254)`}:{landlord ? landlord.phoneNo : ' 078129324'}
               </p>
-              <p>Email : {tenant ? tenant.email : 'linda@gmail.com'}</p>
-              <p>Age : {tenant?.age ? tenant.age : 'Not Provided'}</p>
-              <p>HouseNo: {tenant ? tenant.houseNo : 'Not Asssigned'}</p>
-              {tenant?.blackListTenant == true ? (
-                <span>Blacklisted Status:True</span>
-              ) : (
-                ''
-              )}
-              {tenant?.whiteListTenant == true ? (
-                <span>whiteListed Status:True</span>
-              ) : (
-                ''
-              )}
+              <p className="nId">
+                Email : {landlord ? landlord.email : 'linda@gmail.com'}
+              </p>
+              <p className="nId">
+                Age : {landlord?.age > 0 ? landlord.age : 'Not Provided'}
+              </p>
+              <p className="nId">
+                HouseNo: {landlord ? landlord.assignedHouseNo : 'Not Asssigned'}
+              </p>
             </div>
           </div>
 
@@ -161,16 +160,16 @@ function TenantProfile() {
             <div className="payment-details">
               <h3>Current Balance</h3>
               <div className="dets">
-                <p>Amount</p>
-                <p>{tenant ? tenant.rentPayable : '0'}</p>
+                <p>Monthly Pay</p>
+                <p>{landlord ? landlord.monthlyPay : '0'}</p>
               </div>
             </div>
             <div className="payment-details">
               <h3>Emergency Contact</h3>
               <div className="dets">
-                <p>Name: {tenant ? tenant.emergencyContactName : 'Jane'}</p>
+                <p>Name: {landlord ? landlord.emergencyContactName : 'Jane'}</p>
                 <p>
-                  Contact: {tenant ? tenant.emergencyContactNumber : '1234'}
+                  Contact: {landlord ? landlord.emergencyContactNumber : '1234'}
                 </p>
               </div>
             </div>
@@ -178,27 +177,37 @@ function TenantProfile() {
 
           <div className="deposits">
             <div className=" pd">
-              <h3>Tenant{`'`}s Deposits</h3>
+              <h3>LandLord{`'`}s Deposits</h3>
               <table className="tenant-table">
                 <thead>
                   <tr>
-                    <th>Deposits</th>
-                    <th>
-                      {tenant
-                        ? tenant.houseDeposit + tenant.waterDeposit
-                        : 'amount'}
-                    </th>
+                    <th>Status</th>
+                    <th>Value</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   <tr>
-                    <td>Rent Deposit</td>
-                    <td>{tenant ? tenant.houseDeposit : '12000'}</td>
+                    <td>Blacklisted </td>
+                    <td>
+                      {' '}
+                      {landlord?.blackListLandlord == true ? (
+                        <span>True</span>
+                      ) : (
+                        <span>False</span>
+                      )}
+                    </td>
                   </tr>
                   <tr>
-                    <td>Water Deposit</td>
-                    <td>{tenant ? tenant.waterDeposit : '2500'}</td>
+                    <td>WhiteListed </td>
+                    <td>
+                      {' '}
+                      {landlord?.whiteListLandlord == true ? (
+                        <span>True</span>
+                      ) : (
+                        <span>False</span>
+                      )}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -209,26 +218,26 @@ function TenantProfile() {
               </span>
 
               <div className="details-container">
-                <p>Delete Tenant</p>{' '}
-                <button onClick={handleDeleteTenant}>
+                <p>Delete Landlord</p>{' '}
+                <button onClick={handleDeletelandlord}>
                   <MdDelete size={20} color="red" />
                 </button>
               </div>
               <div className="details-container">
-                <p>Edit Tenant</p>{' '}
-                <button onClick={handleEditTenant}>
+                <p>Edit Landlord</p>{' '}
+                <button onClick={handleEditlandlord}>
                   <FaEdit size={20} color="var(--primary-color)" />
                 </button>
               </div>
               <div className="details-container">
-                <p>Blacklist Tenant</p>{' '}
-                <button onClick={handleBlackListTenant}>
+                <p>Blacklist Landlord</p>{' '}
+                <button onClick={handleBlackListlandlord}>
                   <CgPlayListRemove size={20} color="black" />
                 </button>
               </div>
               <div className="details-container">
-                <p>Whitelist Tenant</p>{' '}
-                <button onClick={handleWhiteListTenant}>
+                <p>Whitelist Landlord</p>{' '}
+                <button onClick={handleWhiteListlandlord}>
                   <MdOutlineNotListedLocation size={20} color="var(--yellow)" />
                 </button>
               </div>
@@ -240,4 +249,4 @@ function TenantProfile() {
   );
 }
 
-export default TenantProfile;
+export default LandLordProfile;

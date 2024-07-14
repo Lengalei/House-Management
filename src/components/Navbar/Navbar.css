@@ -1,8 +1,9 @@
 .navbar {
-  position: fixed;
-  height: 10vh;
+  position: absolute;
+  height: 10%;
   top: 0;
   width: 100%;
+  margin: 0 auto;
   background-color: black;
   border-bottom: 0.5px solid var(--primary-color);
   color: #fff;
@@ -11,6 +12,7 @@
   align-items: center;
   padding: 10px 20px;
   z-index: 1000;
+  /* border: 1px solid firebrick; */
 }
 
 .navbar-logo {
@@ -42,10 +44,18 @@
   border-radius: 50%;
   margin-right: 10px;
 }
-
+.profile-pic:hover {
+  cursor: pointer;
+}
+.iconName:hover {
+  cursor: pointer;
+}
 .dropdown {
   position: relative;
   display: inline-block;
+}
+.drp:hover {
+  cursor: pointer;
 }
 
 .dropdown-content {
@@ -67,10 +77,18 @@
 
 .dropdown-content a:hover {
   background-color: #575757;
+  cursor: pointer;
 }
 
 .dropdown:hover .dropdown-content {
   display: block;
+}
+.notLoggedInLink {
+  color: wheat;
+  text-decoration: none;
+}
+.notLoggedInLink:hover {
+  color: red;
 }
 
 /* sidebar */

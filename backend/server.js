@@ -9,6 +9,7 @@ dotenv.config();
 //routes import
 import authRoutes from './Routes/auth.routes.js';
 import tenantRoutes from './Routes/tenant.routes.js';
+import landLordRoutes from './Routes/landLord.routes.js';
 
 const app = express();
 const port = process.env.PORT || 5500;
@@ -40,3 +41,4 @@ mongoose
 //routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tenants', tenantRoutes);
+app.use('/api/landlords', landLordRoutes);

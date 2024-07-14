@@ -9,10 +9,12 @@
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  border: 1px solid crimson;
 
-  .content {
+  .emailContent {
     text-align: center;
     padding: 20px;
     background-color: wheat; /* White background */

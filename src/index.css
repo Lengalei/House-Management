@@ -17,3 +17,27 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+/*Scroll bar css*/
+/* Hide the default scrollbar on Webkit browsers (Safari, Chrome) */
+::-webkit-scrollbar {
+  display: none;
+  width: 12px;
+}
+
+/* Customize the scrollbar track */
+::-webkit-scrollbar-track {
+  background: #333; /* Change the background color to your desired color */
+}
+
+/* Customize the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #666; /* Change the thumb color to your desired color */
+  border-radius: 6px; /* Add rounded corners to the thumb */
+}
+
+/* When the user hovers over the scrollbar */
+::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Change the thumb color on hover */
+}
+
+/*End Of Scroll bar css*/

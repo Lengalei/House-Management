@@ -1,0 +1,186 @@
+.TenantProfile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 1px;
+  outline: none;
+  //   border: 1px solid lawngreen;
+
+  .loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    .threeDots {
+      color: rgb(52, 138, 18);
+    }
+  }
+
+  .summary2 {
+    background-image: linear-gradient(
+        rgba(71, 68, 68, 0.8),
+        rgba(63, 62, 62, 0.8)
+      ),
+      url('/housebg.jfif');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+
+    .profile {
+      width: 100%;
+      height: 100%;
+      /* padding-top: 5px; */
+      width: 100%;
+      padding-top: 10px;
+      display: flex;
+      gap: 50px;
+      flex-direction: column;
+      align-items: center;
+
+      .personal-details {
+        width: 80%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 20px;
+        background: none;
+        border: none;
+        outline: none;
+        // border: 1px solid greenyellow;
+        .user {
+          //   padding: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          width: 44%;
+
+          height: 100%;
+          background-color: white;
+          box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+            rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+            rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+          border-radius: 10px;
+          border: 1px solid var(--primary-color);
+        }
+        .user .profile-image {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          border: 1px solid var(--primary-color);
+          overflow: hidden;
+        }
+        .profile-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          overflow: hidden;
+        }
+        .user-details {
+          width: 44%;
+          height: 100%;
+          background-color: white;
+          box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+            rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+            rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          padding-left: 10px;
+          align-items: flex-start;
+          text-align: start;
+          justify-content: center;
+          border-radius: 10px;
+          border: 1px solid var(--primary-color);
+        }
+      }
+
+      .payment {
+        width: 80%;
+        display: flex;
+        gap: 20px;
+        // border: 1px solid greenyellow;
+      }
+      .payment-details {
+        width: 400px;
+        height: 100px;
+        display: flex;
+        padding: 20px;
+        background-color: white;
+        flex-direction: column;
+        border-radius: 10px;
+        align-items: center;
+        /* border: 1px solid var(--yellow); */
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+      }
+      .pd {
+        width: 400px;
+        height: 240px;
+        display: flex;
+        padding: 20px;
+        background-color: white;
+        flex-direction: column;
+        border-radius: 10px;
+        align-items: center;
+        border: 1px solid gold;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+      }
+      .dets {
+        width: 90%;
+        display: flex;
+        justify-content: space-between;
+      }
+      .deposits {
+        display: flex;
+        width: 80%;
+        gap: 20px;
+        // border: 1px solid greenyellow;
+      }
+      .deposits .payment-details {
+        height: 200px;
+      }
+      .GiHazardSign {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        // background-color: gray;
+        border-bottom: 1px solid crimson;
+      }
+      .details-container {
+        width: 200px;
+        display: flex;
+        gap: 30px;
+        margin-bottom: 10px;
+        justify-content: space-between;
+      }
+      .details-container button {
+        background-color: transparent;
+        border: none;
+        transition: all 300ms ease-in-out;
+      }
+      .details-container button:hover {
+        background-color: rosybrown;
+        border-radius: 5px;
+        border: 1px solid olive;
+        cursor: pointer;
+      }
+    }
+  }
+}

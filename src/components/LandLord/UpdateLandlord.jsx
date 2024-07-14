@@ -1,29 +1,49 @@
-import { useState } from 'react';
-import './Tenant.css';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiRequest from '../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
 import 'react-toastify/dist/ReactToastify.css';
+import '../Tenants/Tenant.css';
 
-function Tenant() {
+function UpdateLandlord() {
+  const { _id } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     nationalId: '',
     phoneNo: '',
     placementDate: '',
-    houseDeposit: '',
-    waterDeposit: '',
-    houseNo: '',
-    rentPayable: '',
+    assignedHouseNo: '',
+    monthlyPay: '',
     emergencyContactNumber: '',
     emergencyContactName: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLandlord = async () => {
+      try {
+        setLoading(true);
+        const response = await apiRequest.get(
+          `/landlords/getSingleLandlord/${_id}`
+        );
+        const { data } = response;
+        setFormData(data);
+      } catch (error) {
+        console.error('Error fetching landlord:', error);
+        setError('Error fetching landlord data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLandlord();
+  }, [_id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,16 +57,22 @@ function Tenant() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
-      const res = await apiRequest.post('/tenants', formData);
-      if (res.status === 201) {
-        toast.success('Tenant registered successfully!');
-        navigate('/listAllTenants');
+      const res = await apiRequest.put(
+        `/landlords/updateSingleLandlord/${_id}`,
+        formData
+      );
+      if (res.status === 200) {
+        toast.success('Landlord details updated successfully!');
+        navigate(`/listAllLandlord`);
+      } else {
+        setError(res.data.message);
       }
     } catch (err) {
-      console.error('Error registering tenant:', err);
-      setError(err.message);
-      toast.error('Error registering tenant.');
+      console.error('Error updating landlord:', err);
+      setError('Error updating landlord. Please try again.');
+      toast.error('Error updating landlord.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +82,7 @@ function Tenant() {
     <div>
       <div className="tenant">
         <div className="registration">
-          <h3>Input Tenant{`'`}s details to register</h3>
+          <h3>Edit Landlord{`'`}s Details</h3>
           <div className="form">
             <form onSubmit={handleSubmit}>
               <div className="forminput">
@@ -120,50 +146,26 @@ function Tenant() {
                 />
               </div>
               <div className="forminput">
-                <label htmlFor="houseDeposit">
-                  House Deposit<span>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="houseDeposit"
-                  id="houseDeposit"
-                  value={formData.houseDeposit}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="forminput">
-                <label htmlFor="waterDeposit">
-                  Water Deposit<span>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="waterDeposit"
-                  id="waterDeposit"
-                  value={formData.waterDeposit}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="forminput">
-                <label htmlFor="houseNo">
-                  House No<span>*</span>
+                <label htmlFor="assignedHouseNo">
+                  Assigned House No<span>*</span>
                 </label>
                 <input
                   type="text"
-                  name="houseNo"
-                  id="houseNo"
-                  value={formData.houseNo}
+                  name="assignedHouseNo"
+                  id="assignedHouseNo"
+                  value={formData.assignedHouseNo}
                   onChange={handleChange}
                 />
               </div>
               <div className="forminput">
-                <label htmlFor="rentPayable">
-                  Rent Payable<span>*</span>
+                <label htmlFor="monthlyPay">
+                  Monthly Pay<span>*</span>
                 </label>
                 <input
                   type="number"
-                  name="rentPayable"
-                  id="rentPayable"
-                  value={formData.rentPayable}
+                  name="monthlyPay"
+                  id="monthlyPay"
+                  value={formData.monthlyPay}
                   onChange={handleChange}
                 />
               </div>
@@ -205,7 +207,7 @@ function Tenant() {
                       visible={true}
                     />
                   ) : (
-                    'Register'
+                    'Update'
                   )}
                 </button>
               </div>
@@ -219,4 +221,4 @@ function Tenant() {
   );
 }
 
-export default Tenant;
+export default UpdateLandlord;

@@ -4,10 +4,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sendResetPasswordEmail from '../utils/sendEmail.js';
 import User from '../models/user.model.js';
+import mongoose from 'mongoose';
 
 // Function to generate tokens
-const generateTokens = (user, rememberMe = false) => {
-  const age = rememberMe ? 1000 * 60 * 60 * 24 * 30 : 1000 * 60 * 60 * 24 * 2; // 30 days for rememberMe, 2 days otherwise
+const generateTokens = (user) => {
+  const age = 1000 * 60 * 60 * 24 * 30; // 30 days for rememberMe, 2 days otherwise
   const accessToken = jwt.sign(
     { id: user.id, isAdmin: false },
     process.env.JWT_SECRET_KEY,
@@ -47,20 +48,11 @@ export const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Generate token and send to user
-    const { accessToken, expiresIn } = generateTokens(newUser);
-
     // Clear sensitive fields before sending user data
     newUser.password = undefined;
 
     // Set cookie and respond with user data and token
-    res
-      .cookie('token', accessToken, {
-        httpOnly: true,
-        maxAge: expiresIn,
-      })
-      .status(200)
-      .json({ user: newUser, accessToken });
+    res.status(200).json(newUser);
   } catch (err) {
     console.error('Error registering user:', err);
     res.status(500).json({ message: 'Failed to create user' });
@@ -70,6 +62,7 @@ export const register = async (req, res) => {
 // Login function
 export const login = async (req, res) => {
   const { username, password, rememberMe } = req.body;
+  console.log('rememberMe:', rememberMe);
 
   try {
     // Check if the user exists
@@ -82,19 +75,20 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid Credentials!' });
 
     // Generate tokens based on rememberMe option
-    const { accessToken, expiresIn } = generateTokens(user, rememberMe);
+    const { accessToken, expiresIn } = generateTokens(user);
 
     user.password = undefined;
     // Set cookie and respond with user data and token
     res
+      .status(200)
       .cookie('token', accessToken, {
         httpOnly: true,
         maxAge: expiresIn,
         // secure: true, // Set to true if using HTTPS
         // sameSite: 'None', // Adjust as per your security requirements
       })
-      .status(200)
-      .json({ user, accessToken });
+
+      .json(user);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to login!' });
@@ -103,7 +97,10 @@ export const login = async (req, res) => {
 
 /* Logout */
 export const logout = (req, res) => {
-  res.clearCookie('token').status(200).json({ message: 'Logout Successful' });
+  res
+    .cookie('HouseAdmintoken', '', { maxAge: new Date(0) })
+    .status(200)
+    .json({ msg: 'success logout' });
 };
 
 /* Forgot Password */
@@ -117,7 +114,7 @@ export const forgotPassword = async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
-    const resetLink = `${process.env.CLIENT_URL}/resetPassword?token=${token}`;
+    const resetLink = `${process.env.CLIENT_URL}/resetPasswordLinkClicked?token=${token}`;
     await sendResetPasswordEmail(user.email, resetLink);
 
     res.status(200).json({ message: 'Reset password email sent!' });
@@ -142,5 +139,78 @@ export const resetPassword = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to reset password!' });
+  }
+};
+
+/*Update the password*/
+export const adminChangePassword = async (req, res) => {
+  const { adminId, currentPassword, newPassword } = req.body;
+  if (!adminId || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'All fields must be filled' });
+  }
+  try {
+    // Find user with the passed adminId
+    const user = await User.findById(adminId);
+    if (!user) {
+      return res.status(400).json({ error: 'No user found' });
+    }
+    // Compare the password passed to password in Db
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid current password' });
+    }
+    // Hash the new password
+    const hashPass = await bcrypt.hash(newPassword, 10);
+    const changeUserPass = await User.findByIdAndUpdate(
+      adminId,
+      {
+        password: hashPass,
+      },
+      { new: true }
+    );
+    if (!changeUserPass) {
+      return res
+        .status(400)
+        .json({ error: 'Error occurred while updating password' });
+    }
+    changeUserPass.password = undefined;
+    return res.status(200).json(changeUserPass);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'Internal server error. Failed to change password' });
+  }
+};
+
+/*admin update profile*/
+export const adminUpdateProfile = async (req, res) => {
+  const { profile } = req.body;
+  const { id } = req.params;
+  if (!profile) {
+    return res.status(400).json({ error: 'All fields must be filled' });
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+  try {
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        profile,
+      },
+      {
+        new: true,
+      }
+    );
+    if (!user) {
+      return res.status(400).json({ error: 'Error Updating the Profile' });
+    }
+    user.password = undefined;
+    console.log(user);
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'Iternal server Error. Failled to Change Pass' });
   }
 };

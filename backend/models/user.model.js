@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -15,9 +16,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    profile: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema); // Corrected the model name capitalization
 export default User;

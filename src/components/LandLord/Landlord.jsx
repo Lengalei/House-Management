@@ -1,20 +1,22 @@
-import { useState } from "react";
-import "../Tenants/Tenant.css";
-import Navbar from "../Navbar/Navbar";
-import { useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
-import Sidebar from "../sidebar/Sidebar";
+import { useState } from 'react';
+import '../Tenants/Tenant.css';
+import { useNavigate } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { toast, ToastContainer } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Landlord() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    nationalId: "",
-    phoneNo: "",
-    placementDate: "",
-    houseDeposit: "",
-    houseNo: "",
-    rentPayable: "",
+    name: '',
+    email: '',
+    nationalId: '',
+    phoneNo: '',
+    placementDate: '',
+    assignedHouseNo: '',
+    monthlyPay: '',
+    emergencyContactNumber: '',
+    emergencyContactName: '',
   });
   // console.log(formData);
   const handleChange = (e) => {
@@ -24,28 +26,35 @@ function Landlord() {
       [name]: value,
     }));
   };
-  const [error, serError] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    serError("");
+    setError('');
+    setLoading(true);
     try {
-      const res = await apiRequest.post("/tenants", formData);
-      if (res.status) {
-        console.log("Tenant registered:", res.data);
-        navigate("/listAllTenants");
+      const res = await apiRequest.post('/landlords', formData);
+      if (res.status === 201) {
+        toast.success('landlord registered successfully!');
+        navigate('/listAllLandlord');
+      } else {
+        setError(res.data.message);
       }
     } catch (err) {
-      console.error("Error registering tenant:", err);
-      serError(err.message);
+      console.error('Error registering landlord:', err);
+      setError(err.message);
+      toast.error('Error registering landlord.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      <Navbar />
       <div className="tenant">
-        <Sidebar />
         <div className="registration">
           <h3>Input Landlord{`'`}s details to register</h3>
           <div className="form">
@@ -110,50 +119,79 @@ function Landlord() {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="forminput">
-                <label htmlFor="houseDeposit">
-                  House Deposit<span>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="houseDeposit"
-                  id="houseDeposit"
-                  value={formData.houseDeposit}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="forminput">
-                <label htmlFor="houseNo">
-                  House No<span>*</span>
+                <label htmlFor="assignedHouseNo">
+                  Assigned House No<span>*</span>
                 </label>
                 <input
                   type="text"
-                  name="houseNo"
-                  id="houseNo"
-                  value={formData.houseNo}
+                  name="assignedHouseNo"
+                  id="assignedHouseNo"
+                  value={formData.assignedHouseNo}
                   onChange={handleChange}
                 />
               </div>
               <div className="forminput">
-                <label htmlFor="rentPayable">
-                  Rent Payable<span>*</span>
+                <label htmlFor="monthlyPay">
+                  Monthly Pay<span>*</span>
                 </label>
                 <input
                   type="number"
-                  name="rentPayable"
-                  id="rentPayable"
-                  value={formData.rentPayable}
+                  name="monthlyPay"
+                  id="monthlyPay"
+                  value={formData.monthlyPay}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="forminput">
+                <label htmlFor="emergencyContactName">
+                  Emergency Contact Name<span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="emergencyContactName"
+                  id="emergencyContactName"
+                  value={formData.emergencyContactName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="forminput">
+                <label htmlFor="emergencyContactNumber">
+                  Emergency Contact Number<span>*</span>
+                </label>
+                <input
+                  type="number"
+                  name="emergencyContactNumber"
+                  id="emergencyContactNumber"
+                  value={formData.emergencyContactNumber}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <button className="btn">Register</button>
+                <button className="btn" disabled={loading}>
+                  {loading ? (
+                    <ThreeDots
+                      height="20"
+                      width="40"
+                      radius="9"
+                      color="#4fa94d"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClassName=""
+                      visible={true}
+                    />
+                  ) : (
+                    'Register'
+                  )}
+                </button>
               </div>
             </form>
             {error && <span>{error}</span>}
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

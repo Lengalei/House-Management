@@ -67,6 +67,7 @@ const sendMailjetEmail = async (to, subject, html) => {
 
   try {
     await request;
+    console.log('Email sent via Mailjet');
   } catch (err) {
     console.error('Failed to send email via Mailjet', err);
     throw new Error('Failed to send email via Mailjet');
@@ -81,6 +82,7 @@ const sendNodemailerEmail = async (to, subject, html) => {
       subject,
       html,
     });
+    console.log('Email sent via Nodemailer');
   } catch (err) {
     console.error('Failed to send email via Nodemailer', err);
     throw new Error('Failed to send email via Nodemailer');
