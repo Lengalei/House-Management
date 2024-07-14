@@ -4,23 +4,30 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-
-  /* border: 1px solid crimson; */
+  background-color: black;
+  color: white;
+  background-image: 
+    url('/bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* padding: 30px; */
 }
 .profile-details {
-  /* padding-top: 70px; */
-  /* padding-left: 50px; */
   width: 100%;
-  /* margin: 0 auto; */
   height: 95%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 .personalinfo {
-  width: 50%;
+  width: 40%;
   height: 100%;
-  /* border: 1px solid rgb(58, 165, 25); */
+  border-right: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
 }
 .profile2 {
   display: flex;
@@ -36,7 +43,7 @@
 .admin-image img {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(2px -2px 4px crimson);
+   box-shadow: 0 0 10px var(--primary-color);
   outline: none;
   border-radius: 15px;
   object-fit: cover;
@@ -45,32 +52,43 @@
   width: 50%;
   height: 100%;
 }
-.buttons {
+.btn2 {
   display: flex;
-  gap: 10px;
-}
-.buttons .btn {
+  border-radius: 20px;
   width: 150px;
   height: 40px;
+  margin: 0 auto;
 }
+
 form input {
-  color: black;
+  color: white;
 }
 .adminDetails {
+  padding: 5px;
+  padding-left: 10px;
   margin-top: 10px;
-  width: 52%;
+  width: 100%;
   border-radius: 15px;
-  box-shadow: 2px -2px 4px coral;
+  box-shadow: 0 0 10px var(--primary-color);
 }
 .changePassword {
-  margin-top: 10px;
-  border: 1px solid wheat;
+  width: 40%;
+  height: 90%;
+ 
+  margin: 0 auto;
+   margin-top: 20px;
   border-radius: 15px;
-  box-shadow: 2px -2px 4px coral;
+  box-shadow: 0 0 10px var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+/* form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+} */
 .changePassbtn {
   width: 150px;
   height: 40px;

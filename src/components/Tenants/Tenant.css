@@ -1,18 +1,29 @@
 .tenant {
   width: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* border: 1px solid crimson; */
+   /* background-color: black; */
+  color: white;
+  background-image: 
+    url('/tenantbg.webp');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: solid 10px crimson;
 }
 .registration {
-  /* padding-top: 100px;
-  padding-left: 30px; */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .form {
   border-radius: 10px;
   background-color: var(--yellow);
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
 }
 form {
   width: 500px;

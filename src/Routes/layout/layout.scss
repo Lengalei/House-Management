@@ -32,7 +32,22 @@
     height: 95%;
     overflow: scroll;
     overflow-x: hidden;
-    // border: 1px solid crimson;
+    // border: 10px solid greenyellow;
+
+    @include md {
+      width: 100%;
+      position: absolute;
+      top: 10%;
+      left: 0;
+      height: 100%;
+    }
+    @include sm {
+      width: 100%;
+      position: absolute;
+      top: 10%;
+      left: 0;
+      height: 100%;
+    }
   }
 }
 .authlayout {
@@ -52,5 +67,7 @@
     overflow: scroll;
     overflow-x: hidden;
     // border: 1px solid crimson;
+
+    
   }
 }

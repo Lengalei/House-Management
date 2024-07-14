@@ -96,8 +96,8 @@ function Admin() {
                 />
               )}
             </div>
-            <div className="buttons">
-              <UploadWidget
+            <div className="btn2 ">
+              <UploadWidget 
                 uwConfig={{
                   cloudName: 'victorkib',
                   uploadPreset: 'estate',
@@ -108,7 +108,6 @@ function Admin() {
                 onUploadSuccess={handleUploadSuccess}
                 setLoading={setLoading} // Pass setLoading to manage loading state in UploadWidget
               />
-              {/* <button className="btn">Delete Photo</button> */}
             </div>
 
             <div className="adminDetails">
