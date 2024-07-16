@@ -1,48 +1,60 @@
 import { FaHouseUser } from 'react-icons/fa';
-import './Dashboard.css';
+import './Dashboard.scss';
+import Navbar from '../Navbar/Navbar';
+import Sidebar from '../sidebar/Sidebar';
+import Charts from './Charts';
 
 function Dashboard() {
   return (
-    <div>
-      <div className="dashboardcontent">
-        <div className="dashboardheading">
-          <h1>Dashboard</h1>
-          <p>Welcome to your dashboard</p>
-        </div>
+    <div className="dashboard">
+      <div className="summary">
+        <div className="dashboardcontent">
+          <div className="dashboardheading">
+            <div className="h1">
+              <h1>Dashboard</h1>
+              <div className="rentimage">
+                <img src="/rents.png" alt="" />
+              </div>
+            </div>
 
-        <div className="container-info">
-          <div className="box">
-            <FaHouseUser
-              size={80}
-              color="var(--primary-color)"
-              className="fa"
-            />
-            <p>60 Total Tenants</p>
+            <p>Welcome to your dashboard</p>
           </div>
-          <div className="box">
-            <FaHouseUser
-              size={80}
-              color="var(--primary-color)"
-              className="fa"
-            />
-            <p>61 Total houses</p>
+
+          <div className="container-info">
+            <div className="box">
+              <FaHouseUser
+                size={80}
+                color="var(--primary-color)"
+                className="fa"
+              />
+              <p>60 Total Tenants</p>
+            </div>
+            <div className="box">
+              <FaHouseUser
+                size={80}
+                color="var(--primary-color)"
+                className="fa"
+              />
+              <p>61 Total houses</p>
+            </div>
+            <div className="box">
+              <FaHouseUser
+                size={80}
+                color="var(--primary-color)"
+                className="fa"
+              />
+              <p>45000 Total earnings</p>
+            </div>
+            <div className="box">
+              <FaHouseUser
+                size={80}
+                color="var(--primary-color)"
+                className="fa"
+              />
+              <p>10 Vacant Houses</p>
+            </div>
           </div>
-          <div className="box">
-            <FaHouseUser
-              size={80}
-              color="var(--primary-color)"
-              className="fa"
-            />
-            <p>45000 Total Monthly earnings</p>
-          </div>
-          <div className="box">
-            <FaHouseUser
-              size={80}
-              color="var(--primary-color)"
-              className="fa"
-            />
-            <p>10 Vacant Houses</p>
-          </div>
+          <Charts />
         </div>
       </div>
     </div>
