@@ -39,7 +39,7 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="navbar-logo">
-        <img src="/houselogo1.png" alt="" />
+        <img src="/homelogo.png" alt="" />
       </div>
       <div className="navbar-center">
         <FaBell size={20} />
