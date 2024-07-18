@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
-import './Tenant.css';
+import './Tenant.scss';
 import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
