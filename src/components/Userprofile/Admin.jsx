@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import './Admin.css';
+import './Admin.scss';
 import apiRequest from '../../lib/apiRequest';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
