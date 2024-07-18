@@ -4,7 +4,7 @@ import apiRequest from '../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
 import { ThreeDots } from 'react-loader-spinner';
 import 'react-toastify/dist/ReactToastify.css';
-import './Tenant.css';
+import './Tenant.scss';
 
 function EditTenant() {
   const { _id } = useParams();
