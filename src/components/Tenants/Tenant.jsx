@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './Tenant.css';
+import './Tenant.scss';
 import { useNavigate } from 'react-router-dom';
 import apiRequest from '../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
