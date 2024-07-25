@@ -90,10 +90,13 @@ const Sidebar = () => {
               </div>
             )}
           </div>
-          <Link to="assign-house" className="dash">
+          <Link to="/rentpayment" className="dash">
+            <FaHouseUser className="icon" /> Rent Payment
+          </Link>
+          <Link to="/registerTenant" className="dash">
             <FaHouseUser className="icon" /> Assign House
           </Link>
-          <Link to="add-landlord" className="dash">
+          <Link to="/registerLandlord" className="dash">
             <FaUserPlus className="icon" /> Add Landlord
           </Link>
         </div>

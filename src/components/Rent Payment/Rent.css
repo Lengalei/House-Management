@@ -1,0 +1,16 @@
+.rent{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 70px;
+}
+.form{
+    width: 45%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.forminput{
+    width: 90%;
+}

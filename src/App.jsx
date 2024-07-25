@@ -16,6 +16,8 @@ import LandLordProfile from "./components/LandLord/LandLordProfile.jsx";
 import EditTenant from "./components/Tenants/EditTenant.jsx";
 import UpdateLandlord from "./components/LandLord/UpdateLandlord.jsx";
 import ResetPassword from "./components/Home/ResetPassword/ResetPassword.jsx";
+import Rent from "./components/Rent Payment/Rent.jsx";
+import RentDetails from "./components/Rent Payment/RentDetails.jsx";
 
 function App() {
   return (
@@ -31,8 +33,10 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="/registerTenant" element={<Tenant />} />
           <Route path="/registerLandlord" element={<Landlord />} />
+          <Route path="/rentpayment" element={<Rent />} />
           <Route path="/listAllTenants" element={<Listall />} />
           <Route path="/tenant/edit/:_id" element={<EditTenant />} />
+          <Route path="/rentDetails/:_id" element={<RentDetails/>} />
           <Route path="/landlord/edit/:_id" element={<UpdateLandlord />} />
           <Route path="/tenantProfile/:_id" element={<TenantProfile />} />
           <Route path="/landlordProfile/:_id" element={<LandLordProfile />} />
