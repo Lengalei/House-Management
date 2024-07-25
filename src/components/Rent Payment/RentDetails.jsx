@@ -2,7 +2,7 @@ import React from 'react'
 
 function RentDetails() {
   return (
-    <div className="rent">
+    <div className="rent ">
       <div className="form">
         <h2>Rent Records</h2>
         <form action="">
@@ -24,12 +24,13 @@ function RentDetails() {
         <h2>Payment Records</h2>
         <form action="">
           <div className="forminput">
-            <label htmlFor="Monthly Rent">Amount Paid</label>
-            <input type="number" name="Monthly Rent" />
+            <label htmlFor="amount">Amount Paid</label>
+            <input type="number" name="amount" /> 
           </div>
+
           <div className="forminput">
-            <label htmlFor="Extra Bills">Balance</label>
-            <input type="number" name="Extra Bills" />
+            <label htmlFor="balance">Balance</label>
+            <input type="number" name="balance" />
           </div>
 
           <button className='btn'>Enter</button>

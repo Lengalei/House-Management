@@ -143,6 +143,7 @@ const Listall = () => {
                       >
                         More Details
                       </Link>
+    
                       <button
                         onClick={() => handleDelete(tenant._id)}
                         className="delete-btn"
