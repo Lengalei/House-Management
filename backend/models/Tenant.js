@@ -60,6 +60,27 @@ const TenantSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // Rent details
+    monthlyRent: {
+      type: Number,
+      default: 0,
+    },
+    extraBills: {
+      type: Number,
+      default: 0,
+    },
+    totalAmount: {
+      type: Number,
+      default: 0,
+    },
+    amountPaid: {
+      type: Number,
+      default: 0,
+    },
+    balance: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
