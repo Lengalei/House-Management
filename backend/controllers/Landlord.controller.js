@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Landlord from '../models/Landlord.js';
+import Tenant from '../models/Tenant.js';
 
 // register Landlord
 export const registerLandlord = async (req, res) => {
@@ -32,9 +33,22 @@ export const registerLandlord = async (req, res) => {
   try {
     const existingLandlord = await Landlord.findOne({ email });
     if (existingLandlord) {
-      return res.status(409).json({ message: 'Landlord already exists!' });
+      return res.status(400).json({ message: 'Landlord already exists!' });
+    }
+    const existingLandlordHouse = await Landlord.findOne({ assignedHouseNo });
+    if (existingLandlordHouse) {
+      return res
+        .status(400)
+        .json({ message: 'House is already occupied by a current Landlord!' });
     }
 
+    const isHouseOccupied = await Tenant.findOne({ houseNo: assignedHouseNo });
+    console.log('isHouseOccupied: ', isHouseOccupied);
+    if (isHouseOccupied) {
+      return res
+        .status(400)
+        .json({ message: 'House is already occupied by Tenant!' });
+    }
     const newLandlord = await Landlord.create({
       name,
       email,

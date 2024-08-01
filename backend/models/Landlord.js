@@ -26,6 +26,7 @@ const landlordSchema = new mongoose.Schema(
     },
     assignedHouseNo: {
       type: String,
+      unique: true,
       required: true,
     },
     monthlyPay: {
