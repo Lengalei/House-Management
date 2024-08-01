@@ -5,66 +5,45 @@ import apiRequest from '../../lib/apiRequest';
 function RentDetails() {
   const { _id } = useParams();
   const navigate = useNavigate();
-
-  // State to manage form inputs
   const [formData, setFormData] = useState({
-    monthlyRent: '',
-    extraBills: '',
-    totalAmount: '',
-    amountPaid: '',
-    balance: '',
+    monthlyRent: 17000,
+    waterBill: 1200,
+    garbageFee: 500,
+    extraBills: 0,
+    totalAmount: 0,
+    amountPaid: 0,
+    balance: 0,
   });
 
-  // Update state when form inputs change
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Calculate totalAmount whenever monthlyRent or extraBills changes
-  useEffect(() => {
-    const monthlyRent = parseFloat(formData.monthlyRent) || 0;
-    const extraBills = parseFloat(formData.extraBills) || 0;
-    setFormData((prevData) => ({
-      ...prevData,
-      totalAmount: (monthlyRent + extraBills).toFixed(2),
-    }));
-  }, [formData.monthlyRent, formData.extraBills]);
-
-  // Calculate balance whenever totalAmount or amountPaid changes
-  useEffect(() => {
-    const totalAmount = parseFloat(formData.totalAmount) || 0;
-    const amountPaid = parseFloat(formData.amountPaid) || 0;
-    setFormData((prevData) => ({
-      ...prevData,
-      balance: (totalAmount - amountPaid).toFixed(2),
-    }));
-  }, [formData.totalAmount, formData.amountPaid]);
-
-  // Fetch existing tenant data and populate the form
+  // Fetch tenant data
   useEffect(() => {
     const fetchTenantData = async () => {
       try {
         const response = await apiRequest.get(
           `/tenants/getSingleTenant/${_id}`
         );
-        console.log('tenantDetails: ', response.data);
+        console.log('Tenant Details: ', response.data);
+
         if (response.data) {
+          const {
+            monthlyRent = 17000,
+            waterBill = 1200,
+            garbageFee = 500,
+            extraBills = 0,
+            amountPaid = 0,
+          } = response.data;
+
+          const calculatedTotalAmount = (
+            parseFloat(monthlyRent) +
+            parseFloat(waterBill) +
+            parseFloat(garbageFee) +
+            parseFloat(extraBills)
+          ).toFixed(2);
+
           setFormData({
-            monthlyRent: response.data.monthlyRent || '',
-            extraBills: response.data.extraBills || '',
-            totalAmount: (
-              parseFloat(response.data.monthlyRent || 0) +
-              parseFloat(response.data.extraBills || 0)
-            ).toFixed(2),
-            amountPaid: response.data.amountPaid || '',
-            balance: (
-              parseFloat(response.data.monthlyRent || 0) +
-              parseFloat(response.data.extraBills || 0) -
-              parseFloat(response.data.amountPaid || 0)
-            ).toFixed(2),
+            ...response.data,
+            totalAmount: calculatedTotalAmount,
+            balance: (calculatedTotalAmount - amountPaid).toFixed(2),
           });
         }
       } catch (error) {
@@ -75,55 +54,52 @@ function RentDetails() {
     fetchTenantData();
   }, [_id]);
 
-  // Handle form submission
+  // Update totalAmount and balance whenever formData changes
+  useEffect(() => {
+    const totalAmount =
+      parseFloat(formData.monthlyRent) +
+        parseFloat(formData.waterBill) +
+        parseFloat(formData.garbageFee) +
+        parseFloat(formData.extraBills) || 0;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      totalAmount: totalAmount.toFixed(2),
+      balance: (totalAmount - parseFloat(prevData.amountPaid || 0)).toFixed(2),
+    }));
+  }, [
+    formData.monthlyRent,
+    formData.waterBill,
+    formData.garbageFee,
+    formData.extraBills,
+    formData.amountPaid,
+  ]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: parseFloat(value) || 0,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate form data
-    const { monthlyRent, extraBills, totalAmount, amountPaid, balance } =
-      formData;
-    if (
-      monthlyRent !== '' &&
-      extraBills !== '' &&
-      totalAmount !== '' &&
-      amountPaid !== '' &&
-      balance !== ''
-    ) {
-      // Prepare the data to be sent
-      const data = {
-        monthlyRent: parseFloat(monthlyRent),
-        extraBills: parseFloat(extraBills),
-        totalAmount: parseFloat(totalAmount),
-        amountPaid: parseFloat(amountPaid),
-        balance: parseFloat(balance),
-      };
-
-      // Make the PUT request to update the record
-      try {
-        const response = await apiRequest.put(
-          `/tenants/updateSingleTenant/${_id}`,
-          data
-        );
-
-        if (response.status) {
-          console.log(response.data);
-          navigate('/rentpayment');
-        }
-      } catch (error) {
-        console.error('Error updating tenant data:', error);
+    try {
+      const response = await apiRequest.put(
+        `/tenants/updateSingleTenant/${_id}`,
+        formData
+      );
+      if (response.status === 200) {
+        navigate('/rentpayment');
       }
-    } else {
-      // Handle validation error (e.g., show an error message)
-      alert('Please fill in all fields.');
+    } catch (error) {
+      console.error('Error updating tenant data:', error);
     }
   };
 
-  // Check if first form is filled
-  const isFirstFormFilled =
-    formData.monthlyRent !== '' && formData.extraBills !== '';
-
   return (
-    <div className="rent ">
+    <div className="rent">
       <div className="form">
         <h2>Rent Records</h2>
         <form>
@@ -134,6 +110,27 @@ function RentDetails() {
               name="monthlyRent"
               value={formData.monthlyRent}
               onChange={handleChange}
+              readOnly
+            />
+          </div>
+          <div className="forminput">
+            <label htmlFor="waterBill">Water Bill</label>
+            <input
+              type="number"
+              name="waterBill"
+              value={formData.waterBill}
+              onChange={handleChange}
+              readOnly
+            />
+          </div>
+          <div className="forminput">
+            <label htmlFor="garbageFee">Garbage Fee</label>
+            <input
+              type="number"
+              name="garbageFee"
+              value={formData.garbageFee}
+              onChange={handleChange}
+              readOnly
             />
           </div>
           <div className="forminput">
@@ -160,16 +157,25 @@ function RentDetails() {
         <h2>Payment Records</h2>
         <form onSubmit={handleSubmit}>
           <div className="forminput">
-            <label htmlFor="Monthly Rent">Amount Paid</label>
-            <input type="number" name="Monthly Rent" />
+            <label htmlFor="amountPaid">Amount Paid</label>
+            <input
+              type="number"
+              name="amountPaid"
+              value={formData.amountPaid}
+              onChange={handleChange}
+            />
           </div>
-
           <div className="forminput">
-            <label htmlFor="Extra Bills">Balance</label>
-            <input type="number" name="Extra Bills" />
+            <label htmlFor="balance">Balance</label>
+            <input
+              type="number"
+              name="balance"
+              value={formData.balance}
+              readOnly
+            />
           </div>
-          <button type="submit" className="btn" disabled={!isFirstFormFilled}>
-            Enter
+          <button type="submit" className="btn">
+            Submit
           </button>
         </form>
       </div>

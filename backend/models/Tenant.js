@@ -30,16 +30,21 @@ const TenantSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    waterDeposit: {
-      type: Number,
-      required: true,
-    },
     rentPayable: {
       type: Number,
-      required: true,
+      default: 17000,
+    },
+    waterDeposit: {
+      type: Number,
+      default: 1200,
+    },
+    garbageFee: {
+      type: Number,
+      default: 500,
     },
     houseNo: {
       type: String,
+      unique: true,
       required: true,
     },
     // Emergency contact
@@ -59,27 +64,6 @@ const TenantSchema = new mongoose.Schema(
     blackListTenant: {
       type: Boolean,
       default: false,
-    },
-    // Rent details
-    monthlyRent: {
-      type: Number,
-      default: 0,
-    },
-    extraBills: {
-      type: Number,
-      default: 0,
-    },
-    totalAmount: {
-      type: Number,
-      default: 0,
-    },
-    amountPaid: {
-      type: Number,
-      default: 0,
-    },
-    balance: {
-      type: Number,
-      default: 0,
     },
   },
   { timestamps: true }

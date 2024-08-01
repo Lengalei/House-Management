@@ -20,6 +20,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.4",
+    "node-cron": "^3.0.3",
     "node-mailjet": "^6.0.5",
     "nodemailer": "^6.9.14"
   }

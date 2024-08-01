@@ -1,0 +1,228 @@
+.tenant-payment-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid salmon;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .form-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+
+    .form-card,
+    .right-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      form,
+      .update-form,
+      .default-values {
+        display: flex;
+        flex-direction: column;
+
+        label,
+        p {
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        input {
+          color: black;
+        }
+
+        button {
+          background: #007bff;
+          border: none;
+          color: #fff;
+          padding: 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 14px;
+
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
+      }
+
+      .update-form button {
+        background: #28a745;
+
+        &:hover {
+          background-color: #218838;
+        }
+      }
+    }
+
+    .left-card {
+      flex: 1;
+    }
+
+    .right-card {
+      flex: 1;
+    }
+  }
+
+  .outstanding-payments-header {
+    width: 100%;
+    text-align: right;
+    margin: 20px 0;
+
+    button {
+      background: #007bff;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  .outstanding-payments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .popup-content1 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .mini-card {
+      background: whitesmoke;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      button {
+        background: #007bff;
+        border: none;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 14px;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+
+    .popup-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      h3 {
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        label {
+          margin-bottom: 10px;
+          font-size: 14px;
+
+          input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            color: black;
+            border: 1px solid #ddd;
+          }
+        }
+
+        button {
+          background: #007bff;
+          border: none;
+          color: #fff;
+          padding: 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 14px;
+
+          &:first-child {
+            background: #28a745;
+          }
+
+          &:last-child {
+            background: #dc3545;
+          }
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .see-more {
+    cursor: pointer;
+    color: #007bff;
+    font-size: 14px;
+    margin-top: 10px;
+    text-decoration: underline;
+  }
+}

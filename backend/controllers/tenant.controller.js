@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import Tenant from '../models/Tenant.js';
+import cron from 'node-cron';
+import Payment from '../models/Payment.js';
 
 // Register Tenant
 export const registerTenant = async (req, res) => {
@@ -38,6 +40,10 @@ export const registerTenant = async (req, res) => {
     if (existingTenant) {
       return res.status(400).json({ message: 'Tenant already exists!' });
     }
+    const existingTenantInHouse = await Tenant.findOne({ houseNo });
+    if (existingTenantInHouse) {
+      return res.status(400).json({ message: 'House Already Occupied!' });
+    }
     const existingNationalId = await Tenant.findOne({ nationalId });
     if (existingNationalId) {
       return res
@@ -67,10 +73,37 @@ export const registerTenant = async (req, res) => {
 };
 
 // Get All Tenants
+// Get All Tenants with Payment Details
 export const getAllTenants = async (req, res) => {
   try {
+    // Fetch all tenants
     const allTenants = await Tenant.find({});
-    res.status(200).json(allTenants);
+
+    // For each tenant, fetch payment details
+    const tenantsWithPaymentDetails = await Promise.all(
+      allTenants.map(async (tenant) => {
+        // Get payment details for the tenant
+        const payments = await Payment.find({ tenantId: tenant._id });
+
+        // Calculate totalAmount and balance
+        const totalAmount = payments.reduce(
+          (sum, payment) => sum + payment.totalAmount,
+          0
+        );
+        const balance = payments.reduce(
+          (sum, payment) => sum + payment.balance,
+          0
+        );
+
+        return {
+          ...tenant.toObject(),
+          totalAmount,
+          balance,
+        };
+      })
+    );
+
+    res.status(200).json(tenantsWithPaymentDetails);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -186,3 +219,27 @@ export const whiteListTenant = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+//update Tenant Payments
+export const updateTenantPayments = async () => {
+  try {
+    const tenants = await Tenant.find({});
+    tenants.forEach(async (tenant) => {
+      let newTotalAmount =
+        tenant.monthlyRent +
+        tenant.waterBill +
+        tenant.garbageFee +
+        tenant.extraBills;
+      if (tenant.balance > 0) {
+        newTotalAmount += tenant.balance;
+      }
+      await Tenant.findByIdAndUpdate(tenant._id, {
+        totalAmount: newTotalAmount,
+        balance: newTotalAmount - tenant.amountPaid,
+      });
+    });
+  } catch (error) {
+    console.error('Error updating tenant payments:', error);
+  }
+};
+cron.schedule('0 0 1 * *', updateTenantPayments); // Runs on the 1st of every month

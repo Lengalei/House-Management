@@ -11,42 +11,66 @@ const Rent = () => {
     {
       _id: 1,
       name: 'John Doe',
-      bill: '20000',
+      totalAmount: '20000',
       houseNo: 'A6',
       balance: '-100',
       status: 'cleared',
     },
     {
-      _id: 1,
-      name: 'John Doe',
-      bill: '20000',
-      houseNo: 'A6',
-      balance: '2000',
-      status: 'Not cleared',
+      _id: 2,
+      name: 'Jane Smith',
+      totalAmount: '25000',
+      houseNo: 'B3',
+      balance: '500',
+      status: 'pending',
     },
     {
-      _id: 1,
-      name: 'John Doe',
-      bill: '20000',
-      houseNo: 'A6',
-      balance: '2000',
-      status: 'Not cleared',
+      _id: 3,
+      name: 'Michael Johnson',
+      totalAmount: '15000',
+      houseNo: 'C2',
+      balance: '300',
+      status: 'cleared',
     },
     {
-      _id: 1,
-      name: 'John Doe',
-      bill: '20000',
-      houseNo: 'A6',
-      balance: '2000',
-      status: 'Not cleared',
+      _id: 4,
+      name: 'Emily Davis',
+      totalAmount: '18000',
+      houseNo: 'D4',
+      balance: '-200',
+      status: 'pending',
     },
     {
-      _id: 1,
-      name: 'John Doe',
-      bill: '20000',
-      houseNo: 'A6',
-      balance: '2000',
-      status: 'Not cleared',
+      _id: 5,
+      name: 'Chris Brown',
+      totalAmount: '22000',
+      houseNo: 'A1',
+      balance: '0',
+      status: 'cleared',
+    },
+    {
+      _id: 6,
+      name: 'Olivia Wilson',
+      totalAmount: '21000',
+      houseNo: 'B5',
+      balance: '100',
+      status: 'cleared',
+    },
+    {
+      _id: 7,
+      name: 'Daniel Martinez',
+      totalAmount: '17000',
+      houseNo: 'C7',
+      balance: '-50',
+      status: 'pending',
+    },
+    {
+      _id: 8,
+      name: 'Sophia Garcia',
+      totalAmount: '19000',
+      houseNo: 'D9',
+      balance: '200',
+      status: 'cleared',
     },
   ];
 
@@ -59,7 +83,7 @@ const Rent = () => {
       setError('');
       try {
         const res = await apiRequest.get('/tenants/allTenants');
-        console.log(res.data);
+        console.log('allTenants: ', res.data);
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -91,7 +115,6 @@ const Rent = () => {
     }
   };
 
-  // Helper function to determine status based on balance
   const getStatus = (balance) => {
     if (balance <= 0) {
       return <span>Cleared ✅</span>;
@@ -111,8 +134,8 @@ const Rent = () => {
               <tr>
                 <th>Tenant{`'`}s Name</th>
                 <th>House No.</th>
-                <th>Total Bill</th>
-                <th>Balance</th>
+                <th>All Payments</th>
+                <th>All Balance</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -128,16 +151,16 @@ const Rent = () => {
                     <td>{getStatus(tenant.balance)}</td>
                     <td className="actions">
                       <Link
-                        to={`/rentDetails/${tenant._id}`}
+                        to={`/tenantPayment/${tenant._id}`}
                         className="edit-btn"
                       >
-                        EDIT
+                        Add-Payment
                       </Link>
                       <Link
-                        to={`/tenantProfile/${tenant._id}`}
+                        to={`/tenantPaymentList/${tenant._id}`}
                         className="edit-btn"
                       >
-                        More Details
+                        Payments
                       </Link>
                       <button
                         onClick={() => handleDelete(tenant._id)}

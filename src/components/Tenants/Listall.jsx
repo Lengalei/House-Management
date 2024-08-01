@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
-import './Tenant.scss';
+import './Listall.scss';
 import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
@@ -143,7 +143,7 @@ const Listall = () => {
                       >
                         More Details
                       </Link>
-    
+
                       <button
                         onClick={() => handleDelete(tenant._id)}
                         className="delete-btn"

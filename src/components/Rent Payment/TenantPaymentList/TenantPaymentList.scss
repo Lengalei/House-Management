@@ -1,0 +1,48 @@
+.tenant-payment-list {
+  max-width: fit-content;
+  flex-wrap: wrap;
+  margin: auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+
+  h2 {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+    button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: aquamarine;
+      cursor: pointer;
+      transition: all 300ms ease-in-out;
+
+      &.active {
+        background: #007bff;
+        color: white;
+      }
+    }
+    button:hover {
+      background: #007bff3b;
+      color: crimson;
+    }
+  }
+}

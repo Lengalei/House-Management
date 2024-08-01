@@ -1,0 +1,106 @@
+/* src/components/MiniPaymentsPopup.scss */
+
+.mini-payments-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+
+    .closeBtnPopup {
+      margin: 2px 5px;
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: coral;
+      cursor: pointer;
+    }
+
+    .card-container {
+      display: flex;
+      justify-content: space-between;
+
+      .left-card,
+      .right-card {
+        width: 45%;
+      }
+
+      .payment-card {
+        background: #f4f4f4;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .right-card {
+        background: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1)),
+          url('../../../../../public/receipt.jpg') no-repeat center center;
+        background-size: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(196, 7, 7, 0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        button {
+          display: block;
+          margin: 10px 0;
+          padding: 10px;
+          border: none;
+          border-radius: 5px;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+
+          &:first-of-type {
+            background: #007bff;
+          }
+
+          &:last-of-type {
+            background: #28a745;
+          }
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+          }
+        }
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+
+      button {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #fff;
+        cursor: pointer;
+
+        &.active {
+          background: #007bff;
+          color: white;
+        }
+      }
+    }
+  }
+}

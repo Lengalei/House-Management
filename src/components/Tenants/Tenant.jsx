@@ -15,14 +15,18 @@ function Tenant() {
     placementDate: '',
     houseDeposit: '',
     waterDeposit: '',
-    houseNo: '',
     rentPayable: '',
+    houseNo: '',
     emergencyContactNumber: '',
     emergencyContactName: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState('');
+  const [houseOptions, setHouseOptions] = useState([]);
+  const [selectedHouse, setSelectedHouse] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -31,6 +35,61 @@ function Tenant() {
       ...prevFormData,
       [name]: value,
     }));
+  };
+
+  const handleFloorChange = (e) => {
+    const { value } = e.target;
+    setSelectedFloor(value);
+    setShowPopup(true); // Show popup when floor is selected
+
+    if (value === 'GroundFloor') {
+      setHouseOptions(['A', 'B']); // Only A and B for Ground Floor
+    } else if (value.startsWith('Floor')) {
+      // Extract floor number and generate house options A-D
+      const floorNumber = value.split('Floor')[1];
+      setHouseOptions([
+        `${floorNumber}A`,
+        `${floorNumber}B`,
+        `${floorNumber}C`,
+        `${floorNumber}D`,
+      ]);
+    }
+  };
+
+  const handleHouseChoice = (e) => {
+    const house = e.target.value.toUpperCase(); // Convert to uppercase for uniformity
+    const floorLabel = selectedFloor
+      .replace('Floor', '')
+      .replace('GroundFloor', 'Ground Floor');
+    const houseNo = `${floorLabel}, House ${house}`;
+    setSelectedHouse(houseNo); // Update selected house for display
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      houseNo,
+    }));
+
+    // Determine house type from the last character of house number
+    const houseType = house.slice(-1);
+    let houseDeposit = 0;
+    let waterDeposit = 2500;
+    let rentPayable = 0;
+
+    if (houseType === 'A' || houseType === 'B' || houseType === 'C') {
+      houseDeposit = 17000;
+      rentPayable = 17000;
+    } else if (houseType === 'D') {
+      houseDeposit = 15000;
+      rentPayable = 15000;
+    }
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      houseDeposit,
+      waterDeposit,
+      rentPayable,
+    }));
+
+    setShowPopup(false); // Hide popup after selection
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +104,7 @@ function Tenant() {
       }
     } catch (err) {
       console.error('Error registering tenant:', err);
-      setError(err.message);
+      setError(err.response.data.message);
       toast.error('Error registering tenant.');
     } finally {
       setLoading(false);
@@ -59,6 +118,7 @@ function Tenant() {
           <h3>Input Tenant{`'`}s details to register</h3>
           <div className="form">
             <form onSubmit={handleSubmit}>
+              {/* Name */}
               <div className="forminput">
                 <label htmlFor="name">
                   Name <span>*</span>
@@ -71,6 +131,8 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Email */}
               <div className="forminput">
                 <label htmlFor="email">
                   Email <span>*</span>
@@ -83,6 +145,8 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* National ID */}
               <div className="forminput">
                 <label htmlFor="nationalId">
                   National ID<span>*</span>
@@ -95,6 +159,8 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Phone Number */}
               <div className="forminput">
                 <label htmlFor="phoneNo">
                   Phone No<span>*</span>
@@ -107,6 +173,8 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Placement Date */}
               <div className="forminput">
                 <label htmlFor="placementDate">
                   Placement Date<span>*</span>
@@ -119,98 +187,129 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Floor Selection */}
+              <div className="forminput">
+                <label htmlFor="floor">
+                  Floor<span>*</span>
+                </label>
+                <select
+                  id="floor"
+                  name="floor"
+                  onChange={handleFloorChange}
+                  value={selectedFloor}
+                >
+                  <option value="" disabled>
+                    Select Floor
+                  </option>
+                  <option value="GroundFloor">Ground Floor</option>
+                  <option value="Floor1">1st Floor</option>
+                  <option value="Floor2">2nd Floor</option>
+                  <option value="Floor3">3rd Floor</option>
+                  <option value="Floor4">4th Floor</option>
+                  <option value="Floor5">5th Floor</option>
+                  <option value="Floor6">6th Floor</option>
+                </select>
+              </div>
+
+              {/* Selected Floor and House Display */}
+              {selectedFloor && selectedHouse && (
+                <div className="selected-house">
+                  <h4>
+                    Selected Floor:{' '}
+                    {selectedFloor === 'GroundFloor'
+                      ? 'Ground Floor'
+                      : selectedFloor.replace('Floor', 'Floor ')}
+                    <br />
+                    Selected House: {selectedHouse}
+                  </h4>
+                </div>
+              )}
+
+              {/* House Options Popup */}
+              {showPopup && (
+                <div className="popup">
+                  <div className="popup-content">
+                    <h4>Select House</h4>
+                    {houseOptions.map((option) => (
+                      <button
+                        key={option}
+                        value={option}
+                        onClick={handleHouseChoice}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* House Deposit */}
               <div className="forminput">
                 <label htmlFor="houseDeposit">
-                  House Deposit<span>*</span>
+                  House Deposit <span>*</span>
                 </label>
-                <input
-                  type="number"
-                  name="houseDeposit"
-                  id="houseDeposit"
-                  value={formData.houseDeposit}
-                  onChange={handleChange}
-                />
+                <p id="houseDeposit">
+                  {formData.houseDeposit.toLocaleString()}
+                </p>
               </div>
+
+              {/* Water Deposit */}
               <div className="forminput">
                 <label htmlFor="waterDeposit">
-                  Water Deposit<span>*</span>
+                  Water Deposit <span>*</span>
                 </label>
-                <input
-                  type="number"
-                  name="waterDeposit"
-                  id="waterDeposit"
-                  value={formData.waterDeposit}
-                  onChange={handleChange}
-                />
+                <p id="waterDeposit">
+                  {formData.waterDeposit.toLocaleString()}
+                </p>
               </div>
-              <div className="forminput">
-                <label htmlFor="houseNo">
-                  House No<span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="houseNo"
-                  id="houseNo"
-                  value={formData.houseNo}
-                  onChange={handleChange}
-                />
-              </div>
+
+              {/* Rent Payable */}
               <div className="forminput">
                 <label htmlFor="rentPayable">
-                  Rent Payable<span>*</span>
+                  Rent Payable <span>*</span>
+                </label>
+                <p id="rentPayable">{formData.rentPayable.toLocaleString()}</p>
+              </div>
+
+              {/* Emergency Contact Number */}
+              <div className="forminput">
+                <label htmlFor="emergencyContactNumber">
+                  Emergency Contact Number
                 </label>
                 <input
                   type="number"
-                  name="rentPayable"
-                  id="rentPayable"
-                  value={formData.rentPayable}
+                  id="emergencyContactNumber"
+                  name="emergencyContactNumber"
+                  value={formData.emergencyContactNumber}
                   onChange={handleChange}
                 />
               </div>
               <div className="forminput">
                 <label htmlFor="emergencyContactName">
-                  Emergency Contact Name<span>*</span>
+                  Emergency Contact Name
                 </label>
                 <input
                   type="text"
-                  name="emergencyContactName"
                   id="emergencyContactName"
+                  name="emergencyContactName"
                   value={formData.emergencyContactName}
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Submit Button */}
               <div className="forminput">
-                <label htmlFor="emergencyContactNumber">
-                  Emergency Contact Number<span>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="emergencyContactNumber"
-                  id="emergencyContactNumber"
-                  value={formData.emergencyContactNumber}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <button className="btn" disabled={loading}>
+                <button type="submit">
                   {loading ? (
-                    <ThreeDots
-                      height="20"
-                      width="40"
-                      radius="9"
-                      color="#4fa94d"
-                      ariaLabel="three-dots-loading"
-                      wrapperStyle={{}}
-                      wrapperClassName=""
-                      visible={true}
-                    />
+                    <ThreeDots color="#ffffff" height={40} width={40} />
                   ) : (
                     'Register'
                   )}
                 </button>
               </div>
+              {error && <span className="error">{error}</span>}
             </form>
-            {error && <span>{error}</span>}
           </div>
         </div>
       </div>

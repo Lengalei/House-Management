@@ -1,168 +1,142 @@
+// Tenant.scss
+
 .tenant {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-   /* background-color: black; */
-  color: white;
-  background-image: 
-    url('/tenantbg.webp');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  border: solid 10px crimson;
+  .registration {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
 
-  
-}
-.registration {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.form {
-  border-radius: 10px;
-  background-color: var(--yellow);
-  /* color: var(--primary-color); */
-}
-form {
-  width: 500px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 40px;
-}
-.forminput {
-  display: flex;
-  flex-direction: column;
-}
-.forminput span {
-  color: brown;
-}
-input {
-  width: 200px;
-  height: 40px;
-  border-radius: 20px;
-  background: white;
-  border: 1px solid var(--primary-color);
-  text-align: center;
-  color: #333;
-}
-.btn {
-  padding: 5px 10px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
 
-.btn:hover {
-  background-color: darkred;
-}
+    .form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
 
-/* list all */
-:root {
-  --primary-color: #0066ff;
-}
-.summary2 {
-  display: flex;
-  background-image: linear-gradient(
-      rgba(71, 68, 68, 0.8),
-      rgba(63, 62, 62, 0.8)
-    ),
-    url('/housebg.jfif');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100%;
-}
-.tenantslist {
-  padding-top: 100px;
-  margin: 0 auto;
-}
-.title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: var(--primary-color);
-}
+      form {
+        display: flex;
+        flex-direction: column;
 
-.table-container {
-  max-height: 350px;
-  overflow-y: auto;
-}
+        .forminput {
+          margin-bottom: 15px;
 
-.tenant-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+          label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
 
-.tenant-table th,
-.tenant-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
+            span {
+              color: red;
+              font-weight: normal;
+            }
+          }
 
-.tenant-table th {
-  background-color: #333;
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
+          input,
+          select,
+          p {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
 
-.tenant-table tbody tr:nth-child(even) {
-  background-color: #f4f4f4;
-}
+            &:focus {
+              border-color: #007bff;
+              outline: none;
+            }
+          }
+        }
 
-.tenant-table tbody tr:hover {
-  background-color: #ddd;
-}
+        button {
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          padding: 10px;
+          border-radius: 4px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
+          &:hover {
+            background-color: #0056b3;
+          }
 
-.edit-btn {
-  padding: 5px 10px;
-  background-color: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+          &:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+          }
+        }
 
-.edit-btn:hover {
-  background-color: darkblue;
-}
+        .error {
+          color: red;
+          margin-top: 10px;
+          font-weight: bold;
+        }
+      }
 
-.delete-btn {
-  padding: 5px 10px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+      .selected-house {
+        text-align: center;
+        color: chartreuse;
 
-.delete-btn:hover {
-  background-color: darkred;
-}
-
-@media (max-width: 768px) {
-  .tenant-table th,
-  .tenant-table td {
-    padding: 8px 10px;
+        h4 {
+          font-size: smaller;
+          color: rgb(175, 204, 13);
+        }
+      }
+    }
   }
 
-  .edit-btn,
-  .delete-btn {
-    padding: 5px;
-    font-size: 14px;
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      text-align: center;
+
+      h4 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #333;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
   }
 }
