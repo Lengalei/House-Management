@@ -2,6 +2,21 @@ import mongoose from 'mongoose';
 import Tenant from '../models/Tenant.js';
 import cron from 'node-cron';
 import Payment from '../models/Payment.js';
+import House from '../models/houses.js';
+
+// Function to convert floor string to corresponding number
+const convertFloorToNumber = (floor) => {
+  const floorMap = {
+    'Ground Floor': 0,
+    'Floor 1': 1,
+    'Floor 2': 2,
+    'Floor 3': 3,
+    'Floor 4': 4,
+    'Floor 5': 5,
+    'Floor 6': 6,
+  };
+  return floorMap[floor] || null;
+};
 
 // Register Tenant
 export const registerTenant = async (req, res) => {
@@ -35,6 +50,28 @@ export const registerTenant = async (req, res) => {
     return res.status(400).json({ message: 'Please fill in all the details!' });
   }
 
+  // Special handling for "Ground Floor"
+  let floorNumber;
+  let houseName;
+
+  if (houseNo.startsWith('Ground Floor')) {
+    floorNumber = 0;
+    houseName = houseNo.split(',')[1]?.trim() || '';
+  } else {
+    const [floorStr, houseNamePart] = houseNo
+      .split(',')
+      .map((part) => part.trim());
+    console.log('floorStr:', floorStr); // Debugging
+    console.log('houseName:', houseNamePart); // Debugging
+
+    floorNumber = convertFloorToNumber(floorStr);
+    houseName = houseNamePart;
+  }
+
+  if (floorNumber === null) {
+    return res.status(400).json({ message: 'Invalid floor provided!' });
+  }
+
   try {
     const existingTenant = await Tenant.findOne({ email });
     if (existingTenant) {
@@ -49,6 +86,21 @@ export const registerTenant = async (req, res) => {
       return res
         .status(409)
         .json({ message: 'Tenant National Id already exists!' });
+    }
+
+    console.log('Searching for house:', {
+      floor: floorNumber,
+      houseName: houseName,
+    }); // Debugging
+
+    const house = await House.findOneAndUpdate(
+      { floor: floorNumber, houseName: houseName },
+      { isOccupied: true },
+      { new: true }
+    );
+
+    if (!house) {
+      return res.status(404).json({ message: 'House not found!' });
     }
 
     const newTenant = await Tenant.create({
@@ -159,12 +211,57 @@ export const deleteTenantById = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ error: 'Invalid ID format' });
   }
+
   try {
-    const tenant = await Tenant.findByIdAndDelete(id);
+    // Find and delete the tenant
+    const tenant = await Tenant.findById(id);
     if (!tenant) {
       return res.status(404).json({ message: 'Tenant not found' });
     }
-    res.status(200).json({ message: 'Tenant deleted successfully' });
+
+    // Extract houseNo from tenant
+    const { houseNo } = tenant;
+
+    // Determine floor and house name
+    let floorNumber;
+    let houseName;
+
+    if (houseNo.startsWith('Ground Floor')) {
+      floorNumber = 0;
+      houseName = houseNo.split(',')[1]?.trim() || '';
+    } else {
+      const [floorStr, houseNamePart] = houseNo
+        .split(',')
+        .map((part) => part.trim());
+      floorNumber = convertFloorToNumber(floorStr);
+      houseName = houseNamePart;
+    }
+
+    if (floorNumber === null) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid floor in house number!' });
+    }
+
+    // Delete the tenant
+    await Tenant.findByIdAndDelete(id);
+
+    // Update the house to set isOccupied to false
+    const house = await House.findOneAndUpdate(
+      { floor: floorNumber, houseName: houseName },
+      { isOccupied: false },
+      { new: true }
+    );
+
+    if (!house) {
+      return res.status(404).json({ message: 'House not found!' });
+    }
+
+    res
+      .status(200)
+      .json({
+        message: 'Tenant deleted successfully and house status updated',
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });

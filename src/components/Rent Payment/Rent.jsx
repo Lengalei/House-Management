@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
+import { ThreeDots } from 'react-loader-spinner';
 
 const Rent = () => {
   const fallbackTenants = [
@@ -75,12 +76,14 @@ const Rent = () => {
   ];
 
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
 
   useEffect(() => {
     const fetchAllTenants = async () => {
       setError('');
+      setLoading(true);
       try {
         const res = await apiRequest.get('/tenants/allTenants');
         console.log('allTenants: ', res.data);
@@ -97,12 +100,15 @@ const Rent = () => {
       } catch (error) {
         setError('Error fetching tenants. Using fallback data.');
         dispatch(setTenants(fallbackTenants));
+      } finally {
+        setLoading(false);
       }
     };
     fetchAllTenants();
   }, [dispatch]);
 
   const handleDelete = async (_id) => {
+    setLoading(true);
     try {
       const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
@@ -112,6 +118,8 @@ const Rent = () => {
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,52 +136,65 @@ const Rent = () => {
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
         {error && <span>{error}</span>}
-        <div className="table-container">
-          <table className="tenant-table">
-            <thead>
-              <tr>
-                <th>Tenant{`'`}s Name</th>
-                <th>House No.</th>
-                <th>All Payments</th>
-                <th>All Balance</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tenants &&
-                tenants.map((tenant) => (
-                  <tr key={tenant._id}>
-                    <td>{tenant.name}</td>
-                    <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
-                    <td>{tenant.totalAmount}</td>
-                    <td>{tenant.balance}</td>
-                    <td>{getStatus(tenant.balance)}</td>
-                    <td className="actions">
-                      <Link
-                        to={`/tenantPayment/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        Add-Payment
-                      </Link>
-                      <Link
-                        to={`/tenantPaymentList/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        Payments
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(tenant._id)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <div className="loader">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              color="#4fa94d"
+              ariaLabel="three-dots-loading"
+              visible={true}
+            />
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="tenant-table">
+              <thead>
+                <tr>
+                  <th>Tenant{`'`}s Name</th>
+                  <th>House No.</th>
+                  <th>All Payments</th>
+                  <th>All Balance</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tenants &&
+                  tenants.map((tenant) => (
+                    <tr key={tenant._id}>
+                      <td>{tenant.name}</td>
+                      <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
+                      <td>{tenant.totalAmount}</td>
+                      <td>{tenant.balance}</td>
+                      <td>{getStatus(tenant.balance)}</td>
+                      <td className="actions">
+                        <Link
+                          to={`/tenantPayment/${tenant._id}`}
+                          className="edit-btn"
+                        >
+                          Add-Payment
+                        </Link>
+                        <Link
+                          to={`/tenantPaymentList/${tenant._id}`}
+                          className="edit-btn"
+                        >
+                          Payments
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(tenant._id)}
+                          className="delete-btn"
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

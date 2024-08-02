@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaTachometerAlt,
   FaBell,
@@ -12,8 +12,8 @@ import {
   FaCaretDown,
   FaBars,
   FaTimes,
-} from "react-icons/fa";
-import "./sidebar.css";
+} from 'react-icons/fa';
+import './sidebar.css';
 
 const Sidebar = () => {
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
@@ -37,7 +37,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -60,7 +60,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{" "}
+              <FaUsers className="icon" /> Tenants{' '}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -76,7 +76,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> Landlords{" "}
+              <FaUserTie className="icon" /> Landlords{' '}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -96,8 +96,8 @@ const Sidebar = () => {
           <Link to="/registerTenant" className="dash">
             <FaHouseUser className="icon" /> Assign House
           </Link>
-          <Link to="/registerLandlord" className="dash">
-            <FaUserPlus className="icon" /> Add Landlord
+          <Link to="/addHouse" className="dash">
+            <FaUserPlus className="icon" /> Add House
           </Link>
         </div>
 

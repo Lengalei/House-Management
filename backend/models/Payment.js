@@ -50,6 +50,10 @@ const PaymentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    referenceNo: {
+      type: String,
+    },
+
     balance: {
       type: Number,
       default: 0,

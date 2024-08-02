@@ -1,0 +1,175 @@
+.register-house-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  border: 1px solid red;
+}
+
+.loader {
+  position: absolute;
+  top: 35%;
+  left: 45%;
+  height: 100%;
+  width: 100%;
+  z-index: 999;
+  transform: translate(-50%, 50%);
+
+  .threeDots {
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+  }
+}
+
+.register-house,
+.house-list {
+  width: 48%;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    color: black;
+    border: 1px solid #ccc;
+  }
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4fa94d;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #3e8e3d;
+  }
+}
+
+.house-list {
+  margin-bottom: 40px;
+  height: max-content;
+  .house-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .house-icon {
+      font-size: 2rem;
+      margin-right: 10px;
+    }
+
+    .house-details {
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    button {
+      margin: 0 5px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+    }
+  }
+}
+
+.house-name-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  z-index: 1000;
+
+  h3 {
+    margin-top: 0;
+  }
+
+  .house-name-options {
+    display: flex;
+    flex-wrap: wrap;
+
+    button {
+      background-color: #4fa94d;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &.registered {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(.registered) {
+        background-color: #3e8e3d;
+      }
+    }
+  }
+
+  .close-popup-btn {
+    display: block;
+    margin: 10px auto 0 auto;
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #d32f2f;
+    }
+  }
+}

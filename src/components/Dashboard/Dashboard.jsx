@@ -1,10 +1,46 @@
 import { FaHouseUser } from 'react-icons/fa';
 import './Dashboard.scss';
-import Navbar from '../Navbar/Navbar';
-import Sidebar from '../sidebar/Sidebar';
 import Charts from './Charts';
+import { useEffect, useState } from 'react';
+import apiRequest from '../../lib/apiRequest';
 
 function Dashboard() {
+  const [houses, setHouses] = useState([]);
+  const [tenants, setTenants] = useState([]);
+  const [payments, setPayments] = useState();
+  const vacantHouses = houses.filter((house) => !house.isOccupied);
+  useEffect(() => {
+    //fetchHouses
+    const fetchHouses = async () => {
+      const response = await apiRequest.get('/houses/getAllHouses');
+      if (response.status) {
+        console.log('houses', response.data);
+        setHouses(response.data);
+      }
+    };
+
+    //fetchTenants
+    const fetchTenants = async () => {
+      const response = await apiRequest.get('/tenants/allTenants');
+      if (response.status) {
+        console.log('AllTenants: ', response.data);
+        setTenants(response.data);
+      }
+    };
+
+    //fetchAllPayments
+    const fetchAllPayments = async () => {
+      const response = await apiRequest.get('/payments/getAllPayments');
+      if (response.status) {
+        console.log('allPayments: ', response.data);
+        setPayments(response.data);
+      }
+    };
+
+    fetchAllPayments();
+    fetchTenants();
+    fetchHouses();
+  }, []);
   return (
     <div className="dashboard">
       <div className="summary">
@@ -27,7 +63,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>60 Total Tenants</p>
+              <p>{tenants?.length} Total Tenants</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -35,7 +71,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>61 Total houses</p>
+              <p>{houses?.length} Total houses</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -43,7 +79,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>45000 Total earnings</p>
+              <p>{vacantHouses?.length} Vacant Houses</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -51,7 +87,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>10 Vacant Houses</p>
+              <p>{payments} Total earnings</p>
             </div>
           </div>
           <Charts />

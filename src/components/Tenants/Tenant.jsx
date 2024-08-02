@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Tenant.scss';
 import { useNavigate } from 'react-router-dom';
 import apiRequest from '../../lib/apiRequest';
@@ -27,7 +27,21 @@ function Tenant() {
   const [selectedFloor, setSelectedFloor] = useState('');
   const [houseOptions, setHouseOptions] = useState([]);
   const [selectedHouse, setSelectedHouse] = useState('');
+  const [registeredHouses, setRegisteredHouses] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const res = await apiRequest.get('/houses/getAllHouses');
+        setRegisteredHouses(res.data);
+      } catch (err) {
+        console.error('Error fetching houses:', err);
+      }
+    };
+
+    fetchHouses();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,41 +54,39 @@ function Tenant() {
   const handleFloorChange = (e) => {
     const { value } = e.target;
     setSelectedFloor(value);
-    setShowPopup(true); // Show popup when floor is selected
+    setShowPopup(true);
 
-    if (value === 'GroundFloor') {
-      setHouseOptions(['A', 'B']); // Only A and B for Ground Floor
-    } else if (value.startsWith('Floor')) {
-      // Extract floor number and generate house options A-D
-      const floorNumber = value.split('Floor')[1];
-      setHouseOptions([
-        `${floorNumber}A`,
-        `${floorNumber}B`,
-        `${floorNumber}C`,
-        `${floorNumber}D`,
-      ]);
-    }
+    const floorNumber =
+      value === 'GroundFloor' ? 0 : parseInt(value.replace('Floor', ''), 10);
+
+    const housesOnFloor = registeredHouses
+      .filter((house) => house.floor === floorNumber)
+      .map((house) => house.houseName.split(' ')[1]) // Extract the '3C' part
+      .sort();
+
+    setHouseOptions(housesOnFloor);
   };
 
   const handleHouseChoice = (e) => {
-    const house = e.target.value.toUpperCase(); // Convert to uppercase for uniformity
-    const floorLabel = selectedFloor
-      .replace('Floor', '')
-      .replace('GroundFloor', 'Ground Floor');
+    const house = e.target.value.toUpperCase();
+    const floorLabel =
+      selectedFloor === 'GroundFloor'
+        ? 'Ground Floor'
+        : `Floor ${selectedFloor.replace('Floor', '')}`;
     const houseNo = `${floorLabel}, House ${house}`;
-    setSelectedHouse(houseNo); // Update selected house for display
+    setSelectedHouse(houseNo);
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       houseNo,
     }));
 
-    // Determine house type from the last character of house number
     const houseType = house.slice(-1);
     let houseDeposit = 0;
     let waterDeposit = 2500;
     let rentPayable = 0;
 
-    if (houseType === 'A' || houseType === 'B' || houseType === 'C') {
+    if (['A', 'B', 'C'].includes(houseType)) {
       houseDeposit = 17000;
       rentPayable = 17000;
     } else if (houseType === 'D') {
@@ -89,7 +101,11 @@ function Tenant() {
       rentPayable,
     }));
 
-    setShowPopup(false); // Hide popup after selection
+    setShowPopup(false);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
   };
 
   const handleSubmit = async (e) => {
@@ -219,7 +235,7 @@ function Tenant() {
                     Selected Floor:{' '}
                     {selectedFloor === 'GroundFloor'
                       ? 'Ground Floor'
-                      : selectedFloor.replace('Floor', 'Floor ')}
+                      : `Floor ${selectedFloor.replace('Floor', '')}`}
                     <br />
                     Selected House: {selectedHouse}
                   </h4>
@@ -230,7 +246,13 @@ function Tenant() {
               {showPopup && (
                 <div className="popup">
                   <div className="popup-content">
-                    <h4>Select House</h4>
+                    <div className="innerPopupDiv">
+                      <h4 className="close-popup" onClick={handleClosePopup}>
+                        Close
+                      </h4>
+                      <h4>Select House</h4>
+                    </div>
+
                     {houseOptions.map((option) => (
                       <button
                         key={option}
@@ -297,23 +319,27 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
-
+              {error && <p className="error">{error}</p>}
               {/* Submit Button */}
-              <div className="forminput">
-                <button type="submit">
-                  {loading ? (
-                    <ThreeDots color="#ffffff" height={40} width={40} />
-                  ) : (
-                    'Register'
-                  )}
-                </button>
-              </div>
-              {error && <span className="error">{error}</span>}
+              <button type="submit">
+                {loading ? (
+                  <ThreeDots
+                    height="20"
+                    width="40"
+                    radius="9"
+                    color="white"
+                    ariaLabel="three-dots-loading"
+                    visible={true}
+                  />
+                ) : (
+                  'Submit'
+                )}
+              </button>
+              <ToastContainer />
             </form>
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 }
