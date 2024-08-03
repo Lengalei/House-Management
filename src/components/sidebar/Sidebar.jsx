@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaTachometerAlt,
-  FaBell,
-  FaEnvelope,
+  // FaBell,
+  // FaEnvelope,
+  // FaUserPlus,
   FaUsers,
   FaUserTie,
   FaHouseUser,
-  FaUserPlus,
   FaCog,
   FaCaretDown,
   FaBars,
@@ -47,11 +47,11 @@ const Sidebar = () => {
           <Link to="/" className="dash">
             <FaTachometerAlt className="icon" /> Dashboard
           </Link>
-          <Link to="/notifications" className="dash">
-            <FaBell className="icon" /> Notifications
+          <Link to="/listAllTenants" className="dash">
+            <FaUsers className="icon" /> All Tenants
           </Link>
-          <Link to="/messages" className="dash">
-            <FaEnvelope className="icon" /> Messages
+          <Link to="/addHouse" className="dash">
+            <FaHouseUser className="icon" /> Register House
           </Link>
         </div>
 
@@ -90,15 +90,17 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+
+          <Link to="/allPayments" className="dash">
+            <FaHouseUser className="icon" /> All Payments
+          </Link>
           <Link to="/rentpayment" className="dash">
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
-          <Link to="/registerTenant" className="dash">
-            <FaHouseUser className="icon" /> Assign House
-          </Link>
-          <Link to="/addHouse" className="dash">
-            <FaUserPlus className="icon" /> Add House
-          </Link>
+          {/* <Link to="/addHouse" className="dash">
+            <FaHouseUser className="icon" />
+            Add House
+          </Link> */}
         </div>
 
         <div className="management">

@@ -1,6 +1,14 @@
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import './PaymentDetailsPage.scss';
+import {
+  FaMoneyBill,
+  FaWater,
+  FaTrash,
+  FaReceipt,
+  FaFileInvoice,
+} from 'react-icons/fa';
 
 const PaymentDetailsPage = () => {
   const location = useLocation();
@@ -35,7 +43,9 @@ const PaymentDetailsPage = () => {
           <div className="cards-container">
             <div className="left-card">
               <div className="minicard payment-details">
-                <h3>Payment Details</h3>
+                <h3>
+                  <FaMoneyBill /> Payment Details
+                </h3>
                 <p>
                   Month: {new Date(paymentDetails.date).toLocaleDateString()}
                 </p>
@@ -52,7 +62,9 @@ const PaymentDetailsPage = () => {
                 <p>Balance: {paymentDetails.balance}</p>
               </div>
               <div className="minicard payment-maker">
-                <h3>Payment Maker</h3>
+                <h3>
+                  <FaReceipt /> Payment Maker
+                </h3>
                 <p>Name: {paymentDetails.tenantId.name}</p>
                 <hr />
                 <p>Email: {paymentDetails.tenantId.email}</p>
@@ -62,10 +74,10 @@ const PaymentDetailsPage = () => {
               <h3>Advanced</h3>
               <div className="button-container">
                 <button className="generate-invoice" onClick={generateInvoice}>
-                  Generate Invoice
+                  <FaFileInvoice /> Generate Invoice
                 </button>
                 <button className="generate-receipt" onClick={generateReceipt}>
-                  Generate Receipt
+                  <FaReceipt /> Generate Receipt
                 </button>
               </div>
             </div>

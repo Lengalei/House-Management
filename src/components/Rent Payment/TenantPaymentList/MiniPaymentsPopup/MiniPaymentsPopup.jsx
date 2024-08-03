@@ -40,12 +40,12 @@ const MiniPaymentsPopup = ({ payment, onClose }) => {
             ))}
           </div>
           <div className="right-card">
-            <button onClick={() => alert('Generate Invoice')}>
+            {/* <button onClick={() => alert('Generate Invoice')}>
               Generate Invoice
             </button>
             <button onClick={() => alert('Generate Receipt')}>
               Generate Receipt
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="pagination">

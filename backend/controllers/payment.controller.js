@@ -109,6 +109,48 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
+// Get all payments grouped by tenantId
+export const getGroupedPaymentsByTenant = async (req, res) => {
+  try {
+    const payments = await Payment.aggregate([
+      {
+        $group: {
+          _id: '$tenantId',
+          totalAmount: { $sum: '$totalAmount' },
+          payments: { $push: '$$ROOT' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'tenants',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'tenant',
+        },
+      },
+      { $unwind: '$tenant' },
+    ]);
+
+    res.status(200).json(payments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get detailed payments for a specific tenant
+export const getPaymentsByTenantId = async (req, res) => {
+  const { tenantId } = req.params;
+  try {
+    const payments = await Payment.find({ tenantId })
+      .populate('tenantId', 'name email houseNo')
+      .sort({ date: -1 });
+
+    res.status(200).json(payments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Get payment records for a specific tenant
 export const getPaymentsByTenant = async (req, res) => {
   const { tenantId } = req.params;

@@ -61,8 +61,11 @@ function Tenant() {
 
     const housesOnFloor = registeredHouses
       .filter((house) => house.floor === floorNumber)
-      .map((house) => house.houseName.split(' ')[1]) // Extract the '3C' part
-      .sort();
+      .map((house) => ({
+        houseName: house.houseName.split(' ')[1], // Extract the '3C' part
+        isOccupied: house.isOccupied,
+      }))
+      .sort((a, b) => a.houseName.localeCompare(b.houseName));
 
     setHouseOptions(housesOnFloor);
   };
@@ -255,11 +258,14 @@ function Tenant() {
 
                     {houseOptions.map((option) => (
                       <button
-                        key={option}
-                        value={option}
+                        key={option.houseName}
+                        value={option.houseName}
                         onClick={handleHouseChoice}
+                        disabled={option.isOccupied}
+                        className={option.isOccupied ? 'occupied' : ''}
                       >
-                        {option}
+                        {option.houseName}
+                        {option.isOccupied && ' 🚫'}
                       </button>
                     ))}
                   </div>
@@ -300,13 +306,15 @@ function Tenant() {
                   Emergency Contact Number
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="emergencyContactNumber"
                   name="emergencyContactNumber"
                   value={formData.emergencyContactNumber}
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Emergency Contact Name */}
               <div className="forminput">
                 <label htmlFor="emergencyContactName">
                   Emergency Contact Name
@@ -319,27 +327,32 @@ function Tenant() {
                   onChange={handleChange}
                 />
               </div>
-              {error && <p className="error">{error}</p>}
+              {error && <span>{error}</span>}
               {/* Submit Button */}
-              <button type="submit">
-                {loading ? (
-                  <ThreeDots
-                    height="20"
-                    width="40"
-                    radius="9"
-                    color="white"
-                    ariaLabel="three-dots-loading"
-                    visible={true}
-                  />
-                ) : (
-                  'Submit'
-                )}
-              </button>
-              <ToastContainer />
+              <div className="btn">
+                <button type="submit" disabled={loading}>
+                  {loading ? (
+                    <ThreeDots
+                      height="20"
+                      width="30"
+                      radius="9"
+                      color="white"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      visible={true}
+                    />
+                  ) : (
+                    'Register'
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 }
