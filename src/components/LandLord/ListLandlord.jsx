@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLandLord } from '../../features/Landlords/LandLordSlice';
+import { ThreeDots } from 'react-loader-spinner';
 
 const ListLandlord = () => {
   const fallbacklandlords = [
@@ -71,12 +72,14 @@ const ListLandlord = () => {
   ];
 
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const landlords = useSelector((store) => store.landlordsData.landLords);
 
   useEffect(() => {
     const fetchAlllandlords = async () => {
       setError('');
+      setLoading(true);
       try {
         const res = await apiRequest.get('/landlords/allLandlords');
         console.log(res.data);
@@ -93,12 +96,15 @@ const ListLandlord = () => {
       } catch (error) {
         setError('Error fetching landlords. Using fallback data.');
         dispatch(setLandLord(fallbacklandlords));
+      } finally {
+        setLoading(false);
       }
     };
     fetchAlllandlords();
   }, [dispatch]);
 
   const handleDelete = async (_id) => {
+    setLoading(true);
     try {
       const res = await apiRequest.delete(`/landlords/deleteLandlord/${_id}`);
       if (res.status === 200) {
@@ -108,6 +114,8 @@ const ListLandlord = () => {
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,44 +123,56 @@ const ListLandlord = () => {
     <div className="summary2">
       <div className="tenantslist">
         <h2 className="title">Landlord List</h2>
-
-        <div className="table-container">
-          <table className="tenant-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {landlords &&
-                landlords.map((landlord) => (
-                  <tr key={landlord._id}>
-                    <td>{landlord.name}</td>
-                    <td>{landlord.email}</td>
-                    <td>{landlord.phone || landlord.phoneNo}</td>
-                    <td className="actions">
-                      <Link
-                        to={`/landlordProfile/${landlord._id}`}
-                        className="edit-btn"
-                      >
-                        More Details
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(landlord._id)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
         {error && <span>{error}</span>}
+        {loading ? (
+          <div className="loader">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              color="#4fa94d"
+              ariaLabel="three-dots-loading"
+              visible={true}
+            />
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="tenant-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {landlords &&
+                  landlords.map((landlord) => (
+                    <tr key={landlord._id}>
+                      <td>{landlord.name}</td>
+                      <td>{landlord.email}</td>
+                      <td>{landlord.phone || landlord.phoneNo}</td>
+                      <td className="actions">
+                        <Link
+                          to={`/landlordProfile/${landlord._id}`}
+                          className="edit-btn"
+                        >
+                          More Details
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(landlord._id)}
+                          className="delete-btn"
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

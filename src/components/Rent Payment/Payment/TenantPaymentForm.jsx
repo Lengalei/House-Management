@@ -15,6 +15,7 @@ const TenantPaymentForm = () => {
     rent: 0,
     waterBill: 0,
     garbageFee: 0,
+    referenceNo: '',
     amountPaid: 0,
   });
 
@@ -189,19 +190,27 @@ const TenantPaymentForm = () => {
               onChange={handleChange}
               required
             />
-            <label className="extra-bills">Extra Bills:</label>{' '}
+            <label className="extra-bills">Extra Bills:</label>
             <input
               type="number"
               name="extraBills"
               value={formData.extraBills}
               onChange={handleChange}
             />
-            <label className="amountPaid">Amount Paid:</label>{' '}
+            <label className="amountPaid">Amount Paid:</label>
             <input
               type="number"
               name="amountPaid"
               value={formData.amountPaid}
               onChange={handleChange}
+            />
+            <label>Reference Number:</label>
+            <input
+              type="text"
+              name="referenceNo"
+              value={formData.referenceNo}
+              onChange={handleChange}
+              required
             />
             <button type="submit">Submit</button>
           </form>
@@ -234,7 +243,7 @@ const TenantPaymentForm = () => {
                 onChange={handleChange}
                 required
               />
-              <label>Garbage Fee:</label>{' '}
+              <label>Garbage Fee:</label>
               <input
                 type="number"
                 name="garbageFee"

@@ -10,6 +10,7 @@ export const createPayment = async (req, res) => {
     rent,
     waterBill,
     garbageFee,
+    referenceNo,
     amountPaid,
   } = req.body;
 
@@ -46,6 +47,7 @@ export const createPayment = async (req, res) => {
         ? previousPayment.excessPay
         : 0;
     console.log('previousExcessPay: ', previousExcessPay);
+
     // Calculate total amount and balance
     const totalAmount =
       rentNum + waterBillNum + garbageFeeNum + extraBillsNum + previousBalance;
@@ -65,6 +67,7 @@ export const createPayment = async (req, res) => {
       previousBalance,
       previousExcessPay,
       totalAmount,
+      referenceNo,
       amountPaid: amountPaidNum,
       balance: isCleared ? 0 : balance,
       excessPay,
@@ -74,6 +77,76 @@ export const createPayment = async (req, res) => {
     res.status(201).json(payment);
   } catch (err) {
     console.error('Error creating payment:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get total amount of all payments made by all tenants
+export const getAllPayments = async (req, res) => {
+  try {
+    // Fetch all payments
+    const payments = await Payment.find();
+
+    // Check if payments exist
+    if (!payments || payments.length === 0) {
+      return res.status(400).json({ message: 'No payments made yet' });
+    }
+
+    // Calculate the total amount
+    const totalAmount = payments.reduce((total, payment) => {
+      const amount = parseFloat(payment.totalAmount);
+      if (!isNaN(amount)) {
+        return total + amount;
+      }
+      return total;
+    }, 0);
+    console.log('totalAmount: ', totalAmount);
+    // Return the total amount
+    res.status(200).json(totalAmount);
+  } catch (err) {
+    console.error('Error fetching payments for all tenants:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get all payments grouped by tenantId
+export const getGroupedPaymentsByTenant = async (req, res) => {
+  try {
+    const payments = await Payment.aggregate([
+      {
+        $group: {
+          _id: '$tenantId',
+          totalAmount: { $sum: '$totalAmount' },
+          payments: { $push: '$$ROOT' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'tenants',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'tenant',
+        },
+      },
+      { $unwind: '$tenant' },
+    ]);
+
+    res.status(200).json(payments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get detailed payments for a specific tenant
+export const getPaymentsByTenantId = async (req, res) => {
+  const { tenantId } = req.params;
+  try {
+    const payments = await Payment.find({ tenantId })
+      .populate('tenantId', 'name email houseNo')
+      .sort({ date: -1 });
+
+    res.status(200).json(payments);
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };

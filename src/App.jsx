@@ -21,6 +21,8 @@ import RentDetails from './components/Rent Payment/RentDetails.jsx';
 import TenantPaymentForm from './components/Rent Payment/Payment/TenantPaymentForm.jsx';
 import TenantPaymentList from './components/Rent Payment/TenantPaymentList/TenantPaymentList.jsx';
 import PaymentDetailsPage from './components/Rent Payment/PaymentDetails/PaymentDetailsPage.jsx';
+import RegisterHouse from './components/houses/RegisterHouse.jsx';
+import Payments from './components/Rent Payment/AllPayMents/Payments.jsx';
 
 function App() {
   return (
@@ -46,11 +48,13 @@ function App() {
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/listAllLandlord" element={<ListLandlord />} />
           <Route path="/profileSettings" element={<Admin />} />
+          <Route path="/addHouse" element={<RegisterHouse />} />
           {/* Tenant Payment */}
           <Route
             path="/tenantPayment/:tenantId"
             element={<TenantPaymentForm />}
           />
+          <Route path="/allPayments" element={<Payments />} />
           <Route
             path="/tenantPaymentList/:tenantId"
             element={<TenantPaymentList />}

@@ -2,6 +2,9 @@ import express from 'express';
 import {
   createPayment,
   getPaymentByDate,
+  getAllPayments,
+  getGroupedPaymentsByTenant,
+  getPaymentsByTenantId,
   getPreviousPayment,
   getPaymentsByTenant,
   updatePayment,
@@ -16,6 +19,15 @@ router.post('/create', createPayment);
 
 // Route to get a specific payment record by ID
 router.get('/getPaymentByDate/:tenantId/', getPaymentByDate);
+
+// Route to get a specific payment record by ID
+router.get('/getAllPayments', getAllPayments);
+
+// Get all payments grouped by tenantId
+router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);
+
+// Route to get Payments By TenantId
+router.get('/getPaymentsByTenantId/:tenantId', getPaymentsByTenantId);
 
 // Route to get a specific payment record by ID
 router.get('/previousPayment/:tenantId', getPreviousPayment);

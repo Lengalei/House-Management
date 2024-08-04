@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
+import { ThreeDots } from 'react-loader-spinner';
 
 const Listall = () => {
   const fallbackTenants = [
@@ -71,12 +72,14 @@ const Listall = () => {
   ];
 
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
 
   useEffect(() => {
     const fetchAllTenants = async () => {
       setError('');
+      setLoading(true);
       try {
         const res = await apiRequest.get('/tenants/allTenants');
         console.log(res.data);
@@ -93,12 +96,15 @@ const Listall = () => {
       } catch (error) {
         setError('Error fetching tenants. Using fallback data.');
         dispatch(setTenants(fallbackTenants));
+      } finally {
+        setLoading(false);
       }
     };
     fetchAllTenants();
   }, [dispatch]);
 
   const handleDelete = async (_id) => {
+    setLoading(true);
     try {
       const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
@@ -108,6 +114,8 @@ const Listall = () => {
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,46 +124,57 @@ const Listall = () => {
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
         {error && <span>{error}</span>}
-        <div className="table-container">
-          <table className="tenant-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>houseNo</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tenants &&
-                tenants.map((tenant) => (
-                  <tr key={tenant._id}>
-                    <td>{tenant.name}</td>
-                    <td>{tenant.email}</td>
-                    <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
-
-                    <td>{tenant.phone || tenant.phoneNo}</td>
-                    <td className="actions">
-                      <Link
-                        to={`/tenantProfile/${tenant._id}`}
-                        className="edit-btn"
-                      >
-                        More Details
-                      </Link>
-
-                      <button
-                        onClick={() => handleDelete(tenant._id)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <div className="loader">
+            <ThreeDots
+              height="80"
+              width="80"
+              radius="9"
+              color="#4fa94d"
+              ariaLabel="three-dots-loading"
+              visible={true}
+            />
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="tenant-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>houseNo</th>
+                  <th>Phone</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tenants &&
+                  tenants.map((tenant) => (
+                    <tr key={tenant._id}>
+                      <td>{tenant.name}</td>
+                      <td>{tenant.email}</td>
+                      <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
+                      <td>{tenant.phone || tenant.phoneNo}</td>
+                      <td className="actions">
+                        <Link
+                          to={`/tenantProfile/${tenant._id}`}
+                          className="edit-btn"
+                        >
+                          More Details
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(tenant._id)}
+                          className="delete-btn"
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaTachometerAlt,
-  FaBell,
-  FaEnvelope,
+  // FaBell,
+  // FaEnvelope,
+  // FaUserPlus,
   FaUsers,
   FaUserTie,
   FaHouseUser,
-  FaUserPlus,
   FaCog,
   FaCaretDown,
   FaBars,
   FaTimes,
-} from "react-icons/fa";
-import "./sidebar.css";
+} from 'react-icons/fa';
+import './sidebar.css';
 
 const Sidebar = () => {
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
@@ -37,7 +37,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -47,11 +47,11 @@ const Sidebar = () => {
           <Link to="/" className="dash">
             <FaTachometerAlt className="icon" /> Dashboard
           </Link>
-          <Link to="/notifications" className="dash">
-            <FaBell className="icon" /> Notifications
+          <Link to="/listAllTenants" className="dash">
+            <FaUsers className="icon" /> All Tenants
           </Link>
-          <Link to="/messages" className="dash">
-            <FaEnvelope className="icon" /> Messages
+          <Link to="/addHouse" className="dash">
+            <FaHouseUser className="icon" /> Register House
           </Link>
         </div>
 
@@ -60,7 +60,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{" "}
+              <FaUsers className="icon" /> Tenants{' '}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -76,7 +76,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> Landlords{" "}
+              <FaUserTie className="icon" /> Landlords{' '}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -90,15 +90,17 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+
+          <Link to="/allPayments" className="dash">
+            <FaHouseUser className="icon" /> All Payments
+          </Link>
           <Link to="/rentpayment" className="dash">
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
-          <Link to="/registerTenant" className="dash">
-            <FaHouseUser className="icon" /> Assign House
-          </Link>
-          <Link to="/registerLandlord" className="dash">
-            <FaUserPlus className="icon" /> Add Landlord
-          </Link>
+          {/* <Link to="/addHouse" className="dash">
+            <FaHouseUser className="icon" />
+            Add House
+          </Link> */}
         </div>
 
         <div className="management">
