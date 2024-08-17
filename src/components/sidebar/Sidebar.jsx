@@ -37,7 +37,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -60,7 +60,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{' '}
+              <FaUsers className="icon" /> Tenants{" "}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -76,7 +76,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> Landlords{' '}
+              <FaUserTie className="icon" /> Landlords{" "}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -97,10 +97,16 @@ const Sidebar = () => {
           <Link to="/rentpayment" className="dash">
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
-          {/* <Link to="/addHouse" className="dash">
-            <FaHouseUser className="icon" />
-            Add House
-          </Link> */}
+          
+        </div>
+        <div className="management">
+          <h4>Tax</h4>
+          <Link to="taxPayment" className="dash">
+            <FaCog className="icon" /> KRA
+          </Link>
+          <Link to="taxPaymentHistory" className="dash">
+            <FaCog className="icon" /> Payment History
+          </Link>
         </div>
 
         <div className="management">

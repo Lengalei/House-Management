@@ -1,31 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import apiRequest from '../../lib/apiRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import { ThreeDots } from 'react-loader-spinner';
-import 'react-toastify/dist/ReactToastify.css';
-import './Tenant.scss';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import { ThreeDots } from "react-loader-spinner";
+import "react-toastify/dist/ReactToastify.css";
+import "./Tenant.scss";
 
 function EditTenant() {
   const { _id } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    nationalId: '',
-    phoneNo: '',
-    placementDate: '',
-    houseDeposit: '',
-    waterDeposit: '',
-    houseNo: '',
-    rentPayable: '',
-    emergencyContactNumber: '',
-    emergencyContactName: '',
+    name: "",
+    email: "",
+    nationalId: "",
+    phoneNo: "",
+    placementDate: "",
+    houseDeposit: "",
+    waterDeposit: "",
+    houseNo: "",
+    rentPayable: "",
+    amountpaid: "",
+    emergencyContactNumber: "",
+    emergencyContactName: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchTenant = async () => {
@@ -37,8 +38,8 @@ function EditTenant() {
         const { data } = response;
         setFormData(data);
       } catch (error) {
-        console.error('Error fetching tenant:', error);
-        setError('Error fetching tenant data. Please try again.');
+        console.error("Error fetching tenant:", error);
+        setError("Error fetching tenant data. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -57,7 +58,7 @@ function EditTenant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
       const res = await apiRequest.put(
@@ -65,14 +66,14 @@ function EditTenant() {
         formData
       );
       if (res.status === 200) {
-        toast.success('Tenant details updated successfully!');
+        toast.success("Tenant details updated successfully!");
         console.log(res.data);
         navigate(`/tenantProfile/${_id}`);
       }
     } catch (err) {
-      console.error('Error updating tenant:', err);
-      setError('Error updating tenant. Please try again.');
-      toast.error('Error updating tenant.');
+      console.error("Error updating tenant:", err);
+      setError("Error updating tenant. Please try again.");
+      toast.error("Error updating tenant.");
     } finally {
       setLoading(false);
     }
@@ -193,6 +194,14 @@ function EditTenant() {
               />
             </div>
             <div className="forminput">
+              <label htmlFor="rentPayable">Amount Paid</label>
+              <input
+                type="number"
+                name="rentPayable"
+                value={formData.amountpaid}
+              />
+            </div>
+            <div className="forminput">
               <label htmlFor="emergencyContactName">
                 Emergency Contact Name<span>*</span>
               </label>
@@ -230,7 +239,7 @@ function EditTenant() {
                     visible={true}
                   />
                 ) : (
-                  'Update'
+                  "Update"
                 )}
               </button>
             </div>

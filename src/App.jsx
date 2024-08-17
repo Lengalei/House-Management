@@ -23,8 +23,11 @@ import TenantPaymentList from './components/Rent Payment/TenantPaymentList/Tenan
 import PaymentDetailsPage from './components/Rent Payment/PaymentDetails/PaymentDetailsPage.jsx';
 import RegisterHouse from './components/houses/RegisterHouse.jsx';
 import Payments from './components/Rent Payment/AllPayMents/Payments.jsx';
+import TaxPayment from './components/Tax/TaxPayment.jsx';
+import TaxPaymentHistory from './components/Tax/TaxPaymentHistory.jsx';
 
 function App() {
+  
   return (
     <Router>
       <Routes>
@@ -60,6 +63,8 @@ function App() {
             element={<TenantPaymentList />}
           />
           <Route path="/paymentDetails" element={<PaymentDetailsPage />} />
+          <Route path="/taxPayment" element={<TaxPayment />} />
+          <Route path="/taxPaymentHistory" element={<TaxPaymentHistory />} />
         </Route>
         <Route path="/*" element={<NotFound />} />
       </Routes>
