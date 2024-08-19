@@ -1,30 +1,32 @@
-import { useState } from 'react';
-import '../Tenants/Tenant.scss';
-import { useNavigate } from 'react-router-dom';
-import apiRequest from '../../lib/apiRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import { ThreeDots } from 'react-loader-spinner';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState } from "react";
+import "../Tenants/Tenant.scss";
+import { useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import { ThreeDots } from "react-loader-spinner";
+import "react-toastify/dist/ReactToastify.css";
+
+//add an others field option
 
 function Landlord() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    nationalId: '',
-    phoneNo: '',
-    placementDate: '',
-    assignedHouseNo: '',
-    monthlyPay: '',
-    emergencyContactNumber: '',
-    emergencyContactName: '',
+    name: "",
+    email: "",
+    nationalId: "",
+    phoneNo: "",
+    placementDate: "",
+    assignedHouseNo: "",
+    monthlyPay: "",
+    emergencyContactNumber: "",
+    emergencyContactName: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedFloor, setSelectedFloor] = useState('');
+  const [selectedFloor, setSelectedFloor] = useState("");
   const [houseOptions, setHouseOptions] = useState([]);
-  const [selectedHouse, setSelectedHouse] = useState('');
+  const [selectedHouse, setSelectedHouse] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -40,11 +42,11 @@ function Landlord() {
     setSelectedFloor(value);
     setShowPopup(true); // Show popup when floor is selected
 
-    if (value === 'GroundFloor') {
-      setHouseOptions(['A', 'B']); // Only A and B for Ground Floor
-    } else if (value.startsWith('Floor')) {
+    if (value === "GroundFloor") {
+      setHouseOptions(["A", "B"]); // Only A and B for Ground Floor
+    } else if (value.startsWith("Floor")) {
       // Extract floor number and generate house options A-D
-      const floorNumber = value.split('Floor')[1];
+      const floorNumber = value.split("Floor")[1];
       setHouseOptions([
         `${floorNumber}A`,
         `${floorNumber}B`,
@@ -57,8 +59,8 @@ function Landlord() {
   const handleHouseChoice = (e) => {
     const house = e.target.value.toUpperCase(); // Convert to uppercase for uniformity
     const floorLabel = selectedFloor
-      .replace('Floor', '')
-      .replace('GroundFloor', 'Ground Floor');
+      .replace("Floor", "")
+      .replace("GroundFloor", "Ground Floor");
     const houseNo = `${floorLabel}, House ${house}`;
     setSelectedHouse(houseNo); // Update selected house for display
     setFormData((prevFormData) => ({
@@ -71,20 +73,20 @@ function Landlord() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      const res = await apiRequest.post('/landlords', formData);
+      const res = await apiRequest.post("/landlords", formData);
       if (res.status) {
-        toast.success('Landlord registered successfully!');
-        navigate('/listAllLandlord');
+        toast.success("Landlord registered successfully!");
+        navigate("/listAllLandlord");
       } else {
         setError(res.data.message);
       }
     } catch (err) {
-      console.error('Error registering landlord:', err);
+      console.error("Error registering landlord:", err);
       setError(err.response.data.message);
-      toast.error('Error registering landlord.');
+      toast.error("Error registering landlord.");
     } finally {
       setLoading(false);
     }
@@ -195,10 +197,10 @@ function Landlord() {
               {selectedFloor && selectedHouse && (
                 <div className="selected-house">
                   <h4>
-                    Selected Floor:{' '}
-                    {selectedFloor === 'GroundFloor'
-                      ? 'Ground Floor'
-                      : selectedFloor.replace('Floor', 'Floor ')}
+                    Selected Floor:{" "}
+                    {selectedFloor === "GroundFloor"
+                      ? "Ground Floor"
+                      : selectedFloor.replace("Floor", "Floor ")}
                     <br />
                     Selected House: {selectedHouse}
                   </h4>
@@ -279,7 +281,7 @@ function Landlord() {
                   {loading ? (
                     <ThreeDots color="#ffffff" height={40} width={40} />
                   ) : (
-                    'Register'
+                    "Register"
                   )}
                 </button>
               </div>

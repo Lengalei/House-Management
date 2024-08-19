@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
-import './TenantPaymentForm.scss';
-import { useNavigate, useParams } from 'react-router-dom';
-import apiRequest from '../../../lib/apiRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from "react";
+import "./TenantPaymentForm.scss";
+import { useNavigate, useParams } from "react-router-dom";
+import apiRequest from "../../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TenantPaymentForm = () => {
   const { tenantId } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    date: '',
+    date: "",
     extraBills: 0,
     rent: 0,
     waterBill: 0,
     garbageFee: 0,
-    referenceNo: '',
+    referenceNo: "",
     amountPaid: 0,
   });
 
@@ -40,8 +40,8 @@ const TenantPaymentForm = () => {
           }));
         }
       } catch (error) {
-        console.error('Error fetching tenant details:', error);
-        toast.error('Error fetching tenant details.');
+        console.error("Error fetching tenant details:", error);
+        toast.error("Error fetching tenant details.");
       }
     };
 
@@ -57,8 +57,8 @@ const TenantPaymentForm = () => {
       const unpaid = response.data.filter((payment) => !payment.isCleared);
       setOutstandingPayments(unpaid);
     } catch (error) {
-      console.error('Error fetching outstanding payments:', error);
-      toast.error('Error fetching outstanding payments.');
+      console.error("Error fetching outstanding payments:", error);
+      toast.error("Error fetching outstanding payments.");
     }
   };
 
@@ -72,15 +72,15 @@ const TenantPaymentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiRequest.post('/payments/create', {
+      const response = await apiRequest.post("/payments/create", {
         tenantId,
         ...formData,
       });
       if (response.status) {
-        toast.success('Payment record created successfully');
+        toast.success("Payment record created successfully");
         setFormData((prevData) => ({
           ...prevData,
-          date: '',
+          date: "",
           extraBills: 0,
           amountPaid: 0,
         }));
@@ -88,8 +88,8 @@ const TenantPaymentForm = () => {
         navigate(`/tenantPaymentList/${tenantId}`);
       }
     } catch (error) {
-      console.error('Error creating payment record:', error);
-      toast.error('Error creating payment record.');
+      console.error("Error creating payment record:", error);
+      toast.error("Error creating payment record.");
     }
   };
 
@@ -105,12 +105,12 @@ const TenantPaymentForm = () => {
         }
       );
       if (response.status) {
-        toast.success('Default values updated successfully');
+        toast.success("Default values updated successfully");
         setShowUpdateForm(!showUpdateForm);
       }
     } catch (error) {
-      console.error('Error updating default values:', error);
-      toast.error('Error updating default values.');
+      console.error("Error updating default values:", error);
+      toast.error("Error updating default values.");
     }
   };
 
@@ -128,13 +128,13 @@ const TenantPaymentForm = () => {
         }
       );
       if (response.status) {
-        toast.success('Payment updated successfully');
+        toast.success("Payment updated successfully");
         setSelectedPayment(null);
         await fetchOutstandingPayments();
       }
     } catch (error) {
-      console.error('Error updating payment:', error);
-      toast.error('Error updating payment.');
+      console.error("Error updating payment:", error);
+      toast.error("Error updating payment.");
     }
   };
 
@@ -151,7 +151,7 @@ const TenantPaymentForm = () => {
         <button
           onClick={() => setShowOutstandingPayments(!showOutstandingPayments)}
         >
-          {showOutstandingPayments ? 'Hide' : 'View'} Outstanding Payments
+          {showOutstandingPayments ? "Hide" : "View"} Outstanding Payments
         </button>
       </div>
 
@@ -274,6 +274,14 @@ const TenantPaymentForm = () => {
                   onChange={handleChange}
                   required
                 />
+              </label>
+              <label>
+                Date:
+                <input type="Date" name="amountPaid" required />
+              </label>
+              <label>
+                Ref No:
+                <input type="number" name="amountPaid" required />
               </label>
               <button type="submit">Update</button>
               <button type="button" onClick={handleClosePopup}>
