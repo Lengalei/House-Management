@@ -1,19 +1,19 @@
-import mongoose from 'mongoose';
-import Tenant from '../models/Tenant.js';
-import cron from 'node-cron';
-import Payment from '../models/Payment.js';
-import House from '../models/houses.js';
+import mongoose from "mongoose";
+import Tenant from "../models/Tenant.js";
+import cron from "node-cron";
+import Payment from "../models/Payment.js";
+import House from "../models/houses.js";
 
 // Function to convert floor string to corresponding number
 const convertFloorToNumber = (floor) => {
   const floorMap = {
-    'Ground Floor': 0,
-    'Floor 1': 1,
-    'Floor 2': 2,
-    'Floor 3': 3,
-    'Floor 4': 4,
-    'Floor 5': 5,
-    'Floor 6': 6,
+    "Ground Floor": 0,
+    "Floor 1": 1,
+    "Floor 2": 2,
+    "Floor 3": 3,
+    "Floor 4": 4,
+    "Floor 5": 5,
+    "Floor 6": 6,
   };
   return floorMap[floor] || null;
 };
@@ -47,48 +47,48 @@ export const registerTenant = async (req, res) => {
     !emergencyContactNumber ||
     !emergencyContactName
   ) {
-    return res.status(400).json({ message: 'Please fill in all the details!' });
+    return res.status(400).json({ message: "Please fill in all the details!" });
   }
 
   // Special handling for "Ground Floor"
   let floorNumber;
   let houseName;
 
-  if (houseNo.startsWith('Ground Floor')) {
+  if (houseNo.startsWith("Ground Floor")) {
     floorNumber = 0;
-    houseName = houseNo.split(',')[1]?.trim() || '';
+    houseName = houseNo.split(",")[1]?.trim() || "";
   } else {
     const [floorStr, houseNamePart] = houseNo
-      .split(',')
+      .split(",")
       .map((part) => part.trim());
-    console.log('floorStr:', floorStr); // Debugging
-    console.log('houseName:', houseNamePart); // Debugging
+    console.log("floorStr:", floorStr); // Debugging
+    console.log("houseName:", houseNamePart); // Debugging
 
     floorNumber = convertFloorToNumber(floorStr);
     houseName = houseNamePart;
   }
 
   if (floorNumber === null) {
-    return res.status(400).json({ message: 'Invalid floor provided!' });
+    return res.status(400).json({ message: "Invalid floor provided!" });
   }
 
   try {
     const existingTenant = await Tenant.findOne({ email });
     if (existingTenant) {
-      return res.status(400).json({ message: 'Tenant already exists!' });
+      return res.status(400).json({ message: "Tenant already exists!" });
     }
     const existingTenantInHouse = await Tenant.findOne({ houseNo });
     if (existingTenantInHouse) {
-      return res.status(400).json({ message: 'House Already Occupied!' });
+      return res.status(400).json({ message: "House Already Occupied!" });
     }
     const existingNationalId = await Tenant.findOne({ nationalId });
     if (existingNationalId) {
       return res
         .status(409)
-        .json({ message: 'Tenant National Id already exists!' });
+        .json({ message: "Tenant National Id already exists!" });
     }
 
-    console.log('Searching for house:', {
+    console.log("Searching for house:", {
       floor: floorNumber,
       houseName: houseName,
     }); // Debugging
@@ -100,7 +100,7 @@ export const registerTenant = async (req, res) => {
     );
 
     if (!house) {
-      return res.status(404).json({ message: 'House not found!' });
+      return res.status(404).json({ message: "House not found!" });
     }
 
     const newTenant = await Tenant.create({
@@ -117,10 +117,16 @@ export const registerTenant = async (req, res) => {
       emergencyContactName,
     });
 
+    //calculate total amount
+    // const rentPayableNum = Number(rentPayable) || 0;
+    // const houseDepositNum = Number(houseDeposit) || 0;
+    // const waterDepositNum = Number(waterDeposit) || 0;
+    // let totalAmount = rentPayableNum + houseDepositNum + waterDepositNum;
+    // res.status(201).json({ newTenant, totalAmount });
     res.status(201).json(newTenant);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -158,7 +164,7 @@ export const getAllTenants = async (req, res) => {
     res.status(200).json(tenantsWithPaymentDetails);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -166,17 +172,17 @@ export const getAllTenants = async (req, res) => {
 export const getSingleTenant = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
   try {
     const tenant = await Tenant.findById(id);
     if (!tenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+      return res.status(404).json({ error: "Tenant not found" });
     }
     res.status(200).json(tenant);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 // Patch Single Tenant
@@ -184,7 +190,7 @@ export const updateSingleTenant = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
 
   try {
@@ -193,15 +199,15 @@ export const updateSingleTenant = async (req, res) => {
     });
 
     if (!updatedTenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+      return res.status(404).json({ error: "Tenant not found" });
     }
 
     return res.status(200).json(updatedTenant);
   } catch (err) {
-    console.error('Error updating tenant:', err);
+    console.error("Error updating tenant:", err);
     return res
       .status(500)
-      .json({ error: 'Server error', message: err.message });
+      .json({ error: "Server error", message: err.message });
   }
 };
 
@@ -209,14 +215,14 @@ export const updateSingleTenant = async (req, res) => {
 export const deleteTenantById = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
 
   try {
     // Find and delete the tenant
     const tenant = await Tenant.findById(id);
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
 
     // Extract houseNo from tenant
@@ -226,12 +232,12 @@ export const deleteTenantById = async (req, res) => {
     let floorNumber;
     let houseName;
 
-    if (houseNo.startsWith('Ground Floor')) {
+    if (houseNo.startsWith("Ground Floor")) {
       floorNumber = 0;
-      houseName = houseNo.split(',')[1]?.trim() || '';
+      houseName = houseNo.split(",")[1]?.trim() || "";
     } else {
       const [floorStr, houseNamePart] = houseNo
-        .split(',')
+        .split(",")
         .map((part) => part.trim());
       floorNumber = convertFloorToNumber(floorStr);
       houseName = houseNamePart;
@@ -240,7 +246,7 @@ export const deleteTenantById = async (req, res) => {
     if (floorNumber === null) {
       return res
         .status(400)
-        .json({ message: 'Invalid floor in house number!' });
+        .json({ message: "Invalid floor in house number!" });
     }
 
     // Delete the tenant
@@ -254,17 +260,15 @@ export const deleteTenantById = async (req, res) => {
     );
 
     if (!house) {
-      return res.status(404).json({ message: 'House not found!' });
+      return res.status(404).json({ message: "House not found!" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: 'Tenant deleted successfully and house status updated',
-      });
+    res.status(200).json({
+      message: "Tenant deleted successfully and house status updated",
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -272,7 +276,7 @@ export const deleteTenantById = async (req, res) => {
 export const blackListTenant = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
   try {
     const tenant = await Tenant.findByIdAndUpdate(
@@ -281,14 +285,14 @@ export const blackListTenant = async (req, res) => {
       { new: true }
     );
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
     res
       .status(200)
-      .json({ message: 'Tenant blacklisted successfully', tenant });
+      .json({ message: "Tenant blacklisted successfully", tenant });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -296,7 +300,7 @@ export const blackListTenant = async (req, res) => {
 export const whiteListTenant = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
   try {
     const tenant = await Tenant.findByIdAndUpdate(
@@ -305,15 +309,15 @@ export const whiteListTenant = async (req, res) => {
       { new: true }
     );
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
     console.log(tenant);
     res
       .status(200)
-      .json({ message: 'Tenant whitelisted successfully', tenant });
+      .json({ message: "Tenant whitelisted successfully", tenant });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -336,7 +340,7 @@ export const updateTenantPayments = async () => {
       });
     });
   } catch (error) {
-    console.error('Error updating tenant payments:', error);
+    console.error("Error updating tenant payments:", error);
   }
 };
-cron.schedule('0 0 1 * *', updateTenantPayments); // Runs on the 1st of every month
+cron.schedule("0 0 1 * *", updateTenantPayments); // Runs on the 1st of every month
