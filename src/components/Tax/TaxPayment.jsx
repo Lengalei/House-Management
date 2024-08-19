@@ -52,6 +52,13 @@ const TaxPayment = () => {
           placeholder="Tax will be calculated automatically"
         />
       </div>
+      <div className="input-group">
+        <label>Ref NO:</label>
+        <input
+          type="number"
+          placeholder="enter Reference Number"
+        />
+      </div>
       <button onClick={handleSubmit} className="btn">
         Enter
       </button>

@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaClipboardList } from "react-icons/fa";
+import { VscRecordSmall } from "react-icons/vsc";
+import { TbSquarePercentage } from "react-icons/tb";
+import { IoReceiptOutline } from "react-icons/io5";
 import {
   FaTachometerAlt,
   // FaBell,
@@ -50,6 +54,17 @@ const Sidebar = () => {
           <Link to="/listAllTenants" className="dash">
             <FaUsers className="icon" /> All Tenants
           </Link>
+          <Link to="/listAllTenants" className="dash">
+            <FaUsers className="icon" /> RegPayment
+          </Link>
+          <Link to="/greyList" className="dash">
+            <FaClipboardList className="icon" />
+            Grey List
+          </Link>
+          <Link to="/records" className="dash">
+            <VscRecordSmall className="icon" />
+            Records
+          </Link>
           <Link to="/addHouse" className="dash">
             <FaHouseUser className="icon" /> Register House
           </Link>
@@ -67,6 +82,9 @@ const Sidebar = () => {
               <div className="dropdown-content">
                 <Link to="/registerTenant" className="dash">
                   Register Tenant
+                </Link>
+                <Link to="/greyList" className="dash">
+                  Grey List
                 </Link>
                 <Link to="/listAllTenants" className="dash">
                   List All
@@ -97,15 +115,15 @@ const Sidebar = () => {
           <Link to="/rentpayment" className="dash">
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
-          
         </div>
         <div className="management">
-          <h4>Tax</h4>
+          <h4 className="h2">TAX</h4>
+          <hr className="h" />
           <Link to="taxPayment" className="dash">
-            <FaCog className="icon" /> KRA
+            <TbSquarePercentage className="icon" /> KRA
           </Link>
           <Link to="taxPaymentHistory" className="dash">
-            <FaCog className="icon" /> Payment History
+            <IoReceiptOutline className="icon" /> Payment History
           </Link>
         </div>
 
