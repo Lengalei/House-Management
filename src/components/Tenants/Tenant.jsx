@@ -1,42 +1,42 @@
-import { useState, useEffect } from 'react';
-import './Tenant.scss';
-import { useNavigate } from 'react-router-dom';
-import apiRequest from '../../lib/apiRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import { ThreeDots } from 'react-loader-spinner';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from "react";
+import "./Tenant.scss";
+import { useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import { ThreeDots } from "react-loader-spinner";
+import "react-toastify/dist/ReactToastify.css";
 
 function Tenant() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    nationalId: '',
-    phoneNo: '',
-    placementDate: '',
-    houseDeposit: '',
-    waterDeposit: '',
-    rentPayable: '',
-    houseNo: '',
-    emergencyContactNumber: '',
-    emergencyContactName: '',
+    name: "",
+    email: "",
+    nationalId: "",
+    phoneNo: "",
+    placementDate: "",
+    houseDeposit: "",
+    waterDeposit: "",
+    rentPayable: "",
+    houseNo: "",
+    emergencyContactNumber: "",
+    emergencyContactName: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedFloor, setSelectedFloor] = useState('');
+  const [selectedFloor, setSelectedFloor] = useState("");
   const [houseOptions, setHouseOptions] = useState([]);
-  const [selectedHouse, setSelectedHouse] = useState('');
+  const [selectedHouse, setSelectedHouse] = useState("");
   const [registeredHouses, setRegisteredHouses] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHouses = async () => {
       try {
-        const res = await apiRequest.get('/houses/getAllHouses');
+        const res = await apiRequest.get("/houses/getAllHouses");
         setRegisteredHouses(res.data);
       } catch (err) {
-        console.error('Error fetching houses:', err);
+        console.error("Error fetching houses:", err);
       }
     };
 
@@ -57,12 +57,12 @@ function Tenant() {
     setShowPopup(true);
 
     const floorNumber =
-      value === 'GroundFloor' ? 0 : parseInt(value.replace('Floor', ''), 10);
+      value === "GroundFloor" ? 0 : parseInt(value.replace("Floor", ""), 10);
 
     const housesOnFloor = registeredHouses
       .filter((house) => house.floor === floorNumber)
       .map((house) => ({
-        houseName: house.houseName.split(' ')[1], // Extract the '3C' part
+        houseName: house.houseName.split(" ")[1], // Extract the '3C' part
         isOccupied: house.isOccupied,
       }))
       .sort((a, b) => a.houseName.localeCompare(b.houseName));
@@ -73,9 +73,9 @@ function Tenant() {
   const handleHouseChoice = (e) => {
     const house = e.target.value.toUpperCase();
     const floorLabel =
-      selectedFloor === 'GroundFloor'
-        ? 'Ground Floor'
-        : `Floor ${selectedFloor.replace('Floor', '')}`;
+      selectedFloor === "GroundFloor"
+        ? "Ground Floor"
+        : `Floor ${selectedFloor.replace("Floor", "")}`;
     const houseNo = `${floorLabel}, House ${house}`;
     setSelectedHouse(houseNo);
 
@@ -89,10 +89,10 @@ function Tenant() {
     let waterDeposit = 2500;
     let rentPayable = 0;
 
-    if (['A', 'B', 'C'].includes(houseType)) {
+    if (["A", "B", "C"].includes(houseType)) {
       houseDeposit = 17000;
       rentPayable = 17000;
-    } else if (houseType === 'D') {
+    } else if (houseType === "D") {
       houseDeposit = 15000;
       rentPayable = 15000;
     }
@@ -113,18 +113,23 @@ function Tenant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      const res = await apiRequest.post('/tenants', formData);
+      const res = await apiRequest.post("/tenants", formData);
       if (res.status === 201) {
-        toast.success('Tenant registered successfully!');
-        navigate('/listAllTenants');
+        toast.success("Tenant registered successfully!");
+
+        // prior to sending the post request we take the input from the amount paid form popup and we add it to the data being sent to the backend
+        // if(res.data.newTenant.amountPaid > totalAmount){
+        //   navigate('/listAllTenants');
+        // }
+        navigate("/listAllTenants");
       }
     } catch (err) {
-      console.error('Error registering tenant:', err);
+      console.error("Error registering tenant:", err);
       setError(err.response.data.message);
-      toast.error('Error registering tenant.');
+      toast.error("Error registering tenant.");
     } finally {
       setLoading(false);
     }
@@ -235,10 +240,10 @@ function Tenant() {
               {selectedFloor && selectedHouse && (
                 <div className="selected-house">
                   <h4>
-                    Selected Floor:{' '}
-                    {selectedFloor === 'GroundFloor'
-                      ? 'Ground Floor'
-                      : `Floor ${selectedFloor.replace('Floor', '')}`}
+                    Selected Floor:{" "}
+                    {selectedFloor === "GroundFloor"
+                      ? "Ground Floor"
+                      : `Floor ${selectedFloor.replace("Floor", "")}`}
                     <br />
                     Selected House: {selectedHouse}
                   </h4>
@@ -262,10 +267,10 @@ function Tenant() {
                         value={option.houseName}
                         onClick={handleHouseChoice}
                         disabled={option.isOccupied}
-                        className={option.isOccupied ? 'occupied' : ''}
+                        className={option.isOccupied ? "occupied" : ""}
                       >
                         {option.houseName}
-                        {option.isOccupied && ' 🚫'}
+                        {option.isOccupied && " 🚫"}
                       </button>
                     ))}
                   </div>
@@ -342,7 +347,7 @@ function Tenant() {
                       visible={true}
                     />
                   ) : (
-                    'Register'
+                    "Continue"
                   )}
                 </button>
               </div>
