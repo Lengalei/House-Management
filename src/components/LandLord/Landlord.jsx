@@ -1,32 +1,32 @@
-import { useState } from "react";
-import "../Tenants/Tenant.scss";
-import { useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
-import { toast, ToastContainer } from "react-toastify";
-import { ThreeDots } from "react-loader-spinner";
-import "react-toastify/dist/ReactToastify.css";
-
-//add an others field option
+import { useState } from 'react';
+import '../Tenants/Tenant.scss';
+import { useNavigate } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { toast, ToastContainer } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Landlord() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    nationalId: "",
-    phoneNo: "",
-    placementDate: "",
-    assignedHouseNo: "",
-    monthlyPay: "",
-    emergencyContactNumber: "",
-    emergencyContactName: "",
+    name: '',
+    email: '',
+    nationalId: '',
+    phoneNo: '',
+    placementDate: '',
+    assignedHouseNo: '',
+    monthlyPay: '',
+    emergencyContactNumber: '',
+    emergencyContactName: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedFloor, setSelectedFloor] = useState("");
+  const [selectedFloor, setSelectedFloor] = useState('');
   const [houseOptions, setHouseOptions] = useState([]);
-  const [selectedHouse, setSelectedHouse] = useState("");
+  const [selectedHouse, setSelectedHouse] = useState('');
+  const [showCustomHouseInput, setShowCustomHouseInput] = useState(false);
+  const [customHouseInput, setCustomHouseInput] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -40,53 +40,73 @@ function Landlord() {
   const handleFloorChange = (e) => {
     const { value } = e.target;
     setSelectedFloor(value);
-    setShowPopup(true); // Show popup when floor is selected
 
-    if (value === "GroundFloor") {
-      setHouseOptions(["A", "B"]); // Only A and B for Ground Floor
-    } else if (value.startsWith("Floor")) {
-      // Extract floor number and generate house options A-D
-      const floorNumber = value.split("Floor")[1];
+    if (value === 'GroundFloor') {
+      setHouseOptions(['A', 'B']);
+      setShowCustomHouseInput(false);
+      setShowPopup(true); // Show popup for house selection
+    } else if (value.startsWith('Floor')) {
+      const floorNumber = value.split('Floor')[1];
       setHouseOptions([
         `${floorNumber}A`,
         `${floorNumber}B`,
         `${floorNumber}C`,
         `${floorNumber}D`,
       ]);
+      setShowCustomHouseInput(false);
+      setShowPopup(true); // Show popup for house selection
+    } else if (value === 'Others') {
+      setHouseOptions([]);
+      setShowCustomHouseInput(true); // Show custom house input
+      setShowPopup(false); // Do not show the popup for custom input
     }
   };
 
   const handleHouseChoice = (e) => {
-    const house = e.target.value.toUpperCase(); // Convert to uppercase for uniformity
+    const house = e.target.value.toUpperCase();
     const floorLabel = selectedFloor
-      .replace("Floor", "")
-      .replace("GroundFloor", "Ground Floor");
+      .replace('Floor', '')
+      .replace('GroundFloor', 'Ground Floor');
     const houseNo = `${floorLabel}, House ${house}`;
-    setSelectedHouse(houseNo); // Update selected house for display
+    setSelectedHouse(houseNo);
     setFormData((prevFormData) => ({
       ...prevFormData,
       assignedHouseNo: houseNo,
     }));
 
-    setShowPopup(false); // Hide popup after selection
+    setShowPopup(false);
+  };
+
+  const handleCustomHouseChange = (e) => {
+    setCustomHouseInput(e.target.value);
+  };
+
+  const handleCustomHouseSubmit = () => {
+    const houseNo = `Custom House: ${customHouseInput}`;
+    setSelectedHouse(houseNo);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      assignedHouseNo: houseNo,
+    }));
+    setShowCustomHouseInput(false); // Hide the custom input after submission
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
-      const res = await apiRequest.post("/landlords", formData);
+      const res = await apiRequest.post('/landlords', formData);
       if (res.status) {
-        toast.success("Landlord registered successfully!");
-        navigate("/listAllLandlord");
+        toast.success('Landlord registered successfully!');
+        navigate('/listAllLandlord');
       } else {
         setError(res.data.message);
       }
     } catch (err) {
-      console.error("Error registering landlord:", err);
+      console.error('Error registering landlord:', err);
       setError(err.response.data.message);
-      toast.error("Error registering landlord.");
+      toast.error('Error registering landlord.');
     } finally {
       setLoading(false);
     }
@@ -190,6 +210,7 @@ function Landlord() {
                   <option value="Floor4">4th Floor</option>
                   <option value="Floor5">5th Floor</option>
                   <option value="Floor6">6th Floor</option>
+                  <option value="Others">Others</option>
                 </select>
               </div>
 
@@ -197,10 +218,12 @@ function Landlord() {
               {selectedFloor && selectedHouse && (
                 <div className="selected-house">
                   <h4>
-                    Selected Floor:{" "}
-                    {selectedFloor === "GroundFloor"
-                      ? "Ground Floor"
-                      : selectedFloor.replace("Floor", "Floor ")}
+                    Selected Floor:{' '}
+                    {selectedFloor === 'GroundFloor'
+                      ? 'Ground Floor'
+                      : selectedFloor === 'Others'
+                      ? 'Custom Floor'
+                      : selectedFloor.replace('Floor', 'Floor ')}
                     <br />
                     Selected House: {selectedHouse}
                   </h4>
@@ -208,7 +231,7 @@ function Landlord() {
               )}
 
               {/* House Options Popup */}
-              {showPopup && (
+              {showPopup && !showCustomHouseInput && (
                 <div className="popup">
                   <div className="popup-content">
                     <h4>Select House</h4>
@@ -221,7 +244,33 @@ function Landlord() {
                         {option}
                       </button>
                     ))}
+                    <button
+                      className="close-popup"
+                      onClick={() => setShowPopup(false)}
+                    >
+                      Close
+                    </button>
                   </div>
+                </div>
+              )}
+
+              {/* Custom House Input and Submit */}
+              {showCustomHouseInput && (
+                <div className="forminput">
+                  <label htmlFor="customHouse">
+                    Custom House<span>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="customHouse"
+                    name="customHouse"
+                    value={customHouseInput}
+                    onChange={handleCustomHouseChange}
+                    placeholder="Enter custom house number"
+                  />
+                  <button type="button" onClick={handleCustomHouseSubmit}>
+                    Submit Custom House
+                  </button>
                 </div>
               )}
 
@@ -277,15 +326,24 @@ function Landlord() {
 
               {/* Submit Button */}
               <div className="forminput">
-                <button type="submit">
+                <button type="submit" disabled={loading}>
                   {loading ? (
-                    <ThreeDots color="#ffffff" height={40} width={40} />
+                    <ThreeDots
+                      height="10"
+                      width="100"
+                      radius="9"
+                      color="white"
+                      ariaLabel="three-dots-loading"
+                      visible={true}
+                    />
                   ) : (
-                    "Register"
+                    'Register'
                   )}
                 </button>
               </div>
-              {error && <span className="error">{error}</span>}
+
+              {/* Error Handling */}
+              {error && <div className="error">{error}</div>}
             </form>
           </div>
         </div>

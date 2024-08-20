@@ -3,7 +3,7 @@ import House from '../models/houses.js';
 //register house
 export const registerHouse = async (req, res) => {
   const { houseName, floor } = req.body;
-  console.log('HouseDtSent', req.body);
+  // console.log('HouseDtSent', req.body);
   try {
     // Convert floor to number
     const floorNum = Number(floor) || 0;
@@ -24,7 +24,7 @@ export const registerHouse = async (req, res) => {
     if (!house) {
       return res.status(400).json({ message: 'Error Creating House' });
     }
-    console.log('CreatedHouse: ', house);
+    // console.log('CreatedHouse: ', house);
     res.status(200).json(house);
   } catch (err) {
     console.error('Error registering House:', err);
@@ -39,7 +39,7 @@ export const fetchALlHouses = async (req, res) => {
     if (!houses) {
       return res.status(400).json({ message: 'No houses Registered' });
     }
-    console.log('RegistedHouses: ', houses);
+    // console.log('RegistedHouses: ', houses);
     res.status(200).json(houses);
   } catch (err) {
     console.error('Error Fetching Houses:', err);
@@ -57,7 +57,7 @@ export const fetchSingleHouse = async (req, res) => {
     if (!houses) {
       return res.status(400).json({ message: 'No houses Registered' });
     }
-    console.log('RegistedHouses: ', houses);
+    // console.log('RegistedHouses: ', houses);
     res.status(200).json(houses);
   } catch (err) {
     console.error('Error Fetching Houses:', err);

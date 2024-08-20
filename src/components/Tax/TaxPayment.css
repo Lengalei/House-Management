@@ -1,18 +1,40 @@
 .tax-payment-container {
-  max-width: 500px;
-  margin: 20px auto;
+  display: flex;
+  justify-content: space-between;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
 }
 
-.month-heading {
-  text-align: center;
-  margin-bottom: 20px;
+.left-card,
+.right-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 48%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.left-card {
+  margin-right: 20px;
+}
+
+.right-card {
+  margin-left: 20px;
+}
+
+h2 {
   font-size: 1.5rem;
-  color: #333;
+  margin-bottom: 15px;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 1rem;
 }
 
 .input-group {
@@ -21,69 +43,109 @@
 
 .input-group label {
   display: block;
-  margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
+  margin-bottom: 5px;
 }
 
-.input-group input {
+.input-group input[type='date'],
+.input-group input[type='text'] {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
+  color: black;
   border-radius: 4px;
   font-size: 1rem;
-  color: #333;
 }
 
-.input-group input:focus {
-  outline: none;
-  border-color: #ffa62f;
-}
-
-.input-group input[readonly] {
-  background-color: #e9ecef;
-}
-
-
-.tax-payment-history-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.input-group input[type='text'][readonly] {
   background-color: #f9f9f9;
 }
 
-.tax-payment-history-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  color: #333;
+.selected-month,
+.rental-value {
+  font-weight: bold;
+  font-size: 1rem;
+  color: chocolate;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-table th, table td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-.back-button {
+.btn {
   display: inline-block;
-  padding: 10px 15px;
-  background-color: #ffa62f;
+  padding: 10px 20px;
+  font-size: 0.8rem;
   color: #fff;
-  text-align: center;
+  background-color: #007bff;
+  border: none;
   border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
   text-decoration: none;
+  transition: background-color 0.3s ease;
 }
 
-.back-button:hover {
-  background-color: #e59424;
+.btn:disabled {
+  background-color: #d6d6d6;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.month-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.month-card {
+  flex: 1 1 calc(50% - 20px);
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.month-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.month-card p {
+  margin: 5px 0 0;
+  font-size: 1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination button:hover:not(.active) {
+  background-color: #e2e2e2;
+}
+
+.year-total {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
 }

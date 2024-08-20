@@ -36,6 +36,7 @@ const MiniPaymentsPopup = ({ payment, onClose }) => {
                   Date: {new Date(miniPayment.timestamp).toLocaleDateString()}
                 </div>
                 <div>Amount: {miniPayment.amount}</div>
+                <div>ReferenceNo: {miniPayment.referenceNo}</div>
               </div>
             ))}
           </div>

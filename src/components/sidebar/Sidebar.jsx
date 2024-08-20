@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaClipboardList } from "react-icons/fa";
-import { VscRecordSmall } from "react-icons/vsc";
-import { TbSquarePercentage } from "react-icons/tb";
-import { IoReceiptOutline } from "react-icons/io5";
+import { FaClipboardList } from 'react-icons/fa';
+import { VscRecordSmall } from 'react-icons/vsc';
+import { TbSquarePercentage } from 'react-icons/tb';
+import { IoReceiptOutline } from 'react-icons/io5';
 import {
   FaTachometerAlt,
   // FaBell,
@@ -41,7 +41,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -54,9 +54,7 @@ const Sidebar = () => {
           <Link to="/listAllTenants" className="dash">
             <FaUsers className="icon" /> All Tenants
           </Link>
-          <Link to="/listAllTenants" className="dash">
-            <FaUsers className="icon" /> RegPayment
-          </Link>
+
           <Link to="/greyList" className="dash">
             <FaClipboardList className="icon" />
             Grey List
@@ -75,7 +73,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{" "}
+              <FaUsers className="icon" /> Tenants{' '}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -94,13 +92,13 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> Landlords{" "}
+              <FaUserTie className="icon" /> CareTaker{' '}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
               <div className="dropdown-content">
                 <Link to="/registerLandlord" className="dash">
-                  Register Landlord
+                  Register CareTaker
                 </Link>
                 <Link to="/listAllLandlord" className="dash">
                   List All
@@ -108,12 +106,11 @@ const Sidebar = () => {
               </div>
             )}
           </div>
-
-          <Link to="/allPayments" className="dash">
-            <FaHouseUser className="icon" /> All Payments
-          </Link>
           <Link to="/rentpayment" className="dash">
             <FaHouseUser className="icon" /> Rent Payment
+          </Link>
+          <Link to="/allPayments" className="dash">
+            <FaHouseUser className="icon" /> All Payments
           </Link>
         </div>
         <div className="management">
@@ -123,7 +120,7 @@ const Sidebar = () => {
             <TbSquarePercentage className="icon" /> KRA
           </Link>
           <Link to="taxPaymentHistory" className="dash">
-            <IoReceiptOutline className="icon" /> Payment History
+            <IoReceiptOutline className="icon" /> KRA History
           </Link>
         </div>
 

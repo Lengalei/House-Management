@@ -201,7 +201,6 @@ const RegisterHouse = () => {
               </p>
               <p>Floor: {house.floor}</p>
               <p>Status: {house.isOccupied ? 'Occupied' : 'Available'}</p>
-              {house.isOccupied && <p>Occupied by: {house.tenantName}</p>}
             </div>
           </div>
         ))}

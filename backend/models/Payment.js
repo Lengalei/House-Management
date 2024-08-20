@@ -5,6 +5,12 @@ const PaymentHistorySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  date: {
+    type: Date,
+  },
+  referenceNo: {
+    type: String,
+  },
   timestamp: {
     type: Date,
     default: Date.now,

@@ -1,42 +1,46 @@
-import { useState, useEffect } from "react";
-import "./Tenant.scss";
-import { useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
-import { toast, ToastContainer } from "react-toastify";
-import { ThreeDots } from "react-loader-spinner";
-import "react-toastify/dist/ReactToastify.css";
+import { useState, useEffect } from 'react';
+import './Tenant.scss';
+import { useNavigate } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { toast, ToastContainer } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Tenant() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    nationalId: "",
-    phoneNo: "",
-    placementDate: "",
-    houseDeposit: "",
-    waterDeposit: "",
-    rentPayable: "",
-    houseNo: "",
-    emergencyContactNumber: "",
-    emergencyContactName: "",
+    name: '',
+    email: '',
+    nationalId: '',
+    phoneNo: '',
+    placementDate: '',
+    houseDeposit: '',
+    waterDeposit: '',
+    rentPayable: '',
+    houseNo: '',
+    emergencyContactNumber: '',
+    emergencyContactName: '',
+    amountPaid: '',
+    paymentDate: '',
+    referenceNumber: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedFloor, setSelectedFloor] = useState("");
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState('');
   const [houseOptions, setHouseOptions] = useState([]);
-  const [selectedHouse, setSelectedHouse] = useState("");
+  const [selectedHouse, setSelectedHouse] = useState('');
   const [registeredHouses, setRegisteredHouses] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHouses = async () => {
       try {
-        const res = await apiRequest.get("/houses/getAllHouses");
+        const res = await apiRequest.get('/houses/getAllHouses');
         setRegisteredHouses(res.data);
       } catch (err) {
-        console.error("Error fetching houses:", err);
+        console.error('Error fetching houses:', err);
       }
     };
 
@@ -57,12 +61,12 @@ function Tenant() {
     setShowPopup(true);
 
     const floorNumber =
-      value === "GroundFloor" ? 0 : parseInt(value.replace("Floor", ""), 10);
+      value === 'GroundFloor' ? 0 : parseInt(value.replace('Floor', ''), 10);
 
     const housesOnFloor = registeredHouses
       .filter((house) => house.floor === floorNumber)
       .map((house) => ({
-        houseName: house.houseName.split(" ")[1], // Extract the '3C' part
+        houseName: house.houseName.split(' ')[1], // Extract the '3C' part
         isOccupied: house.isOccupied,
       }))
       .sort((a, b) => a.houseName.localeCompare(b.houseName));
@@ -73,9 +77,9 @@ function Tenant() {
   const handleHouseChoice = (e) => {
     const house = e.target.value.toUpperCase();
     const floorLabel =
-      selectedFloor === "GroundFloor"
-        ? "Ground Floor"
-        : `Floor ${selectedFloor.replace("Floor", "")}`;
+      selectedFloor === 'GroundFloor'
+        ? 'Ground Floor'
+        : `Floor ${selectedFloor.replace('Floor', '')}`;
     const houseNo = `${floorLabel}, House ${house}`;
     setSelectedHouse(houseNo);
 
@@ -89,10 +93,10 @@ function Tenant() {
     let waterDeposit = 2500;
     let rentPayable = 0;
 
-    if (["A", "B", "C"].includes(houseType)) {
+    if (['A', 'B', 'C'].includes(houseType)) {
       houseDeposit = 17000;
       rentPayable = 17000;
-    } else if (houseType === "D") {
+    } else if (houseType === 'D') {
       houseDeposit = 15000;
       rentPayable = 15000;
     }
@@ -109,31 +113,44 @@ function Tenant() {
 
   const handleClosePopup = () => {
     setShowPopup(false);
+    setShowPaymentPopup(false); // Also close payment popup if open
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
+    setShowPaymentPopup(true); // Show payment popup on form submission
+  };
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
     setLoading(true);
     try {
-      const res = await apiRequest.post("/tenants", formData);
+      const res = await apiRequest.post('/tenants', formData);
       if (res.status === 201) {
-        toast.success("Tenant registered successfully!");
-
-        // prior to sending the post request we take the input from the amount paid form popup and we add it to the data being sent to the backend
-        // if(res.data.newTenant.amountPaid > totalAmount){
-        //   navigate('/listAllTenants');
-        // }
-        navigate("/listAllTenants");
+        toast.success('Tenant registered successfully!');
+        if (res.data.newTenant.isInGreyList) {
+          navigate('/greyList');
+        } else {
+          navigate('/listAllTenants');
+        }
       }
     } catch (err) {
-      console.error("Error registering tenant:", err);
+      console.error('Error registering tenant:', err);
       setError(err.response.data.message);
-      toast.error("Error registering tenant.");
+      toast.error('Error registering tenant.');
     } finally {
       setLoading(false);
     }
   };
+
+  // Calculate the expected amount
+  const totalAmount = (
+    Number(formData.houseDeposit) +
+    Number(formData.rentPayable) +
+    Number(formData.waterDeposit)
+  ).toLocaleString();
 
   return (
     <div>
@@ -240,10 +257,10 @@ function Tenant() {
               {selectedFloor && selectedHouse && (
                 <div className="selected-house">
                   <h4>
-                    Selected Floor:{" "}
-                    {selectedFloor === "GroundFloor"
-                      ? "Ground Floor"
-                      : `Floor ${selectedFloor.replace("Floor", "")}`}
+                    Selected Floor:{' '}
+                    {selectedFloor === 'GroundFloor'
+                      ? 'Ground Floor'
+                      : `Floor ${selectedFloor.replace('Floor', '')}`}
                     <br />
                     Selected House: {selectedHouse}
                   </h4>
@@ -267,10 +284,12 @@ function Tenant() {
                         value={option.houseName}
                         onClick={handleHouseChoice}
                         disabled={option.isOccupied}
-                        className={option.isOccupied ? "occupied" : ""}
+                        className={
+                          option.isOccupied ? 'occupied' : 'notOccupied'
+                        }
                       >
                         {option.houseName}
-                        {option.isOccupied && " 🚫"}
+                        {option.isOccupied && ' 🚫'}
                       </button>
                     ))}
                   </div>
@@ -333,28 +352,77 @@ function Tenant() {
                 />
               </div>
               {error && <span>{error}</span>}
-              {/* Submit Button */}
-              <div className="btn">
-                <button type="submit" disabled={loading}>
-                  {loading ? (
-                    <ThreeDots
-                      height="20"
-                      width="30"
-                      radius="9"
-                      color="white"
-                      ariaLabel="three-dots-loading"
-                      wrapperStyle={{}}
-                      visible={true}
-                    />
-                  ) : (
-                    "Continue"
-                  )}
-                </button>
-              </div>
+              <button type="submit" disabled={loading}>
+                {loading ? (
+                  <ThreeDots
+                    height="20"
+                    width="30"
+                    radius="9"
+                    color="white"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    visible={true}
+                  />
+                ) : (
+                  'Continue'
+                )}
+              </button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* Payment Popup */}
+      {showPaymentPopup && (
+        <div className="paymentPopup">
+          <div className="paymentPopup-content">
+            <div className="paymentInnerPopupDiv">
+              <h4 className="paymentClose-popup" onClick={handleClosePopup}>
+                Close
+              </h4>
+              <h4>Payment Details</h4>
+            </div>
+            <form onSubmit={handlePaymentSubmit} className="paymentForm">
+              <div className="forminput">
+                <label htmlFor="paymentDate">Payment Date</label>
+                <input
+                  type="date"
+                  id="paymentDate"
+                  name="paymentDate"
+                  value={formData.paymentDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <h4 className="expectedPay">
+                Expected pay value: <span>{totalAmount}</span>{' '}
+              </h4>
+              <div className="forminput">
+                <label htmlFor="amountPaid">Amount Paid</label>
+                <input
+                  type="number"
+                  id="amountPaid"
+                  name="amountPaid"
+                  value={formData.amountPaid}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="forminput">
+                <label htmlFor="referenceNumber">Reference Number</label>
+                <input
+                  type="text"
+                  id="referenceNumber"
+                  name="referenceNumber"
+                  value={formData.referenceNumber}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <button type="submit">Finish (Register)</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Toast Container */}
       <ToastContainer />

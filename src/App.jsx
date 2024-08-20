@@ -26,9 +26,9 @@ import Payments from './components/Rent Payment/AllPayMents/Payments.jsx';
 import TaxPayment from './components/Tax/TaxPayment.jsx';
 import TaxPaymentHistory from './components/Tax/TaxPaymentHistory.jsx';
 import GreyList from './components/Tenants/GreyList.jsx';
+import Records from './components/Records/Records.jsx';
 
 function App() {
-  
   return (
     <Router>
       <Routes>
@@ -63,6 +63,7 @@ function App() {
             path="/tenantPaymentList/:tenantId"
             element={<TenantPaymentList />}
           />
+          <Route path="/records" element={<Records />} />
           <Route path="/paymentDetails" element={<PaymentDetailsPage />} />
           <Route path="/greyList" element={<GreyList />} />
           <Route path="/taxPayment" element={<TaxPayment />} />

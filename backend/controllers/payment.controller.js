@@ -1,8 +1,12 @@
+import mongoose from 'mongoose';
 import Payment from '../models/Payment.js';
+import Tenant from '../models/Tenant.js';
+
+// Create a new payment record
 
 // Create a new payment record
 export const createPayment = async (req, res) => {
-  console.log('paymentRecivedInBackEnd: ', req.body);
+  console.log('paymentReceivedInBackEnd: ', req.body);
   const {
     tenantId,
     date,
@@ -34,7 +38,16 @@ export const createPayment = async (req, res) => {
         .json({ message: 'Invalid numerical values provided.' });
     }
 
-    // Check if there's an unpaid previous balance or excess pay
+    // Fetch the tenant details
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found.' });
+    }
+
+    // Check if the tenant has an overPay value
+    const onEntryOverPay = tenant.overPay || 0;
+
+    // Calculate the total amount expected and adjust based on previous payment
     const previousPayment = await Payment.findOne({ tenantId }).sort({
       createdAt: -1,
     });
@@ -46,17 +59,16 @@ export const createPayment = async (req, res) => {
       previousPayment && previousPayment.excessPay
         ? previousPayment.excessPay
         : 0;
-    console.log('previousExcessPay: ', previousExcessPay);
 
-    // Calculate total amount and balance
+    // Calculate total amount and balance considering onEntryOverPay
     const totalAmount =
       rentNum + waterBillNum + garbageFeeNum + extraBillsNum + previousBalance;
-    console.log('totalAmount: ', totalAmount);
-    const balance = totalAmount - (amountPaidNum + previousExcessPay);
-    console.log('balance: ', balance);
+    const balance =
+      totalAmount - (amountPaidNum + previousExcessPay + onEntryOverPay);
     const isCleared = balance <= 0;
     const excessPay = isCleared ? Math.abs(balance) : 0;
 
+    // Create the payment record
     const payment = await Payment.create({
       tenantId,
       date,
@@ -74,7 +86,15 @@ export const createPayment = async (req, res) => {
       isCleared,
     });
 
-    res.status(201).json(payment);
+    // After considering overPay, set tenant's overPay to 0
+    tenant.overPay = 0;
+    await tenant.save();
+
+    // Respond with payment details and onEntryOverPay
+    res.status(201).json({
+      payment,
+      onEntryOverPay,
+    });
   } catch (err) {
     console.error('Error creating payment:', err);
     res.status(500).json({ message: err.message });
@@ -100,11 +120,68 @@ export const getAllPayments = async (req, res) => {
       }
       return total;
     }, 0);
-    console.log('totalAmount: ', totalAmount);
+    // console.log('totalAmount: ', totalAmount);
     // Return the total amount
     res.status(200).json(totalAmount);
   } catch (err) {
     console.error('Error fetching payments for all tenants:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get total amount of all rents from all payments made by all tenants
+export const getAllRentsPaid = async (req, res) => {
+  try {
+    // Fetch all payments
+    const payments = await Payment.find();
+
+    // Check if payments exist
+    if (!payments || payments.length === 0) {
+      return res.status(400).json({ message: 'No payments made yet' });
+    }
+
+    // Group payments by year
+    const groupedByYear = payments.reduce((acc, payment) => {
+      const year = payment.date.getFullYear();
+      const rent = parseFloat(payment.rent) || 0;
+
+      if (!acc[year]) {
+        acc[year] = {
+          totalRent: 0,
+          months: {},
+        };
+      }
+
+      // Add the rent to the total for that year
+      acc[year].totalRent += rent;
+
+      // Get the month
+      const month = payment.date.toLocaleString('default', { month: 'long' });
+
+      if (!acc[year].months[month]) {
+        acc[year].months[month] = 0;
+      }
+
+      // Add the rent to the total for that month
+      acc[year].months[month] += rent;
+
+      return acc;
+    }, {});
+
+    // Convert grouped data into a more structured format for the response
+    const response = Object.keys(groupedByYear).map((year) => ({
+      year,
+      totalRent: groupedByYear[year].totalRent,
+      months: Object.keys(groupedByYear[year].months).map((month) => ({
+        month,
+        totalRent: groupedByYear[year].months[month],
+      })),
+    }));
+
+    // Return the grouped data
+    res.status(200).json({ groupedByYear: response });
+  } catch (err) {
+    console.error('Error fetching total rent for all payments:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -116,7 +193,7 @@ export const getGroupedPaymentsByTenant = async (req, res) => {
       {
         $group: {
           _id: '$tenantId',
-          totalAmount: { $sum: '$totalAmount' },
+          totalPayments: { $sum: '$totalAmount' }, // Sum of all payments
           payments: { $push: '$$ROOT' },
         },
       },
@@ -129,6 +206,25 @@ export const getGroupedPaymentsByTenant = async (req, res) => {
         },
       },
       { $unwind: '$tenant' },
+      {
+        $addFields: {
+          totalAmountPaid: { $add: ['$totalPayments', '$tenant.amountPaid'] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalPayments: 1,
+          payments: 1,
+          tenant: {
+            name: 1,
+            phoneNo: 1,
+            houseNo: 1,
+            amountPaid: 1, // Initial amount from the tenant model
+          },
+          totalAmountPaid: 1, // The sum of initial amountPaid and totalPayments
+        },
+      },
     ]);
 
     res.status(200).json(payments);
@@ -156,12 +252,25 @@ export const getPaymentsByTenant = async (req, res) => {
   const { tenantId } = req.params;
 
   try {
-    // Find payments by tenantId and populate tenant's email, username, and phoneNumber
+    // Fetch the tenant details
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found.' });
+    }
+
+    // Check if the tenant has an onEntryOverPay value
+    const onEntryOverPay = tenant.overPay > 0 ? tenant.overPay : null;
+
+    // Find payments by tenantId and populate tenant's email, name, and phoneNo
     const payments = await Payment.find({ tenantId })
       .sort({ date: -1 })
       .populate('tenantId', 'email name phoneNo');
-    console.log('paymentsWithTenantDt: ', payments);
-    res.status(200).json(payments);
+
+    // Send response with payments and onEntryOverPay
+    res.status(200).json({
+      payments,
+      onEntryOverPay,
+    });
   } catch (err) {
     console.error('Error fetching payments for tenant:', err);
     res.status(500).json({ message: err.message });
@@ -211,7 +320,7 @@ export const getPreviousPayment = async (req, res) => {
 export const updatePayment = async (req, res) => {
   try {
     const { paymentId } = req.params;
-    const { amountPaid } = req.body;
+    const { amountPaid, date, referenceNo } = req.body;
 
     const amountPaidNum = Number(amountPaid) || 0;
     if (isNaN(amountPaidNum)) {
@@ -243,12 +352,19 @@ export const updatePayment = async (req, res) => {
     payment.isCleared = newBalance === 0;
 
     // Add the payment to the payment history
-    payment.paymentHistory.push({ amount: amountPaidNum });
+    payment.paymentHistory.push({
+      amount: amountPaidNum,
+      date,
+      referenceNo,
+    });
 
     // Save the updated payment record
     await payment.save();
 
-    res.status(200).json({ message: 'Payment updated successfully', payment });
+    res.status(200).json({
+      message: 'Payment updated successfully',
+      payment,
+    });
   } catch (error) {
     console.error('Error updating payment:', error);
     res.status(500).json({ message: 'Server error' });
@@ -259,10 +375,24 @@ export const updatePayment = async (req, res) => {
 export const deletePayment = async (req, res) => {
   const { paymentId } = req.params;
 
+  // Validate the paymentId format
+  if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+    return res.status(400).json({ message: 'Invalid paymentId format' });
+  }
+
   try {
-    await Payment.findByIdAndDelete(paymentId);
+    // Attempt to find and delete the payment record
+    const payment = await Payment.findByIdAndDelete(paymentId);
+
+    // Check if the payment record was found and deleted
+    if (!payment) {
+      return res.status(404).json({ message: 'No payment found to delete' });
+    }
+
+    // Respond with success message
     res.status(200).json({ message: 'Payment record deleted' });
   } catch (err) {
+    // Handle any errors that occur
     res.status(500).json({ message: err.message });
   }
 };

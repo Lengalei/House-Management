@@ -1,11 +1,10 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import './PaymentDetailsPage.scss';
 import {
   FaMoneyBill,
-  FaWater,
-  FaTrash,
+  // FaWater,
+  // FaTrash,
   FaReceipt,
   FaFileInvoice,
 } from 'react-icons/fa';
@@ -13,6 +12,7 @@ import {
 const PaymentDetailsPage = () => {
   const location = useLocation();
   const paymentDetails = location.state?.payment || {};
+  const onEntryOverPay = location.state?.onEntryOverPay || 0;
   console.log('paymentDetails: ', paymentDetails);
 
   const generatePDF = (content, fileName) => {
@@ -55,11 +55,37 @@ const PaymentDetailsPage = () => {
                 <p>Extra Bills: {paymentDetails.extraBills}</p>
                 <p>Total Amount: {paymentDetails.totalAmount}</p>
                 <hr />
-                <p>Amount Paid: {paymentDetails.amountPaid}</p>
-                <p>Previous Excess Pay: {paymentDetails.previousExcessPay}</p>
-                <p>Current Excess Pay: {paymentDetails.excessPay}</p>
-                <p>Previous Balance: {paymentDetails.previousBalance}</p>
-                <p>Balance: {paymentDetails.balance}</p>
+                <p>
+                  Amount Paid:{' '}
+                  <span className="amountPaid">
+                    {paymentDetails.amountPaid}
+                  </span>{' '}
+                </p>
+                {onEntryOverPay ? <p>On Entry Overpay {onEntryOverPay}</p> : ''}
+
+                <p>
+                  Previous Excess Pay:{' '}
+                  <span className="currentExcessPay">
+                    {paymentDetails.previousExcessPay}
+                  </span>{' '}
+                </p>
+                <p>
+                  Current Excess Pay:{' '}
+                  <span className="currentExcessPay">
+                    {paymentDetails.excessPay}
+                  </span>{' '}
+                </p>
+                <p>
+                  Previous Balance:{' '}
+                  <span className="balance">
+                    {' '}
+                    {paymentDetails.previousBalance}
+                  </span>{' '}
+                </p>
+                <p>
+                  Balance:{' '}
+                  <span className="balance">{paymentDetails.balance}</span>
+                </p>
               </div>
               <div className="minicard payment-maker">
                 <h3>

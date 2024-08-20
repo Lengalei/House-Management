@@ -49,6 +49,18 @@
           border: 0;
           border-top: 1px solid #ddd;
         }
+        .amountPaid {
+          color: purple;
+          font-weight: 700;
+        }
+        .currentExcessPay {
+          color: green;
+          font-weight: 700;
+        }
+        .balance {
+          color: crimson;
+          font-weight: 700;
+        }
       }
     }
 

@@ -18,7 +18,7 @@ const Payments = () => {
         const res = await apiRequest.get(
           '/payments/getGroupedPaymentsByTenant'
         );
-        if (Array.isArray(res.data)) {
+        if (Array?.isArray(res.data)) {
           console.log('GroupedPayments: ', res.data);
           setGroupedPayments(res.data);
         } else {
@@ -42,7 +42,7 @@ const Payments = () => {
         `/payments/getPaymentsByTenantId/${tenantId}`
       );
       setActiveTenant({
-        ...groupedPayments.find((gp) => gp._id === tenantId),
+        ...groupedPayments?.find((gp) => gp?._id === tenantId),
         payments: res.data,
       });
       setShowPopup(true);
@@ -56,7 +56,7 @@ const Payments = () => {
   };
 
   const displayedGroups = Array.isArray(groupedPayments)
-    ? groupedPayments.slice(
+    ? groupedPayments?.slice(
         (activePage - 1) * itemsPerPage,
         activePage * itemsPerPage
       )
@@ -69,13 +69,13 @@ const Payments = () => {
         {displayedGroups.map((group) => (
           <div className="payment-card" key={group._id}>
             <div className="card-header">
-              <h3>{group.tenant?.name}</h3>
-              <p>{group.tenant?.email}</p>
-              <p>House No: {group.tenant?.houseNo}</p>
-              <p>Total Amount: {group.totalAmount.toLocaleString()}</p>
+              <h3>{group?.tenant?.name}</h3>
+              <p>{group?.tenant?.email}</p>
+              <p>House No: {group?.tenant?.houseNo}</p>
+              <p>Total Amount: {group?.totalAmount?.toLocaleString()}</p>
             </div>
             <div className="card-body">
-              <button onClick={() => handleViewPayments(group._id)}>
+              <button onClick={() => handleViewPayments(group?._id)}>
                 View Payments <FaChevronDown />
               </button>
             </div>

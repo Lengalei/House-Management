@@ -1,0 +1,191 @@
+.records-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+
+  .records-cards {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 20px;
+
+    .record-card {
+      background-color: #f4f4f4;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      width: 30%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      h3 {
+        margin-bottom: 10px;
+      }
+
+      select {
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+    }
+  }
+
+  .records-table {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    color: #333;
+
+    &.water-themed {
+      background-image: url('/path/to/water-background.jpg');
+      color: #003366;
+
+      table {
+        background-color: rgba(0, 204, 255, 0.2);
+
+        th {
+          background-color: #00aaff;
+          color: #ffffff;
+        }
+
+        td {
+          color: #004d99;
+        }
+      }
+
+      .pagination button {
+        background-color: #00aaff;
+
+        &.active {
+          background-color: #0077cc;
+        }
+
+        &:hover {
+          background-color: #0077cc;
+        }
+      }
+    }
+
+    &.rent-themed {
+      background-image: url('/path/to/rent-background.jpg');
+      color: #333333;
+
+      table {
+        background-color: rgba(255, 223, 0, 0.2);
+
+        th {
+          background-color: #ffcc00;
+          color: #333333;
+        }
+
+        td {
+          color: #666666;
+        }
+      }
+
+      .pagination button {
+        background-color: #ffcc00;
+
+        &.active {
+          background-color: #ffaa00;
+        }
+
+        &:hover {
+          background-color: #ffaa00;
+        }
+      }
+    }
+
+    &.garbage-themed {
+      background-image: url('/path/to/garbage-background.jpg');
+      color: #4d4d4d;
+
+      table {
+        background-color: rgba(128, 128, 128, 0.2);
+
+        th {
+          background-color: #666666;
+          color: #ffffff;
+        }
+
+        td {
+          color: #333333;
+        }
+      }
+
+      .pagination button {
+        background-color: #666666;
+
+        &.active {
+          background-color: #444444;
+        }
+
+        &:hover {
+          background-color: #444444;
+        }
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background-color: #f0f0f0;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+
+      button {
+        background-color: #ddd;
+        border: none;
+        border-radius: 4px;
+        margin: 0 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &.active {
+          background-color: #0077cc;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #ccc;
+        }
+      }
+    }
+
+    .total-amount {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  }
+}

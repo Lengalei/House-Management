@@ -8,6 +8,13 @@ import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { ThreeDots } from 'react-loader-spinner';
 
 const Rent = () => {
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [tenantToDelete, setTenantToDelete] = useState(null); // State for selected tenant
+  const dispatch = useDispatch();
+  const tenants = useSelector((store) => store.tenantsData.tenants);
+
   const fallbackTenants = [
     {
       _id: 1,
@@ -75,18 +82,13 @@ const Rent = () => {
     },
   ];
 
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const tenants = useSelector((store) => store.tenantsData.tenants);
-
   useEffect(() => {
     const fetchAllTenants = async () => {
       setError('');
       setLoading(true);
       try {
         const res = await apiRequest.get('/tenants/allTenants');
-        console.log('allTenants: ', res.data);
+
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -113,6 +115,7 @@ const Rent = () => {
       const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
+        setShowModal(false); // Close modal on successful deletion
       } else {
         console.error('Failed to delete tenant');
       }
@@ -121,6 +124,16 @@ const Rent = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenModal = (_id) => {
+    setTenantToDelete(_id);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setTenantToDelete(null);
   };
 
   const getStatus = (balance) => {
@@ -183,7 +196,7 @@ const Rent = () => {
                           Payments
                         </Link>
                         <button
-                          onClick={() => handleDelete(tenant._id)}
+                          onClick={() => handleOpenModal(tenant._id)} // Open modal instead of directly deleting
                           className="delete-btn"
                         >
                           <FaTrashAlt />
@@ -196,6 +209,24 @@ const Rent = () => {
           </div>
         )}
       </div>
+      {showModal && (
+        <div className="confirmation-modal">
+          <div className="modal-content">
+            <p>Are you sure you want to delete this tenant?</p>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={handleCloseModal}>
+                Cancel
+              </button>
+              <button
+                className="confirm-btn"
+                onClick={() => tenantToDelete && handleDelete(tenantToDelete)}
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

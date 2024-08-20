@@ -3,6 +3,7 @@ import {
   createPayment,
   getPaymentByDate,
   getAllPayments,
+  getAllRentsPaid,
   getGroupedPaymentsByTenant,
   getPaymentsByTenantId,
   getPreviousPayment,
@@ -22,6 +23,9 @@ router.get('/getPaymentByDate/:tenantId/', getPaymentByDate);
 
 // Route to get a specific payment record by ID
 router.get('/getAllPayments', getAllPayments);
+
+// Route to get a specific payment record by ID
+router.get('/allRents', getAllRentsPaid);
 
 // Get all payments grouped by tenantId
 router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);
