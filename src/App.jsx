@@ -26,7 +26,6 @@ import Payments from './components/Rent Payment/AllPayMents/Payments.jsx';
 import TaxPayment from './components/Tax/TaxPayment.jsx';
 import TaxPaymentHistory from './components/Tax/TaxPaymentHistory.jsx';
 import GreyList from './components/Tenants/GreyList.jsx';
-import PaymentRecords from './components/PayementRecords/PaymentRecords.jsx';
 
 function App() {
   
