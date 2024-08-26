@@ -8,6 +8,7 @@
   overflow: scroll;
   overflow-x: hidden;
   margin: 0;
+  color: black;
   padding: 1px;
   outline: none;
   //   border: 1px solid lawngreen;
@@ -34,7 +35,7 @@
         rgba(71, 68, 68, 0.8),
         rgba(63, 62, 62, 0.8)
       ),
-      url('/housebg.jfif');
+      url("/housebg.jfif");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -60,6 +61,7 @@
         gap: 20px;
         background: none;
         border: none;
+        color: black;
         outline: none;
         // border: 1px solid greenyellow;
         .user {
@@ -119,8 +121,9 @@
       }
       .payment-details {
         width: 400px;
-        height: 100px;
+        height: 200px;
         display: flex;
+        color: black;
         padding: 20px;
         background-color: white;
         flex-direction: column;
@@ -137,12 +140,14 @@
         background-color: white;
         flex-direction: column;
         border-radius: 10px;
+        color: black;
         align-items: center;
         border: 1px solid gold;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
       }
       .dets {
         width: 90%;
+        height: auto;
         display: flex;
         justify-content: space-between;
       }

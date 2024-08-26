@@ -2,12 +2,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+ background: rgb(51,51,51);
+background: radial-gradient(circle, rgba(51,51,51,1) 18%, rgba(51,51,51,1) 63%, rgba(4,5,5,1) 89%, rgba(51,51,51,1) 93%, rgba(1,1,8,0.9866071428571429) 100%);
+  // border-radius: 8px;
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid salmon;
+  // border: 1px solid salmon;
 
   h2 {
     margin-bottom: 20px;
@@ -18,10 +20,12 @@
     width: 100%;
     justify-content: space-between;
     gap: 20px;
-
+.form-card{
+  background-image: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url(/house1.jpg);
+}
     .form-card,
     .right-card {
-      background: #fff;
+      // background: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 20px;
@@ -47,6 +51,7 @@
 
         button {
           background: #007bff;
+          width: 200px;
           border: none;
           color: #fff;
           padding: 10px;
@@ -54,10 +59,12 @@
           cursor: pointer;
           margin-top: 10px;
           font-size: 14px;
-
-          &:hover {
-            background-color: #0056b3;
-          }
+          box-shadow: rgba(89, 88, 88, 0.4) 0px 2px 4px, rgba(65, 65, 65, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+transition: transform 0.3s ease;
+      &:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+      }
         }
       }
 
@@ -92,9 +99,11 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
-
+      box-shadow: rgba(89, 88, 88, 0.4) 0px 2px 4px, rgba(65, 65, 65, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+      transition: transform 0.3s ease;
       &:hover {
         background-color: #0056b3;
+        transform: scale(1.1);
       }
     }
   }

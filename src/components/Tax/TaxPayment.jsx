@@ -146,7 +146,7 @@ const TaxPayment = () => {
               {currentMonths.map((month) => (
                 <div key={month.month} className="month-card">
                   <h3>{month.month}</h3>
-                  <p>Total Rent: ${month.totalRent.toFixed(2)}</p>
+                  <p>Total Rent: {month.totalRent.toFixed(2)}</p>
                 </div>
               ))}
             </div>
@@ -162,7 +162,7 @@ const TaxPayment = () => {
               ))}
             </div>
             <p className="year-total">
-              Total Rent for {selectedYear}: ${totalYearRent.toFixed(2)}
+              Total Rent for {selectedYear}: {totalYearRent.toFixed(2)}
             </p>
           </>
         )}

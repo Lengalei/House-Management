@@ -41,3 +41,12 @@
 }
 
 /*End Of Scroll bar css*/
+
+button{
+  transition: transform 0.3s ease;
+  box-shadow: rgba(89, 88, 88, 0.4) 0px 2px 4px, rgba(65, 65, 65, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+button:hover{
+  transform: scale(1.1);
+}
+       

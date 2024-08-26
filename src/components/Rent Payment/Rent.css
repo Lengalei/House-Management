@@ -3,6 +3,7 @@
   display: flex;
   justify-content: space-between;
   padding: 70px;
+  background-color: #333333;
 }
 .form {
   width: 45%;
