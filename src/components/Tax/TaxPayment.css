@@ -1,7 +1,20 @@
+.taxPaying{
+  width: 100%;
+  height: 100vh;
+background-image: linear-gradient(rgba(11, 11, 11, 0.8), rgba(10, 9, 9, 0.8)), url(/Kra.jpeg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .tax-payment-container {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   padding: 20px;
+  
 }
 
 .left-card,
@@ -10,8 +23,10 @@
   border-radius: 8px;
   padding: 20px;
   width: 48%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   background-color: #fff;
+  background-image: linear-gradient(rgba(190, 187, 187, 0.9), rgba(139, 139, 139, 0.9)), url(/krarecord.jpeg);
+  background-size: cover;
 }
 
 .left-card {
@@ -65,7 +80,7 @@ select {
 .rental-value {
   font-weight: bold;
   font-size: 1rem;
-  color: chocolate;
+  color: var(--primary-color);
 }
 
 .btn {
@@ -83,7 +98,8 @@ select {
 }
 
 .btn:disabled {
-  background-color: #d6d6d6;
+  background-color: #0056b3;
+  /* font-size: 16px; */
   cursor: not-allowed;
 }
 

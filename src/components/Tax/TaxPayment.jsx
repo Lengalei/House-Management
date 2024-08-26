@@ -127,109 +127,111 @@ const TaxPayment = () => {
   );
 
   return (
-    <div className="tax-payment-container">
-      <div className="left-card">
-        <h2>Select Year</h2>
-        <select value={selectedYear || ''} onChange={handleYearChange}>
-          <option value="" disabled>
-            Select Year
-          </option>
-          {yearsData.map((year) => (
-            <option key={year.year} value={year.year}>
-              {year.year}
+    <div className="taxPaying">
+      <div className="tax-payment-container">
+        <div className="left-card">
+          <h2>Select Year</h2>
+          <select value={selectedYear || ""} onChange={handleYearChange}>
+            <option value="" disabled>
+              Select Year
             </option>
-          ))}
-        </select>
-        {selectedYear && (
-          <>
-            <div className="month-cards">
-              {currentMonths.map((month) => (
-                <div key={month.month} className="month-card">
-                  <h3>{month.month}</h3>
-                  <p>Total Rent: {month.totalRent.toFixed(2)}</p>
-                </div>
-              ))}
-            </div>
-            <div className="pagination">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  className={index + 1 === currentPage ? 'active' : ''}
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-            <p className="year-total">
-              Total Rent for {selectedYear}: {totalYearRent.toFixed(2)}
-            </p>
-          </>
-        )}
-      </div>
-
-      <div className={`right-card ${!selectedYear ? 'disabled' : ''}`}>
-        <h2 className="month-heading">
-          KRA Payment Details for {selectedYear || '...'}
-        </h2>
-        <form onSubmit={handleSubmit}>
+            {yearsData.map((year) => (
+              <option key={year.year} value={year.year}>
+                {year.year}
+              </option>
+            ))}
+          </select>
           {selectedYear && (
-            <div className="input-group">
-              <label>Select Date:</label>
-              <input
-                type="date"
-                value={date}
-                onChange={handleDateChange}
-                min={`${selectedYear}-01-01`}
-                max={`${selectedYear}-12-31`}
-                required
-              />
-            </div>
+            <>
+              <div className="month-cards">
+                {currentMonths.map((month) => (
+                  <div key={month.month} className="month-card">
+                    <h3>{month.month}</h3>
+                    <p>Total Rent: {month.totalRent.toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index}
+                    className={index + 1 === currentPage ? "active" : ""}
+                    onClick={() => handlePageChange(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+              <p className="year-total">
+                Total Rent for {selectedYear}: {totalYearRent.toFixed(2)}
+              </p>
+            </>
           )}
-          {selectedMonth && (
+        </div>
+
+        <div className={`right-card ${!selectedYear ? "disabled" : ""}`}>
+          <h2 className="month-heading">
+            KRA Payment Details for {selectedYear || "..."}
+          </h2>
+          <form onSubmit={handleSubmit}>
+            {selectedYear && (
+              <div className="input-group">
+                <label>Select Date:</label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={handleDateChange}
+                  min={`${selectedYear}-01-01`}
+                  max={`${selectedYear}-12-31`}
+                  required
+                />
+              </div>
+            )}
+            {selectedMonth && (
+              <div className="input-group">
+                <label>
+                  Selected Month:{" "}
+                  <span className="selected-month">{selectedMonth}</span>
+                </label>
+              </div>
+            )}
             <div className="input-group">
               <label>
-                Selected Month:{' '}
-                <span className="selected-month">{selectedMonth}</span>
+                Total Rent for the Selected Month:{" "}
+                <span className="rental-value">
+                  {monthRent.toFixed(2) || "0.00"}
+                </span>
               </label>
             </div>
-          )}
-          <div className="input-group">
-            <label>
-              Total Rent for the Selected Month:{' '}
-              <span className="rental-value">
-                {monthRent.toFixed(2) || '0.00'}
-              </span>
-            </label>
-          </div>
-          <div className="input-group">
-            <label>Tax Paid (7.5%):</label>
-            <input
-              type="text"
-              value={tax}
-              readOnly
-              placeholder="Tax will be calculated automatically"
-            />
-          </div>
-          <div className="input-group">
-            <label>Ref NO Used:</label>
-            <input
-              type="text"
-              value={formData.referenceNo}
-              onChange={handleReferenceNoChange}
-              placeholder="Enter Reference Number"
-              required
+            <div className="input-group">
+              <label>Tax Paid (7.5%):</label>
+              <input
+                type="text"
+                value={tax}
+                readOnly
+                placeholder="Tax will be calculated automatically"
+              />
+            </div>
+            <div className="input-group">
+              <label>Ref NO Used:</label>
+              <input
+                type="text"
+                value={formData.referenceNo}
+                onChange={handleReferenceNoChange}
+                placeholder="Enter Reference Number"
+                required
+                disabled={!selectedYear || !date}
+              />
+            </div>
+            <button
+              type="submit"
+              className="btn"
               disabled={!selectedYear || !date}
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn"
-            disabled={!selectedYear || !date}
-          >
-            Add KRA Record
-          </button>
-        </form>
+            >
+              Add KRA Record
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

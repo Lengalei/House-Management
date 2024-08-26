@@ -52,60 +52,62 @@ const TaxPaymentHistory = () => {
   };
 
   return (
-    <div className="tax-payment-history-container">
-      {error && <span>{error}</span>}
-      <h2>Tax Payment History</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Month</th>
-            <th>Total Rents Obtained</th>
-            <th>Tax Paid</th>
-            <th>Reference No</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {payments?.map((payment, index) => (
-            <tr key={index}>
-              <td>{convertToLocalDate(payment.date)}</td>
-              <td>{payment.month}</td>
-              <td>{payment.rent}</td>
-              <td>{payment.tax}</td>
-              <td>{payment.referenceNo}</td>
-              <td>
-                <button onClick={() => handleOpenModal(payment._id)}>
-                  Delete
-                </button>
-              </td>
+    <div className="maintaxbox">
+      <div className="tax-payment-history-container">
+        {error && <span>{error}</span>}
+        <h2>Tax Payment History</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Month</th>
+              <th>Total Rents Obtained</th>
+              <th>Tax Paid</th>
+              <th>Reference No</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <Link to="/taxpayment" className="back-button">
-        Back to Tax Payment
-      </Link>
-      {showModal && (
-        <div className="confirmation-modal">
-          <div className="modal-content">
-            <p>Are you sure you want to delete this record?</p>
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={handleCloseModal}>
-                Cancel
-              </button>
-              <button
-                className="confirm-btn"
-                onClick={() =>
-                  paymentToDelete && handleTaxDelete(paymentToDelete)
-                }
-              >
-                Yes, Delete
-              </button>
+          </thead>
+          <tbody>
+            {payments?.map((payment, index) => (
+              <tr key={index}>
+                <td>{convertToLocalDate(payment.date)}</td>
+                <td>{payment.month}</td>
+                <td>{payment.rent}</td>
+                <td>{payment.tax}</td>
+                <td>{payment.referenceNo}</td>
+                <td>
+                  <button onClick={() => handleOpenModal(payment._id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <Link to="/taxpayment" className="back-button">
+          Back to Tax Payment
+        </Link>
+        {showModal && (
+          <div className="confirmation-modal">
+            <div className="modal-content">
+              <p>Are you sure you want to delete this record?</p>
+              <div className="modal-actions">
+                <button className="cancel-btn" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+                <button
+                  className="confirm-btn"
+                  onClick={() =>
+                    paymentToDelete && handleTaxDelete(paymentToDelete)
+                  }
+                >
+                  Yes, Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

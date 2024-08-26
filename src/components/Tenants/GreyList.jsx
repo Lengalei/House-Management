@@ -108,119 +108,121 @@ const GreyList = () => {
   };
 
   return (
-    <div className="tenant-table-container">
-      <h2>Grey List</h2>
-      {error && <span>{error}</span>}
-      {loading ? (
-        <ThreeDots
-          height="20"
-          width="30"
-          radius="9"
-          color="white"
-          ariaLabel="three-dots-loading"
-          wrapperStyle={{}}
-          visible={true}
-        />
-      ) : (
-        <>
-          <table className="tenant-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone Number</th>
-                <th>House Number</th>
-                <th>Amount Paid</th>
-                <th>Expected Pay</th>
-                <th>Balance</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tenants.map((tenant, index) => {
-                const expectedPay =
-                  tenant.houseDeposit +
-                  tenant.waterDeposit +
-                  tenant.rentPayable;
-                const balance = expectedPay - tenant.amountPaid;
-                return (
-                  <tr key={index}>
-                    <td>{tenant.name}</td>
-                    <td>{tenant.phoneNo}</td>
-                    <td>{tenant.houseNo}</td>
-                    <td>{tenant.amountPaid}</td>
-                    <td>{expectedPay}</td>
-                    <td>{balance}</td>
-                    <td className="actions">
-                      <Link
-                        onClick={() => openPopup(tenant)}
-                        className="edit-btn"
-                      >
-                        Edit Payment
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(tenant._id)}
-                        className="delete-btn"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+    <div className="maingreylist">
+      <div className="tenant-table-container">
+        <h2>Grey List</h2>
+        {error && <span>{error}</span>}
+        {loading ? (
+          <ThreeDots
+            height="20"
+            width="30"
+            radius="9"
+            color="white"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            visible={true}
+          />
+        ) : (
+          <>
+            <table className="tenant-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone Number</th>
+                  <th>House Number</th>
+                  <th>Amount Paid</th>
+                  <th>Expected Pay</th>
+                  <th>Balance</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tenants.map((tenant, index) => {
+                  const expectedPay =
+                    tenant.houseDeposit +
+                    tenant.waterDeposit +
+                    tenant.rentPayable;
+                  const balance = expectedPay - tenant.amountPaid;
+                  return (
+                    <tr key={index}>
+                      <td>{tenant.name}</td>
+                      <td>{tenant.phoneNo}</td>
+                      <td>{tenant.houseNo}</td>
+                      <td>{tenant.amountPaid}</td>
+                      <td>{expectedPay}</td>
+                      <td>{balance}</td>
+                      <td className="actions">
+                        <Link
+                          onClick={() => openPopup(tenant)}
+                          className="edit-btn"
+                        >
+                          Edit Payment
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(tenant._id)}
+                          className="delete-btn"
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
-          {showPopup && selectedTenant && (
-            <div className="popup-overlay">
-              <div className="popup-container">
-                <h3>
-                  Update Payment for {capitalizeName(selectedTenant.name)}
-                </h3>
-                <div className="popup-input">
-                  <label>Remaining Balance: {remainingBalance} </label>
-                </div>
-                <div className="popup-input">
-                  <label>Amount:</label>
-                  <input
-                    type="number"
-                    placeholder="Enter amount"
-                    value={amountPaid}
-                    onChange={(e) => setAmountPaid(e.target.value)}
-                  />
-                </div>
-                <div className="popup-input">
-                  <label>Date:</label>
-                  <input
-                    type="date"
-                    value={paymentDate}
-                    onChange={(e) => setPaymentDate(e.target.value)}
-                  />
-                </div>
-                <div className="popup-input">
-                  <label>Reference Number:</label>
-                  <input
-                    type="text"
-                    placeholder="Enter reference number"
-                    value={referenceNumber}
-                    onChange={(e) => setReferenceNumber(e.target.value)}
-                  />
-                </div>
-                <div className="popup-actions">
-                  <button onClick={closePopup} className="cancel-btn">
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => handlePaymentUpdate(selectedTenant._id)}
-                    className="save-btn"
-                  >
-                    Update
-                  </button>
+            {showPopup && selectedTenant && (
+              <div className="popup-overlay">
+                <div className="popup-container">
+                  <h3>
+                    Update Payment for {capitalizeName(selectedTenant.name)}
+                  </h3>
+                  <div className="popup-input">
+                    <label>Remaining Balance: {remainingBalance} </label>
+                  </div>
+                  <div className="popup-input">
+                    <label>Amount:</label>
+                    <input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={amountPaid}
+                      onChange={(e) => setAmountPaid(e.target.value)}
+                    />
+                  </div>
+                  <div className="popup-input">
+                    <label>Date:</label>
+                    <input
+                      type="date"
+                      value={paymentDate}
+                      onChange={(e) => setPaymentDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="popup-input">
+                    <label>Reference Number:</label>
+                    <input
+                      type="text"
+                      placeholder="Enter reference number"
+                      value={referenceNumber}
+                      onChange={(e) => setReferenceNumber(e.target.value)}
+                    />
+                  </div>
+                  <div className="popup-actions">
+                    <button onClick={closePopup} className="cancel-btn">
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handlePaymentUpdate(selectedTenant._id)}
+                      className="save-btn"
+                    >
+                      Update
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
