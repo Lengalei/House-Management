@@ -63,40 +63,42 @@ const Payments = () => {
     : [];
 
   return (
-    <div className="payments-container">
-      <h2>Payments Made</h2>
-      <div className="payments-list">
-        {displayedGroups.map((group) => (
-          <div className="payment-card" key={group._id}>
-            <div className="card-header">
-              <h3>{group?.tenant?.name}</h3>
-              <p>{group?.tenant?.email}</p>
-              <p>House No: {group?.tenant?.houseNo}</p>
-              <p>Total Amount: {group?.totalAmount?.toLocaleString()}</p>
+    <div className="allpaymentspage">
+      <div className="payments-container">
+        <h2>Payments Made</h2>
+        <div className="payments-list">
+          {displayedGroups.map((group) => (
+            <div className="payment-card" key={group._id}>
+              <div className="card-header">
+                <h3>{group?.tenant?.name}</h3>
+                <p>{group?.tenant?.email}</p>
+                <p>House No: {group?.tenant?.houseNo}</p>
+                <p>Total Amount: {group?.totalAmount?.toLocaleString()}</p>
+              </div>
+              <div className="card-body">
+                <button onClick={() => handleViewPayments(group?._id)}>
+                  View Payments <FaChevronDown />
+                </button>
+              </div>
             </div>
-            <div className="card-body">
-              <button onClick={() => handleViewPayments(group?._id)}>
-                View Payments <FaChevronDown />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Pagination
-        activePage={activePage}
-        itemsCountPerPage={itemsPerPage}
-        totalItemsCount={groupedPayments.length}
-        pageRangeDisplayed={5}
-        onChange={handlePageChange}
-        itemClass="page-item"
-        linkClass="page-link"
-      />
-      {showPopup && (
-        <Popup
-          payments={activeTenant?.payments || []}
-          onClose={handleClosePopup}
+          ))}
+        </div>
+        <Pagination
+          activePage={activePage}
+          itemsCountPerPage={itemsPerPage}
+          totalItemsCount={groupedPayments.length}
+          pageRangeDisplayed={5}
+          onChange={handlePageChange}
+          itemClass="page-item"
+          linkClass="page-link"
         />
-      )}
+        {showPopup && (
+          <Popup
+            payments={activeTenant?.payments || []}
+            onClose={handleClosePopup}
+          />
+        )}
+      </div>
     </div>
   );
 };
