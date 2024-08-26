@@ -4,6 +4,8 @@ import {
   getPaymentByDate,
   getAllPayments,
   getAllRentsPaid,
+  getAllWaterRecords,
+  getAllGarbageRecords,
   getGroupedPaymentsByTenant,
   getPaymentsByTenantId,
   getPreviousPayment,
@@ -26,6 +28,10 @@ router.get('/getAllPayments', getAllPayments);
 
 // Route to get a specific payment record by ID
 router.get('/allRents', getAllRentsPaid);
+
+//get water and garbage records
+router.get('/waterRecords', getAllWaterRecords);
+router.get('/garbageRecords', getAllGarbageRecords);
 
 // Get all payments grouped by tenantId
 router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);

@@ -186,6 +186,104 @@ export const getAllRentsPaid = async (req, res) => {
   }
 };
 
+// Controller to get all water payment records
+export const getAllWaterRecords = async (req, res) => {
+  try {
+    const waterPayments = await Payment.find({ waterBill: { $gt: 0 } });
+
+    if (!waterPayments || waterPayments.length === 0) {
+      return res.status(400).json({ message: 'No water payments made yet' });
+    }
+
+    const groupedByYear = waterPayments.reduce((acc, payment) => {
+      const year = payment.date.getFullYear();
+      const amount = payment.waterBill || 0;
+
+      if (!acc[year]) {
+        acc[year] = {
+          totalAmount: 0,
+          months: {},
+        };
+      }
+
+      acc[year].totalAmount += amount;
+
+      const month = payment.date.toLocaleString('default', { month: 'long' });
+
+      if (!acc[year].months[month]) {
+        acc[year].months[month] = 0;
+      }
+
+      acc[year].months[month] += amount;
+
+      return acc;
+    }, {});
+
+    const response = Object.keys(groupedByYear).map((year) => ({
+      year,
+      totalAmount: groupedByYear[year].totalAmount,
+      months: Object.keys(groupedByYear[year].months).map((month) => ({
+        month,
+        totalAmount: groupedByYear[year].months[month],
+      })),
+    }));
+
+    res.status(200).json({ groupedByYear: response });
+  } catch (err) {
+    console.error('Error fetching water payment records:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Controller to get all garbage payment records
+export const getAllGarbageRecords = async (req, res) => {
+  try {
+    const garbagePayments = await Payment.find({ garbageFee: { $gt: 0 } });
+
+    if (!garbagePayments || garbagePayments.length === 0) {
+      return res.status(400).json({ message: 'No garbage payments made yet' });
+    }
+
+    const groupedByYear = garbagePayments.reduce((acc, payment) => {
+      const year = payment.date.getFullYear();
+      const amount = payment.garbageFee || 0;
+
+      if (!acc[year]) {
+        acc[year] = {
+          totalAmount: 0,
+          months: {},
+        };
+      }
+
+      acc[year].totalAmount += amount;
+
+      const month = payment.date.toLocaleString('default', { month: 'long' });
+
+      if (!acc[year].months[month]) {
+        acc[year].months[month] = 0;
+      }
+
+      acc[year].months[month] += amount;
+
+      return acc;
+    }, {});
+
+    const response = Object.keys(groupedByYear).map((year) => ({
+      year,
+      totalAmount: groupedByYear[year].totalAmount,
+      months: Object.keys(groupedByYear[year].months).map((month) => ({
+        month,
+        totalAmount: groupedByYear[year].months[month],
+      })),
+    }));
+
+    res.status(200).json({ groupedByYear: response });
+  } catch (err) {
+    console.error('Error fetching garbage payment records:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Get all payments grouped by tenantId
 export const getGroupedPaymentsByTenant = async (req, res) => {
   try {
