@@ -140,7 +140,7 @@ const Records = () => {
             {currentData.map((record, index) => (
               <tr key={index}>
                 <td>{record.month}</td>
-                <td>${record.amount}</td>
+                <td>{record.amount}</td>
               </tr>
             ))}
           </tbody>
@@ -157,7 +157,7 @@ const Records = () => {
           ))}
         </div>
         <div className="total-amount">
-          <strong>Total Amount:</strong> ${totalAmount}
+          <strong>Total Amount:</strong> {totalAmount}
         </div>
       </div>
     );
