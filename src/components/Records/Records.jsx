@@ -117,6 +117,13 @@ const Records = () => {
     setCurrentPage(pageNumber);
   };
 
+  const formatNumber = (number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'KSH',
+    }).format(number);
+  };
+
   const renderTable = () => {
     if (loading) {
       return (
@@ -160,7 +167,7 @@ const Records = () => {
             {currentData.map((record, index) => (
               <tr key={index}>
                 <td>{record.month}</td>
-                <td>{record.amount}</td>
+                <td>{formatNumber(record.amount)}</td>
               </tr>
             ))}
           </tbody>
@@ -177,7 +184,7 @@ const Records = () => {
           ))}
         </div>
         <div className="total-amount">
-          <strong>Total Amount:</strong> {totalAmount}
+          <strong>Total Amount:</strong> {formatNumber(totalAmount)}
         </div>
       </div>
     );
@@ -187,10 +194,10 @@ const Records = () => {
     <div className="mainRecordPage">
       <div className="records-container">
         <div className="records-cards">
-          <div className="record-card" onClick={() => handleCardClick("rent")}>
+          <div className="record-card" onClick={() => handleCardClick('rent')}>
             <h3>Rent Records</h3>
             <select
-              onChange={(e) => handleYearChange("rent", e.target.value)}
+              onChange={(e) => handleYearChange('rent', e.target.value)}
               value={selectedYear?.rent}
             >
               {years?.rent.map((year) => (
@@ -200,10 +207,10 @@ const Records = () => {
               ))}
             </select>
           </div>
-          <div className="record-card" onClick={() => handleCardClick("water")}>
+          <div className="record-card" onClick={() => handleCardClick('water')}>
             <h3>Water Records</h3>
             <select
-              onChange={(e) => handleYearChange("water", e.target.value)}
+              onChange={(e) => handleYearChange('water', e.target.value)}
               value={selectedYear?.water}
             >
               {years?.water.map((year) => (
@@ -216,11 +223,11 @@ const Records = () => {
 
           <div
             className="record-card"
-            onClick={() => handleCardClick("garbage")}
+            onClick={() => handleCardClick('garbage')}
           >
             <h3>Garbage Records</h3>
             <select
-              onChange={(e) => handleYearChange("garbage", e.target.value)}
+              onChange={(e) => handleYearChange('garbage', e.target.value)}
               value={selectedYear?.garbage}
             >
               {years?.garbage.map((year) => (
