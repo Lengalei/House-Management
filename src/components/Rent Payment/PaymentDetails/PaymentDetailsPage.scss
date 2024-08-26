@@ -1,47 +1,47 @@
 .payment-details-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
-
   .cards-container {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    width: 100%;
-    max-width: 800px;
-
-    .left-card,
-    .right-card {
-      flex: 1;
-      margin: 10px;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+    gap: 20px;
+    max-width: 80%;
 
     .left-card {
+      flex: 2;
+
+      height: max-content;
       .minicard {
-        margin-bottom: 20px;
-        padding: 15px;
+        background-color: #fff;
+        border: 1px solid #ddd;
         border-radius: 8px;
-        background-color: #f0f4f7;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        margin-bottom: 20px;
 
         h3 {
           display: flex;
           align-items: center;
-          margin-bottom: 15px;
-          font-size: 1.2em;
+          gap: 8px;
+          font-size: 18px;
           color: #333;
+          margin-bottom: 10px;
         }
 
         p {
-          margin: 5px 0;
-          color: #555;
+          margin: 10px 0;
+          font-size: 16px;
+
+          .amountPaid {
+            font-weight: bold;
+            color: #2a9d8f;
+          }
+          .currentExcessPay {
+            font-weight: bold;
+            color: yellowgreen;
+          }
+          .balance {
+            font-weight: bold;
+            color: crimson;
+          }
         }
 
         hr {
@@ -49,50 +49,115 @@
           border: 0;
           border-top: 1px solid #ddd;
         }
-        .amountPaid {
-          color: purple;
-          font-weight: 700;
-        }
-        .currentExcessPay {
-          color: green;
-          font-weight: 700;
-        }
-        .balance {
-          color: crimson;
-          font-weight: 700;
+
+        .reference-no {
+          font-size: 14px;
+          color: #555;
+          margin-top: 10px;
         }
       }
     }
 
     .right-card {
+      flex: 1;
+      margin-top: 20px;
+      height: max-content;
+      .advanced-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+
+        h3 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 10px;
+        }
+
+        p {
+          margin: 10px 0;
+          font-size: 16px;
+
+          .amountPaid,
+          .currentExcessPay,
+          .balance {
+            font-weight: bold;
+            color: #2a9d8f;
+          }
+        }
+
+        hr {
+          margin: 10px 0;
+          border: 0;
+          border-top: 1px solid #ddd;
+        }
+
+        .reference-no {
+          font-size: 14px;
+          color: #555;
+          margin-top: 10px;
+        }
+      }
+
       .button-container {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        margin-top: 20px;
 
-        .generate-invoice,
-        .generate-receipt {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 10px;
-          font-size: 1em;
-          color: #fff;
-          background-color: #007bff;
+        button {
+          background-color: #2a9d8f;
           border: none;
+          color: #fff;
+          padding: 10px;
           border-radius: 5px;
           cursor: pointer;
-          transition: background-color 0.3s ease;
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
 
           &:hover {
-            background-color: #0056b3;
+            background-color: #1b6f59;
           }
 
-          svg {
-            margin-right: 8px;
+          &.generate-invoice {
+            background-color: #f4a261;
+          }
+
+          &.generate-receipt {
+            background-color: #e76f51;
           }
         }
       }
     }
   }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    .cards-container {
+      flex-direction: column;
+
+      .left-card,
+      .right-card {
+        flex: 1;
+      }
+    }
+  }
+}
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
