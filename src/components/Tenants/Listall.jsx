@@ -73,6 +73,8 @@ const Listall = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [tenantToDelete, setTenantToDelete] = useState(null); // State for selected tenant
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
 
@@ -82,9 +84,8 @@ const Listall = () => {
       setLoading(true);
       try {
         const res = await apiRequest.get('/tenants/allTenants');
-        console.log(res.data);
         if (res.status) {
-          if (res?.data?.length == 0) {
+          if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
           } else {
             dispatch(setTenants(res.data));
@@ -119,6 +120,23 @@ const Listall = () => {
     }
   };
 
+  const handleOpenModal = (_id) => {
+    setTenantToDelete(_id);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setTenantToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (tenantToDelete) {
+      handleDelete(tenantToDelete);
+      handleCloseModal();
+    }
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
@@ -142,7 +160,7 @@ const Listall = () => {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>houseNo</th>
+                  <th>House No</th>
                   <th>Phone</th>
                   <th>Actions</th>
                 </tr>
@@ -163,7 +181,7 @@ const Listall = () => {
                           More Details
                         </Link>
                         <button
-                          onClick={() => handleDelete(tenant._id)}
+                          onClick={() => handleOpenModal(tenant._id)}
                           className="delete-btn"
                         >
                           <FaTrashAlt />
@@ -176,6 +194,21 @@ const Listall = () => {
           </div>
         )}
       </div>
+      {showModal && (
+        <div className="confirmation-modal">
+          <div className="modal-content">
+            <p>Are you sure you want to delete this tenant?</p>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={handleCloseModal}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={handleConfirmDelete}>
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
