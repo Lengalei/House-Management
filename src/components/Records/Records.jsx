@@ -164,50 +164,55 @@ const Records = () => {
   };
 
   return (
-    <div className="records-container">
-      <div className="records-cards">
-        <div className="record-card" onClick={() => handleCardClick('rent')}>
-          <h3>Rent Records</h3>
-          <select
-            onChange={(e) => handleYearChange('rent', e.target.value)}
-            value={selectedYear?.rent}
-          >
-            {years?.rent.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="record-card" onClick={() => handleCardClick('water')}>
-          <h3>Water Records</h3>
-          <select
-            onChange={(e) => handleYearChange('water', e.target.value)}
-            value={selectedYear?.water}
-          >
-            {years?.water.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="mainRecordPage">
+      <div className="records-container">
+        <div className="records-cards">
+          <div className="record-card" onClick={() => handleCardClick("rent")}>
+            <h3>Rent Records</h3>
+            <select
+              onChange={(e) => handleYearChange("rent", e.target.value)}
+              value={selectedYear?.rent}
+            >
+              {years?.rent.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="record-card" onClick={() => handleCardClick("water")}>
+            <h3>Water Records</h3>
+            <select
+              onChange={(e) => handleYearChange("water", e.target.value)}
+              value={selectedYear?.water}
+            >
+              {years?.water.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="record-card" onClick={() => handleCardClick('garbage')}>
-          <h3>Garbage Records</h3>
-          <select
-            onChange={(e) => handleYearChange('garbage', e.target.value)}
-            value={selectedYear?.garbage}
+          <div
+            className="record-card"
+            onClick={() => handleCardClick("garbage")}
           >
-            {years?.garbage.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
+            <h3>Garbage Records</h3>
+            <select
+              onChange={(e) => handleYearChange("garbage", e.target.value)}
+              value={selectedYear?.garbage}
+            >
+              {years?.garbage.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+        {renderTable()}
       </div>
-      {renderTable()}
     </div>
   );
 };
