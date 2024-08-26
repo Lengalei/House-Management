@@ -51,164 +51,91 @@
     overflow: hidden;
 
     &.water-themed {
-      // background-image: url('/waterThemed.jpeg');
       background-size: 50% auto; // Adjust the size as needed
       background-position: center;
 
       table {
-        background-color: rgba(
-          0,
-          204,
-          255,
-          0.3
-        ); // Light overlay for readability
-
-        th {
-          background-color: rgba(0, 170, 255, 0.9);
-          color: #ffffff;
-        }
-
-        td {
-          color: #004d99;
-        }
-      }
-
-      .pagination button {
-        background-color: #00aaff;
-
-        &.active {
-          background-color: #0077cc;
-        }
-
-        &:hover {
-          background-color: #0077cc;
-        }
+        background-color: rgba(0, 204, 255, 0.3); // Light blue for water
       }
     }
 
     &.rent-themed {
-      // background-image: url('/money.jpeg');
-      background-size: 40% auto; // Adjust the size as needed
-      background-position: center;
-
-      table {
-        background-color: rgba(
-          255,
-          223,
-          0,
-          0.3
-        ); // Light overlay for readability
-
-        th {
-          background-color: rgba(255, 204, 0, 0.9);
-          color: #333333;
-        }
-
-        td {
-          color: #666666;
-        }
-      }
-
-      .pagination button {
-        background-color: #ffcc00;
-
-        &.active {
-          background-color: #ffaa00;
-        }
-
-        &:hover {
-          background-color: #ffaa00;
-        }
-      }
-    }
-
-    &.garbage-themed {
-      // background-image: url('/Garbagebags.jpg');
       background-size: 50% auto; // Adjust the size as needed
       background-position: center;
 
       table {
-        background-color: rgba(
-          128,
-          128,
-          128,
-          0.3
-        ); // Light overlay for readability
-
-        th {
-          background-color: rgba(102, 102, 102, 0.9);
-          color: #ffffff;
-        }
-
-        td {
-          color: #808080;
-        }
+        background-color: rgba(255, 204, 0, 0.3); // Light yellow for rent
       }
+    }
 
-      .pagination button {
-        background-color: #666666;
+    &.garbage-themed {
+      background-size: 50% auto; // Adjust the size as needed
+      background-position: center;
 
-        &.active {
-          background-color: #4d4d4d;
-        }
-
-        &:hover {
-          background-color: #4d4d4d;
-        }
+      table {
+        background-color: rgba(0, 255, 0, 0.3); // Light green for garbage
       }
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+
+      thead {
+        background-color: #f0f0f0;
+      }
 
       th,
       td {
-        padding: 12px;
+        padding: 10px;
         text-align: left;
         border-bottom: 1px solid #ddd;
-        background-color: rgba(
-          255,
-          255,
-          255,
-          0.8
-        ); // Light background for table cells
-      }
-
-      th {
-        background-color: #f4f4f4;
-        color: #333;
       }
     }
 
     .pagination {
+      margin-top: 10px;
       display: flex;
       justify-content: center;
 
       button {
-        margin: 0 5px;
-        padding: 8px 12px;
+        background: #007bff;
         border: none;
-        border-radius: 4px;
+        color: white;
+        padding: 10px 20px;
+        margin: 0 5px;
+        border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
+        transition: background-color 0.3s;
 
         &.active {
-          background-color: #333;
-          color: #fff;
+          background-color: #0056b3;
         }
 
         &:hover {
-          background-color: #555;
+          background-color: #0056b3;
         }
       }
     }
 
     .total-amount {
-      text-align: left;
+      margin-top: 10px;
       font-weight: bold;
-      color: crimson;
+      text-align: center;
     }
+  }
+
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }

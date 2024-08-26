@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Records.scss';
 import apiRequest from '../../lib/apiRequest';
+import { Bars } from 'react-loader-spinner'; // Importing the spinner component from react-loader-spinner
 
 const Records = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -21,10 +22,12 @@ const Records = () => {
     rent: {},
     garbage: {},
   });
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
     const fetchAllRecords = async () => {
       try {
+        setLoading(true); // Set loading to true before fetching
         // Fetch rent records
         const rentResponse = await apiRequest.get('/payments/allRents');
         const rentData = rentResponse.data.groupedByYear;
@@ -88,6 +91,8 @@ const Records = () => {
         });
       } catch (error) {
         console.error('Failed to fetch records:', error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
       }
     };
 
@@ -113,6 +118,21 @@ const Records = () => {
   };
 
   const renderTable = () => {
+    if (loading) {
+      return (
+        <div className="loader-container">
+          <Bars
+            height="80"
+            width="80"
+            color="#00aaff"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+          />
+        </div>
+      );
+    }
+
     if (!selectedRecord || !selectedYear[selectedRecord]) return null;
 
     const year = selectedYear[selectedRecord];
