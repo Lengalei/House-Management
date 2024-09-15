@@ -520,8 +520,7 @@ export const addDeposits = async (req, res) => {
     // Update isCleared status
     tenant.deposits.isCleared =
       tenant.deposits.rentDeposit >= tenant.houseDetails.rentDeposit &&
-      tenant.deposits.waterDeposit >= tenant.houseDetails.waterDeposit &&
-      tenant.deposits.initialRentPayment >= tenant.houseDetails.rent;
+      tenant.deposits.waterDeposit >= tenant.houseDetails.waterDeposit;
 
     await tenant.save();
 
@@ -706,9 +705,7 @@ export const addSingleAmountDeposit = async (req, res) => {
 
     // Update the clearance status
     const totalPaidDeposit =
-      tenant.deposits.rentDeposit +
-      tenant.deposits.waterDeposit +
-      tenant.deposits.initialRentPayment;
+      tenant.deposits.rentDeposit + tenant.deposits.waterDeposit;
     const shortfall = totalRequiredDeposit - totalPaidDeposit;
 
     tenant.deposits.isCleared = shortfall <= 0;
@@ -977,8 +974,7 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
     // Update isCleared field and add global record of totals
     tenant.deposits.isCleared =
       deposits.rentDeposit >= houseDetails.rentDeposit &&
-      deposits.waterDeposit >= houseDetails.waterDeposit &&
-      deposits.initialRentPayment >= houseDetails.rent;
+      deposits.waterDeposit >= houseDetails.waterDeposit;
 
     const totalDepositAmount =
       parseFloat(deposits.rentDeposit) +
