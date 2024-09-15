@@ -19,8 +19,10 @@ function Tenant() {
     houseNo: '',
     emergencyContactNumber: '',
     emergencyContactName: '',
+    //from popup
     amountPaid: '',
     paymentDate: '',
+    monthInQuestionPay: '',
     referenceNumber: '',
   });
 
@@ -218,7 +220,14 @@ function Tenant() {
               {/* Placement Date */}
               <div className="forminput">
                 <label htmlFor="placementDate">
-                  Placement Date<span>*</span>
+                  Placement Date
+                  <span>*</span>
+                  <br />
+                  <span>
+                    {
+                      '(The date the Tenant entered or will enter the house officially)'
+                    }
+                  </span>
                 </label>
                 <input
                   type="date"
@@ -384,12 +393,24 @@ function Tenant() {
             </div>
             <form onSubmit={handlePaymentSubmit} className="paymentForm">
               <div className="forminput">
-                <label htmlFor="paymentDate">Payment Date</label>
+                <label htmlFor="paymentDate">Transaction Payment Date</label>
                 <input
                   type="date"
                   id="paymentDate"
                   name="paymentDate"
                   value={formData.paymentDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="forminput">
+                <label htmlFor="monthInQuestionPay">
+                  Month Pay Attributed To {'( Month Name In Full)'}
+                </label>
+                <input
+                  type="text"
+                  id="monthInQuestionPay"
+                  name="monthInQuestionPay"
+                  value={formData.monthInQuestionPay}
                   onChange={handleChange}
                 />
               </div>

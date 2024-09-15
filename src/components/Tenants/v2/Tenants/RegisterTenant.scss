@@ -1,0 +1,337 @@
+.register-tenant {
+  // Basic styling for the component
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  border: 1px solid whitesmoke;
+  background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
+    url(/register.jpeg);
+
+  .registration-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .registration-card {
+    width: 50%;
+    margin-bottom: 2px;
+    padding: 10px;
+    height: 85%;
+    overflow: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    h2 {
+      margin-bottom: 7px;
+      font-size: 20px;
+      color: #333;
+      text-decoration: underline;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      height: 90%;
+      //border: 1px solid crimson;
+
+      label {
+        margin: 10px 0 5px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        color: black;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+
+      .house-selection {
+        padding: 10px;
+        border: 1px solid #ddd;
+        color: coral;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        background-color: #f8f9fa;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #e2e6ea;
+        }
+      }
+    }
+  }
+
+  .deposit-popup {
+    margin-bottom: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-width: max-content;
+    height: 100%;
+    // border: 1px solid crimson;
+
+    h2 {
+      color: brown;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .close-popup {
+      background-color: #8a1515;
+      border: none;
+      font-size: 20px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      color: #eaece9;
+      cursor: pointer;
+      position: relative;
+      top: 0%;
+      right: 0%;
+    }
+    .deposit-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+
+    .card-options {
+      height: 70%;
+      overflow: scroll;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      // border: 1px solid crimson;
+
+      .deposit-card {
+        width: 100%;
+        height: 100%;
+        max-width: max-content;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #7e0202;
+
+        h3 {
+          font-size: 18px;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+
+        input {
+          margin-bottom: 10px;
+          margin-bottom: 15px;
+          padding: 10px;
+          border: 1px solid #ddd;
+          color: black;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+
+        button {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+      }
+
+      .single-deposit {
+        background-color: #e9f5ff;
+        border: 1px solid #722543;
+
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: left;
+        }
+        label {
+          color: #722543;
+        }
+        h3 {
+          color: #0056b3;
+          text-decoration: underline;
+        }
+
+        button {
+          background-color: #0056b3;
+          color: #fff;
+
+          &:hover {
+            background-color: #004a99;
+          }
+        }
+      }
+
+      .multiple-deposits {
+        background-color: #e9ffe9;
+        border: 1px solid #b3ffb3;
+        height: 100%;
+        overflow: scroll;
+        overflow-x: hidden;
+
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: left;
+        }
+        label {
+          color: #28a745;
+        }
+        h3 {
+          color: #28a745;
+          text-decoration: underline;
+        }
+
+        button {
+          background-color: #28a745;
+          color: #fff;
+
+          &:hover {
+            background-color: #218838;
+          }
+        }
+      }
+    }
+  }
+
+  .floor-popup {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #fff;
+    color: olive;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    z-index: 1000;
+
+    .closePopup {
+      background-color: #8a1515;
+      border: none;
+      font-size: 20px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      color: #eaece9;
+      cursor: pointer;
+      position: relative;
+      top: 0%;
+      right: 0%;
+    }
+
+    .floor-option {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #6cb619;
+      }
+    }
+
+    .house-popup {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      width: 200px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+
+      .house-option {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid chocolate;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #b8980b;
+        }
+      }
+    }
+    .house-option {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+
+      &.occupied {
+        color: #d9534f; // Red color for occupied
+        cursor: not-allowed;
+        text-decoration: line-through; // Optional: line-through to indicate unavailability
+        pointer-events: none; // Disable clicking
+      }
+
+      &:hover {
+        background-color: #6cb619;
+      }
+
+      &:hover.occupied {
+        background-color: #f2dede; // Lighter red for hover effect
+      }
+    }
+  }
+}

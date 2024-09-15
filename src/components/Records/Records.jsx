@@ -29,7 +29,7 @@ const Records = () => {
       try {
         setLoading(true); // Set loading to true before fetching
         // Fetch rent records
-        const rentResponse = await apiRequest.get('/payments/allRents');
+        const rentResponse = await apiRequest.get('/v2/payments/allRents');
         const rentData = rentResponse.data.groupedByYear;
 
         // Fetch water records
@@ -166,8 +166,8 @@ const Records = () => {
           <tbody>
             {currentData.map((record, index) => (
               <tr key={index}>
-                <td>{record.month}</td>
-                <td>{formatNumber(record.amount)}</td>
+                <td>{record?.month}</td>
+                <td>{formatNumber(record?.amount)}</td>
               </tr>
             ))}
           </tbody>

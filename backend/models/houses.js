@@ -5,7 +5,6 @@ const houseSchema = new mongoose.Schema(
     houseName: {
       type: String,
       unique: true,
-      match: /^House \d+[A-D]$/, // Enforce the format House floorLetter
     },
     floor: {
       type: Number,

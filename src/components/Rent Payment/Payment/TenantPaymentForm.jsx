@@ -19,6 +19,9 @@ const TenantPaymentForm = () => {
     amountPaid: 0,
   });
 
+  const [monthInQuestionPay, setMonthInQuestionPay] = useState('');
+  const [tenantName, setTenantName] = useState('');
+
   const [outstandingPayments, setOutstandingPayments] = useState([]);
   const [showOutstandingPayments, setShowOutstandingPayments] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
@@ -31,6 +34,8 @@ const TenantPaymentForm = () => {
         const response = await apiRequest.get(
           `/tenants/getSingleTenant/${tenantId}`
         );
+
+        console.log('singleTenantDt:', response.data);
         if (response.status) {
           const tenant = response.data;
           setFormData((prevData) => ({
@@ -39,6 +44,8 @@ const TenantPaymentForm = () => {
             waterBill: tenant.waterDeposit || 1200,
             garbageFee: tenant.garbageFee || 500,
           }));
+          setMonthInQuestionPay(response.data.monthInQuestionPay);
+          setTenantName(response.data.name);
         }
       } catch (error) {
         console.error('Error fetching tenant details:', error);
@@ -158,10 +165,32 @@ const TenantPaymentForm = () => {
     setShowOutstandingPayments(false);
   };
 
+  // New functionality to calculate the next month
+  const getNextMonth = (currentMonth) => {
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const currentIndex = monthNames.indexOf(currentMonth);
+    return monthNames[(currentIndex + 1) % 12];
+  };
+
+  const nextMonthPay = getNextMonth(monthInQuestionPay);
+
   return (
     <div className="tenant-payment-form">
       <ToastContainer />
-      <h2>Create Payment</h2>
+      <h2>{tenantName + `'s`} Payment</h2>
       <div className="outstanding-payments-header">
         <button
           onClick={() => setShowOutstandingPayments(!showOutstandingPayments)}
@@ -196,39 +225,50 @@ const TenantPaymentForm = () => {
 
       <div className="form-container">
         <div className="form-card left-card">
-          <form onSubmit={handleSubmit}>
-            <label>Date:</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-            />
-            <label className="extra-bills">Extra Bills:</label>
-            <input
-              type="number"
-              name="extraBills"
-              value={formData.extraBills}
-              onChange={handleChange}
-            />
-            <label className="amountPaid">Amount Paid:</label>
-            <input
-              type="number"
-              name="amountPaid"
-              value={formData.amountPaid}
-              onChange={handleChange}
-            />
-            <label>Reference Number:</label>
-            <input
-              type="text"
-              name="referenceNo"
-              value={formData.referenceNo}
-              onChange={handleChange}
-              required
-            />
-            <button type="submit">Submit</button>
-          </form>
+          <div className="innerLeftCard">
+            {' '}
+            <form onSubmit={handleSubmit} className="innerLeftCardForm">
+              <label>Transaction Payment Date:</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+              <label className="extra-bills">Extra Bills:</label>
+              <input
+                type="number"
+                name="extraBills"
+                value={formData.extraBills}
+                onChange={handleChange}
+              />
+              <label className="amountPaid">Amount Paid:</label>
+              <input
+                type="number"
+                name="amountPaid"
+                value={formData.amountPaid}
+                onChange={handleChange}
+              />
+              <label>Reference Number:</label>
+              <input
+                type="text"
+                name="referenceNo"
+                value={formData.referenceNo}
+                onChange={handleChange}
+                required
+              />
+              <button type="submit">Submit</button>
+            </form>
+            <div className="inneRightCard">
+              <h5>
+                Last Pay Month: <span>{monthInQuestionPay} </span>{' '}
+              </h5>
+              <h5>
+                New Expected Pay Month: <span>{nextMonthPay}</span>{' '}
+              </h5>
+            </div>
+          </div>
         </div>
 
         <div className="form-card right-card">
@@ -280,36 +320,30 @@ const TenantPaymentForm = () => {
             </button>
             <h3>Edit Payment</h3>
             <form onSubmit={handleUpdatePayment}>
-              <label>
-                Amount Paid:
-                <input
-                  type="number"
-                  name="amountPaid"
-                  value={formData.amountPaid}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-              <label>
-                Date:
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-              <label>
-                Reference Number:
-                <input
-                  type="text"
-                  name="referenceNo"
-                  value={formData.referenceNo}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+              <label>Date:</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+              <label>Reference Number:</label>
+              <input
+                type="text"
+                name="referenceNo"
+                value={formData.referenceNo}
+                onChange={handleChange}
+                required
+              />
+              <label>Amount Paid:</label>
+              <input
+                type="number"
+                name="amountPaid"
+                value={formData.amountPaid}
+                onChange={handleChange}
+                required
+              />
               <button type="submit">Update Payment</button>
             </form>
           </div>
@@ -318,11 +352,10 @@ const TenantPaymentForm = () => {
 
       {showConfirmationPopup && (
         <div className="confirmation-popup">
-          <div className="confirmation-popup-content">
-            <h3>Confirm Payment</h3>
-            <p>Are you sure you want to add this payment?</p>
-            <button onClick={handleCancel}>Cancel</button>
-            <button onClick={handleConfirm}>Confirm</button>
+          <div className="popup-content">
+            <p>Are you sure you want to submit this payment?</p>
+            <button onClick={handleConfirm}>Yes</button>
+            <button onClick={handleCancel}>No</button>
           </div>
         </div>
       )}

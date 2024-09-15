@@ -43,6 +43,7 @@ const TenantSchema = new mongoose.Schema(
     // Financial details
     amountPaid: { type: Number, default: 0 },
     paymentDate: { type: Date },
+    monthInQuestionPay: { type: String, upperCase:true },
     referenceNumber: { type: String },
     isInGreyList: { type: Boolean, default: true },
     overPay: { type: Number, default: 0 },

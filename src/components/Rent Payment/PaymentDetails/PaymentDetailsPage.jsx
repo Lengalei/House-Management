@@ -69,29 +69,18 @@ const PaymentDetailsPage = () => {
         <div class="container">
           <h1>Receipt</h1>
           <div class="details">
-            <p><strong>Date:</strong> ${new Date(
-              paymentDetails.date
-            ).toLocaleDateString()}</p>
-            <p><strong>Rent:</strong> ${paymentDetails.rent}</p>
-            <p><strong>Water Bill:</strong> ${paymentDetails.waterBill}</p>
-            <p><strong>Garbage Fee:</strong> ${paymentDetails.garbageFee}</p>
-            <p><strong>Extra Bills:</strong> ${paymentDetails.extraBills}</p>
-            <p><strong>Total Amount:</strong> ${paymentDetails.totalAmount}</p>
-            <p><strong>Amount Paid:</strong> ${paymentDetails.amountPaid}</p>
-            <p><strong>Previous Excess Pay:</strong> ${
-              paymentDetails.previousExcessPay
-            }</p>
-            <p><strong>Current Excess Pay:</strong> ${
-              paymentDetails.excessPay
-            }</p>
-            <p><strong>Previous Balance:</strong> ${
-              paymentDetails.previousBalance
-            }</p>
-            <p><strong>Balance:</strong> ${paymentDetails.balance}</p>
-            <p><strong>Reference No:</strong> ${paymentDetails.referenceNo}</p>
+            <p><strong>Date:</strong> ${paymentDetails.month}</p>
+            <p><strong>Rent:</strong> ${paymentDetails.rent.amount}</p>
+            <p><strong>Water Bill:</strong> ${paymentDetails.waterBill.amount}</p>
+            <p><strong>Garbage Fee:</strong> ${paymentDetails.garbageFee.amount}</p>
+            <p><strong>Extra Bills:</strong> ${paymentDetails.extraCharges.amount}</p>
+            <p><strong>Total Amount:</strong> ${paymentDetails.totalAmountPaid}</p>
+            <p><strong>Current Excess Pay:</strong> ${paymentDetails.overpay}</p>
+            <p><strong>Deficit Balance:</strong> ${paymentDetails.globalDeficit}</p>
+            <p><strong>Reference No:</strong> ${paymentDetails.referenceNumber}</p>
             <p><strong>Payment Maker:</strong></p>
-            <p>Name: ${paymentDetails.tenantId.name}</p>
-            <p>Email: ${paymentDetails.tenantId.email}</p>
+            <p>Name: ${paymentDetails.tenant.name}</p>
+            <p>Email: ${paymentDetails.tenant.email}</p>
           </div>
           <div class="footer">
             <p>Thank you for your payment!</p>
@@ -143,18 +132,16 @@ const PaymentDetailsPage = () => {
         <div class="container">
           <h1>Invoice</h1>
           <div class="details">
-            <p><strong>Date:</strong> ${new Date(
-              paymentDetails.date
-            ).toLocaleDateString()}</p>
-            <p><strong>Rent:</strong> ${paymentDetails.rent}</p>
-            <p><strong>Water Bill:</strong> ${paymentDetails.waterBill}</p>
-            <p><strong>Garbage Fee:</strong> ${paymentDetails.garbageFee}</p>
-            <p><strong>Extra Bills:</strong> ${paymentDetails.extraBills}</p>
-            <p><strong>Total Amount:</strong> ${paymentDetails.totalAmount}</p>
-            <p><strong>Reference No:</strong> ${paymentDetails.referenceNo}</p>
+            <p><strong>Date:</strong> ${paymentDetails.month}</p>
+            <p><strong>Rent:</strong> ${paymentDetails.rent.amount}</p>
+            <p><strong>Water Bill:</strong> ${paymentDetails.waterBill.amount}</p>
+            <p><strong>Garbage Fee:</strong> ${paymentDetails.garbageFee.amount}</p>
+            <p><strong>Extra Bills:</strong> ${paymentDetails.extraCharges.amount}</p>
+            <p><strong>Total Amount:</strong> ${paymentDetails.totalAmountPaid}</p>
+            <p><strong>Reference No:</strong> ${paymentDetails.referenceNumber}</p>
             <p><strong>Payment Maker:</strong></p>
-            <p>Name: ${paymentDetails.tenantId.name}</p>
-            <p>Email: ${paymentDetails.tenantId.email}</p>
+            <p>Name: ${paymentDetails.tenant.name}</p>
+            <p>Email: ${paymentDetails.tenant.email}</p>
           </div>
           <div class="footer">
             <p>Thank you for your business!</p>
@@ -181,57 +168,55 @@ const PaymentDetailsPage = () => {
                 <h3>
                   <FaMoneyBill /> Payment Details
                 </h3>
-                <p>
-                  Month: {new Date(paymentDetails.date).toLocaleDateString()}
-                </p>
-                <p>Rent: {paymentDetails.rent}</p>
-                <p>Water Bill: {paymentDetails.waterBill}</p>
-                <p>Garbage Fee: {paymentDetails.garbageFee}</p>
-                <p>Extra Bills: {paymentDetails.extraBills}</p>
-                <p>Total Amount: {paymentDetails.totalAmount}</p>
+                <p>Month: {paymentDetails?.month}</p>
+                <p>Rent: {paymentDetails?.rent?.amount}</p>
+                <p>Water Bill: {paymentDetails.waterBill.amount}</p>
+                <p>Garbage Fee: {paymentDetails.garbageFee.amount}</p>
+                <p>Extra Bills: {paymentDetails.extraCharges.amount}</p>
+                {/* <p>Total Amount: {paymentDetails.totalAmount}</p> */}
                 <hr />
                 <p>
                   Amount Paid:{' '}
                   <span className="amountPaid">
-                    {paymentDetails.amountPaid}
+                    {paymentDetails.totalAmountPaid}
                   </span>
                 </p>
                 {onEntryOverPay ? <p>On Entry Overpay {onEntryOverPay}</p> : ''}
 
-                <p>
+                {/* <p>
                   Previous Excess Pay:{' '}
                   <span className="currentExcessPay">
-                    {paymentDetails.previousExcessPay}
+                    {paymentDetails.overpay}
                   </span>
-                </p>
+                </p> */}
                 <p>
                   Current Excess Pay:{' '}
                   <span className="currentExcessPay">
-                    {paymentDetails.excessPay}
+                    {paymentDetails.overpay}
                   </span>
                 </p>
                 <p>
-                  Previous Balance:{' '}
+                  Deficit:{' '}
                   <span className="balance">
                     {' '}
-                    {paymentDetails.previousBalance}
+                    {paymentDetails.globalDeficit}
                   </span>
                 </p>
-                <p>
+                {/* <p>
                   Balance:{' '}
                   <span className="balance">{paymentDetails.balance}</span>
-                </p>
+                </p> */}
                 <p className="reference-no">
-                  Reference No: {paymentDetails.referenceNo}
+                  Reference No: {paymentDetails.referenceNumber}
                 </p>
               </div>
               <div className="minicard payment-maker">
                 <h3>
                   <FaReceipt /> Payment Maker
                 </h3>
-                <p>Name: {paymentDetails.tenantId.name}</p>
+                <p>Name: {paymentDetails.tenant.name}</p>
                 <hr />
-                <p>Email: {paymentDetails.tenantId.email}</p>
+                <p>Email: {paymentDetails.tenant.email}</p>
               </div>
             </div>
             <div className="right-card">

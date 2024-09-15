@@ -23,16 +23,20 @@ const Popup = ({ payments, onClose }) => {
         <button className="close-button" onClick={onClose}>
           <FaTimes />
         </button>
-        <h2>{displayedPayments[0].tenantId?.name} Payments Details</h2>
+        <h2>{displayedPayments[0]?.tenant?.name} Payments Details</h2>
         <div className="popup-payments-list">
           {displayedPayments.map((payment) => (
-            <div className="payment-mini-card" key={payment._id}>
+            <div className="payment-mini-card" key={payment?._id}>
               <div className="mini-card-header">
-                <p>Date: {new Date(payment.date).toLocaleDateString()}</p>
-                <p>Total Amount: {payment.totalAmount.toLocaleString()}</p>
+                <p>Month: {payment?.month}</p>
+                <p>
+                  Total Amount: {payment?.totalAmountPaid?.toLocaleString()}
+                </p>
                 <p>
                   Status:{' '}
-                  {payment.isCleared ? (
+                  {payment?.rent?.paid &&
+                  payment?.waterBill?.paid &&
+                  payment?.garbageFee?.paid ? (
                     <FaCheckCircle className="icon success" />
                   ) : (
                     <FaTimesCircle className="icon failure" />

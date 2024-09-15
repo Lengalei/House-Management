@@ -27,6 +27,11 @@ import TaxPayment from './components/Tax/TaxPayment.jsx';
 import TaxPaymentHistory from './components/Tax/TaxPaymentHistory.jsx';
 import GreyList from './components/Tenants/GreyList.jsx';
 import Records from './components/Records/Records.jsx';
+//v2
+import RegisterTenant from './components/Tenants/v2/Tenants/RegisterTenant.jsx';
+import TenantsWithIncompleteDeposits from './components/Tenants/v2/incompleteDeposits/TenantsWithIncompleteDeposits .jsx';
+import TenantUpdateDeposits from './components/Tenants/v2/incompleteDeposits/TenantUpdateDeposits.jsx';
+import TenantPaymentsV2 from './components/Tenants/v2/TenantPaymentsV2/TenantPaymentsV2.jsx';
 
 function App() {
   return (
@@ -42,7 +47,6 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="/registerTenant" element={<Tenant />} />
           <Route path="/registerLandlord" element={<Landlord />} />
-          <Route path="/rentpayment" element={<Rent />} />
           <Route path="/listAllTenants" element={<Listall />} />
           <Route path="/tenant/edit/:_id" element={<EditTenant />} />
           <Route path="/rentDetails/:_id" element={<RentDetails />} />
@@ -54,6 +58,7 @@ function App() {
           <Route path="/profileSettings" element={<Admin />} />
           <Route path="/addHouse" element={<RegisterHouse />} />
           {/* Tenant Payment */}
+          <Route path="/rentpayment" element={<Rent />} />
           <Route
             path="/tenantPayment/:tenantId"
             element={<TenantPaymentForm />}
@@ -68,6 +73,21 @@ function App() {
           <Route path="/greyList" element={<GreyList />} />
           <Route path="/taxPayment" element={<TaxPayment />} />
           <Route path="/taxPaymentHistory" element={<TaxPaymentHistory />} />
+          {/* ************************************************************************** */}
+          {/* v2 */}
+          <Route path="/v2/registerTenant" element={<RegisterTenant />} />{' '}
+          <Route
+            path="/v2/incompleteDeposits"
+            element={<TenantsWithIncompleteDeposits />}
+          />
+          <Route
+            path="/v2/tenantUpdateDeposit"
+            element={<TenantUpdateDeposits />}
+          />
+          <Route
+            path="/v2/tenantPaymentsV2/:tenantId"
+            element={<TenantPaymentsV2 />}
+          />
         </Route>
         <Route path="/*" element={<NotFound />} />
       </Routes>

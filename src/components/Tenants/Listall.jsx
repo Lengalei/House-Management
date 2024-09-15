@@ -83,7 +83,7 @@ const Listall = () => {
       setError('');
       setLoading(true);
       try {
-        const res = await apiRequest.get('/tenants/allTenants');
+        const res = await apiRequest.get('/v2/tenants/getAllTenants');
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -107,7 +107,7 @@ const Listall = () => {
   const handleDelete = async (_id) => {
     setLoading(true);
     try {
-      const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
+      const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
       } else {
@@ -171,7 +171,11 @@ const Listall = () => {
                     <tr key={tenant._id}>
                       <td>{tenant.name}</td>
                       <td>{tenant.email}</td>
-                      <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
+                      <td>
+                        {tenant?.houseDetails?.houseNo
+                          ? tenant.houseDetails?.houseNo
+                          : ''}
+                      </td>
                       <td>{tenant.phone || tenant.phoneNo}</td>
                       <td className="actions">
                         <Link

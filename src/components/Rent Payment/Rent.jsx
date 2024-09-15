@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
 import './Rent.css';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,7 @@ import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { ThreeDots } from 'react-loader-spinner';
 
 const Rent = () => {
+  const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false); // State for modal visibility
@@ -87,8 +88,8 @@ const Rent = () => {
       setError('');
       setLoading(true);
       try {
-        const res = await apiRequest.get('/tenants/allTenants');
-
+        const res = await apiRequest.get('/v2/tenants/getAllTenants');
+        console.log('allTenantsRes: ', res.data);
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
@@ -112,7 +113,7 @@ const Rent = () => {
   const handleDelete = async (_id) => {
     setLoading(true);
     try {
-      const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
+      const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
         setShowModal(false); // Close modal on successful deletion
@@ -136,12 +137,20 @@ const Rent = () => {
     setTenantToDelete(null);
   };
 
-  const getStatus = (balance) => {
-    if (balance <= 0) {
-      return <span>Cleared ✅</span>;
-    } else {
-      return <span>Not Cleared ❌</span>;
-    }
+  // const getStatus = (balance, monthInQuestionPay) => {
+  //   if (balance <= 0) {
+  //     return <span> {monthInQuestionPay} Cleared ✅</span>;
+  //   } else {
+  //     return <span>Not Cleared ❌</span>;
+  //   }
+  // };
+
+  const handleSingleTenantClick = (tenant) => {
+    navigate(`/v2/tenantPaymentsV2/${tenant._id}`, {
+      state: {
+        tenantDetails: tenant,
+      },
+    });
   };
 
   return (
@@ -167,9 +176,9 @@ const Rent = () => {
                 <tr>
                   <th>Tenant{`'`}s Name</th>
                   <th>House No.</th>
-                  <th>All Payments</th>
+                  {/* <th>All Payments</th>
                   <th>All Balance</th>
-                  <th>Status</th>
+                  <th>Status</th> */}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -178,17 +187,25 @@ const Rent = () => {
                   tenants.map((tenant) => (
                     <tr key={tenant._id}>
                       <td>{tenant.name}</td>
-                      <td>{tenant?.houseNo ? tenant.houseNo : ''}</td>
-                      <td>{tenant.totalAmount}</td>
+                      <td>
+                        {tenant?.houseDetails
+                          ? tenant?.houseDetails?.houseNo
+                          : ''}
+                      </td>
+                      {/* <td>{tenant.totalAmount}</td>
                       <td>{tenant.balance}</td>
-                      <td>{getStatus(tenant.balance)}</td>
+                      <td>
+                        {getStatus(tenant.balance, tenant.monthInQuestionPay)}
+                      </td> */}
                       <td className="actions">
-                        <Link
-                          to={`/tenantPayment/${tenant._id}`}
+                        <p
+                          onClick={() => {
+                            handleSingleTenantClick(tenant);
+                          }}
                           className="edit-btn"
                         >
                           Add-Payment
-                        </Link>
+                        </p>
                         <Link
                           to={`/tenantPaymentList/${tenant._id}`}
                           className="edit-btn"

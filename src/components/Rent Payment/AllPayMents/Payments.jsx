@@ -16,7 +16,7 @@ const Payments = () => {
     const fetchGroupedPayments = async () => {
       try {
         const res = await apiRequest.get(
-          '/payments/getGroupedPaymentsByTenant'
+          '/v2/payments/getGroupedPaymentsByTenant'
         );
         if (Array?.isArray(res.data)) {
           console.log('GroupedPayments: ', res.data);
@@ -39,7 +39,7 @@ const Payments = () => {
   const handleViewPayments = async (tenantId) => {
     try {
       const res = await apiRequest.get(
-        `/payments/getPaymentsByTenantId/${tenantId}`
+        `/v2/payments/getPaymentsByTenantId/${tenantId}`
       );
       setActiveTenant({
         ...groupedPayments?.find((gp) => gp?._id === tenantId),
@@ -72,11 +72,11 @@ const Payments = () => {
               <div className="card-header">
                 <h3>{group?.tenant?.name}</h3>
                 <p>{group?.tenant?.email}</p>
-                <p>House No: {group?.tenant?.houseNo}</p>
-                <p>Total Amount: {group?.totalAmount?.toLocaleString()}</p>
+                <p>House No: {group?.tenant?.houseDetails?.houseNo}</p>
+                <p>Total Amount: {group?.totalPayments?.toLocaleString()}</p>
               </div>
               <div className="card-body">
-                <button onClick={() => handleViewPayments(group?._id)}>
+                <button onClick={() => handleViewPayments(group?.tenant?._id)}>
                   View Payments <FaChevronDown />
                 </button>
               </div>

@@ -1,0 +1,124 @@
+.tenant-update-page {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 20px;
+  height: 100%;
+  text-transform: capitalize;
+  background-image: linear-gradient(rgba(15, 15, 15, 0.8), rgba(9, 9, 9, 0.8)),
+    url(/alotMoney.jpeg);
+  background-position: center;
+}
+
+.tenant-info {
+  flex: 1;
+
+  .card {
+    background-color: whitesmoke;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #000000; // Black border for tenant info card
+  }
+}
+
+.tenant-update-form {
+  flex: 2;
+
+  .card {
+    height: 100%;
+    background-color: whitesmoke;
+    padding: 20px;
+    color: black;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .toggle-button {
+      background-color: #4a90e2; // Default color for toggle button
+      color: #ffffff;
+      border: none;
+      padding: 5px 5px;
+      margin-left: 3px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #357ab7;
+      }
+    }
+  }
+
+  .toggle-form {
+    height: 70%;
+    overflow: scroll;
+    overflow-x: hidden;
+    &.update-total {
+      background-color: #fbe8e8; // Coral color for total update form
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #e14a4a; // Coral border
+
+      button {
+        background-color: #e14a4a; // Coral button
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #c62828;
+        }
+      }
+    }
+
+    &.update-individual {
+      background-color: #e8f5e9; // Green color for individual update form
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #4caf50; // Green border
+
+      button {
+        background-color: #4caf50; // Green button
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #388e3c;
+        }
+      }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333333; // Dark grey for labels
+      }
+
+      input {
+        width: 50%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc; // Light grey border for inputs
+      }
+    }
+  }
+}

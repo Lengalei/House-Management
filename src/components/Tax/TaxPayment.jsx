@@ -24,7 +24,7 @@ const TaxPayment = () => {
   useEffect(() => {
     const fetchYearsData = async () => {
       try {
-        const response = await apiRequest.get('/payments/allRents');
+        const response = await apiRequest.get('/v2/payments/allRents');
         if (response.status === 200) {
           setYearsData(response.data.groupedByYear || []);
         } else {
@@ -131,7 +131,7 @@ const TaxPayment = () => {
       <div className="tax-payment-container">
         <div className="left-card">
           <h2>Select Year</h2>
-          <select value={selectedYear || ""} onChange={handleYearChange}>
+          <select value={selectedYear || ''} onChange={handleYearChange}>
             <option value="" disabled>
               Select Year
             </option>
@@ -155,7 +155,7 @@ const TaxPayment = () => {
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button
                     key={index}
-                    className={index + 1 === currentPage ? "active" : ""}
+                    className={index + 1 === currentPage ? 'active' : ''}
                     onClick={() => handlePageChange(index + 1)}
                   >
                     {index + 1}
@@ -169,9 +169,9 @@ const TaxPayment = () => {
           )}
         </div>
 
-        <div className={`right-card ${!selectedYear ? "disabled" : ""}`}>
+        <div className={`right-card ${!selectedYear ? 'disabled' : ''}`}>
           <h2 className="month-heading">
-            KRA Payment Details for {selectedYear || "..."}
+            KRA Payment Details for {selectedYear || '...'}
           </h2>
           <form onSubmit={handleSubmit}>
             {selectedYear && (
@@ -190,16 +190,16 @@ const TaxPayment = () => {
             {selectedMonth && (
               <div className="input-group">
                 <label>
-                  Selected Month:{" "}
+                  Selected Month:{' '}
                   <span className="selected-month">{selectedMonth}</span>
                 </label>
               </div>
             )}
             <div className="input-group">
               <label>
-                Total Rent for the Selected Month:{" "}
+                Total Rent for the Selected Month:{' '}
                 <span className="rental-value">
-                  {monthRent.toFixed(2) || "0.00"}
+                  {monthRent.toFixed(2) || '0.00'}
                 </span>
               </label>
             </div>
