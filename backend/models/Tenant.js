@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // Define the PaymentHistory schema
 const PaymentHistorySchema = new mongoose.Schema(
@@ -32,7 +32,7 @@ const TenantSchema = new mongoose.Schema(
     houseDeposit: { type: Number, required: true },
     rentPayable: { type: Number, default: 17000 },
     waterDeposit: { type: Number, default: 1200 },
-    garbageFee: { type: Number, default: 500 },
+    garbageFee: { type: Number, default: 150 },
     houseNo: { type: String, unique: true, required: true },
     // Emergency contact
     emergencyContactNumber: { type: Number, required: true },
@@ -53,6 +53,6 @@ const TenantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Tenant = mongoose.model('Tenant', TenantSchema);
+const Tenant = mongoose.model("Tenant", TenantSchema);
 
 export default Tenant;
