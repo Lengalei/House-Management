@@ -21,7 +21,7 @@ function Dashboard() {
 
     //fetchTenants
     const fetchTenants = async () => {
-      const response = await apiRequest.get('/tenants/allTenants');
+      const response = await apiRequest.get('/v2/tenants/getAllTenants');
       if (response.status) {
         console.log('AllTenants: ', response.data);
         setTenants(response.data);

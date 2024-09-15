@@ -19,7 +19,7 @@ const TenantPaymentList = () => {
     const fetchPayments = async () => {
       try {
         const response = await apiRequest.get(
-          `/payments/paymentsByTenant/${tenantId}`
+          `/v2/payments/paymentsByTenant/${tenantId}`
         );
         setPayments(response.data.payments);
         setOnEntryOverPay(response.data.onEntryOverPay);
@@ -44,7 +44,7 @@ const TenantPaymentList = () => {
   const handleDeletePaymentDetail = async () => {
     try {
       const response = await apiRequest.delete(
-        `/payments/deletePayment/${paymentToDelete}`
+        `/v2/payments/deletePayment/${paymentToDelete}`
       );
       if (response.status === 200) {
         setPayments(
@@ -81,20 +81,18 @@ const TenantPaymentList = () => {
             <th>Garbage Fee</th>
             <th>Extra Bills</th>
             <th>Total Amount</th>
-            <th>Amount Paid</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {payments.map((payment) => (
-            <tr key={payment._id}>
-              <td>{new Date(payment.date).toLocaleDateString()}</td>
-              <td>{payment.rent}</td>
-              <td>{payment.waterBill}</td>
-              <td>{payment.garbageFee}</td>
-              <td>{payment.extraBills}</td>
-              <td>{payment.totalAmount}</td>
-              <td>{payment.amountPaid}</td>
+            <tr key={payment?._id}>
+              <td>{payment?.month}</td>
+              <td>{payment?.rent?.amount || 'None'}</td>
+              <td>{payment?.waterBill?.amount || 'None'}</td>
+              <td>{payment?.garbageFee?.amount || 'None'}</td>
+              <td>{payment?.extraCharges?.amount || 'None'}</td>
+              <td>{payment?.totalAmountPaid || 'None'}</td>
               <td>
                 <Link to="/paymentDetails" state={{ payment, onEntryOverPay }}>
                   <button>View Details</button>
@@ -103,12 +101,12 @@ const TenantPaymentList = () => {
                   size={20}
                   color={'red'}
                   className="paymentRecordDeletebtn"
-                  onClick={() => handleOpenModal(payment._id)}
+                  onClick={() => handleOpenModal(payment?._id)}
                 />
                 <br />
                 <br />
-                {payment.paymentHistory &&
-                  payment.paymentHistory.length > 0 && (
+                {payment?.paymentHistory &&
+                  payment?.paymentHistory?.length > 0 && (
                     <button onClick={() => handleViewMiniPayments(payment)}>
                       MiniPayments
                     </button>

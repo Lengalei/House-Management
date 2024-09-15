@@ -178,7 +178,10 @@ const GreyList = () => {
                     Update Payment for {capitalizeName(selectedTenant.name)}
                   </h3>
                   <div className="popup-input">
-                    <label>Remaining Balance: {remainingBalance} </label>
+                    <label>
+                      Remaining Balance: {remainingBalance} for{' '}
+                      {selectedTenant.monthInQuestionPay}{' '}
+                    </label>
                   </div>
                   <div className="popup-input">
                     <label>Amount:</label>

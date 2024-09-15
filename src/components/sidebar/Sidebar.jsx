@@ -78,14 +78,11 @@ const Sidebar = () => {
             </div>
             {tenantDropdownOpen && (
               <div className="dropdown-content">
-                <Link to="/registerTenant" className="dash">
+                <Link to="/v2/registerTenant" className="dash">
                   Register Tenant
                 </Link>
-                <Link to="/greyList" className="dash">
-                  Grey List
-                </Link>
-                <Link to="/listAllTenants" className="dash">
-                  List All
+                <Link to="/v2/incompleteDeposits" className="dash">
+                  Incomplete Deposits
                 </Link>
               </div>
             )}

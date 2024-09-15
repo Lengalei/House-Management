@@ -32,8 +32,10 @@ export const registerTenant = async (req, res) => {
     rentPayable,
     emergencyContactNumber,
     emergencyContactName,
+    //from popup
     amountPaid,
     paymentDate,
+    monthInQuestionPay,
     referenceNumber,
   } = req.body;
 
@@ -49,6 +51,7 @@ export const registerTenant = async (req, res) => {
     !rentPayable ||
     !emergencyContactNumber ||
     !emergencyContactName ||
+    !monthInQuestionPay ||
     !amountPaid ||
     !paymentDate ||
     !referenceNumber
@@ -138,6 +141,7 @@ export const registerTenant = async (req, res) => {
       emergencyContactNumber,
       emergencyContactName,
       amountPaid: amountPaidNum,
+      monthInQuestionPay,
       paymentDate,
       referenceNumber,
       isInGreyList,
