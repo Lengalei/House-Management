@@ -20,6 +20,13 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-left: 4px solid #000000; // Black border for tenant info card
+
+    p {
+      margin: 2px;
+      padding: 3px;
+      border-radius: 12px;
+      border: 1px solid wheat;
+    }
   }
 }
 

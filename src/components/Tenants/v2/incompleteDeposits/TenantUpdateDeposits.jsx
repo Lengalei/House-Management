@@ -242,14 +242,33 @@ const TenantUpdateDeposit = () => {
           <p>
             <strong>House No:</strong> {tenant?.houseDetails?.houseNo}
           </p>
-          <p>
-            <strong>Rent Deposit Deficit:</strong> KSH{' '}
-            {tenant?.deposits?.rentDepositDeficit}
-          </p>
-          <p>
-            <strong>Water Deposit Deficit:</strong> KSH{' '}
-            {tenant?.deposits?.waterDepositDeficit}
-          </p>
+          {tenant?.deposits?.rentDepositDeficit ? (
+            <p>
+              <strong>Rent Deposit Deficit:</strong> KSH{' '}
+              {tenant?.deposits?.rentDepositDeficit}
+            </p>
+          ) : (
+            ''
+          )}
+
+          {tenant?.deposits?.waterDepositDeficit ? (
+            <p>
+              <strong>Water Deposit Deficit:</strong> KSH{' '}
+              {tenant?.deposits?.waterDepositDeficit}
+            </p>
+          ) : (
+            ''
+          )}
+
+          {tenant?.deposits?.initialRentPaymentDeficit ? (
+            <p>
+              <strong>Initial rent Deficit:</strong> KSH{' '}
+              {tenant?.deposits?.initialRentPaymentDeficit}
+            </p>
+          ) : (
+            ''
+          )}
+
           <p>
             <strong>Total Deficit:</strong> KSH {calculateTotalDeficit}
           </p>
