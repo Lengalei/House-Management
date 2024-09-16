@@ -8,21 +8,21 @@
   margin: 0 auto;
   padding: 10px;
   font-family: Arial, sans-serif;
-  border: 1px solid whitesmoke;
+  // border: 1px solid whitesmoke;
   background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
     url(/register.jpeg);
 
   .registration-card {
-    background-color: #fff;
+    backdrop-filter: blur(10px);
+    // background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(161, 171, 71, 0.1);
     padding: 20px;
     margin-bottom: 20px;
   }
 
   .registration-card {
     width: 50%;
-    margin-bottom: 2px;
     padding: 10px;
     height: 85%;
     overflow: scroll;
@@ -32,27 +32,35 @@
     align-items: center;
     justify-content: flex-start;
     h2 {
-      margin-bottom: 7px;
+      width: 100%;
       font-size: 20px;
-      color: #333;
-      text-decoration: underline;
+      color: #007bff;
+      // text-decoration: underline;
+    }
+    .h{
+      width: 10%;
+      height: 30px;
+      color: #007bff;
+      // border: none;
     }
     form {
       display: flex;
       flex-direction: column;
-      height: 90%;
+      height: 100%;
+      margin-bottom: 20px;
+      padding: 10px;
       //border: 1px solid crimson;
 
       label {
         margin: 10px 0 5px;
         font-size: 14px;
-        color: #555;
+        color: #b8980b;
       }
 
       input {
         margin-bottom: 15px;
         padding: 10px;
-        color: black;
+        color: white;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 14px;
@@ -61,22 +69,26 @@
       button {
         padding: 10px;
         border: none;
+        margin-top: 10px;
+        margin-bottom: 30px;
         border-radius: 4px;
         background-color: #007bff;
         color: #fff;
         font-size: 16px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background-color 0.5s;
 
         &:hover {
-          background-color: #0056b3;
+          background-color: #b8980b;
         }
       }
 
       .house-selection {
         padding: 10px;
         border: 1px solid #ddd;
-        color: coral;
+        color: #b8980b;
+        font-size: 18px;
+        font-weight: 800;
         border-radius: 4px;
         cursor: pointer;
         text-align: center;
@@ -92,18 +104,23 @@
 
   .deposit-popup {
     margin-bottom: 20px;
-    background: #f5f5f5;
+    background-image: linear-gradient(rgba(250,250,250,0.8),rgba(250,250,250,0.8)), url("/house2.jpg");
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    max-width: max-content;
-    height: 100%;
+    width:50%;
+    height: 95%;
     // border: 1px solid crimson;
 
     h2 {
-      color: brown;
+      color: rgb(32, 31, 31);
       margin-bottom: 20px;
+
+      span{
+        color: #b8980b;
+        font-weight: 800;
+      }
     }
 
     h2 {
@@ -112,7 +129,7 @@
     }
 
     .close-popup {
-      background-color: #8a1515;
+      background-color: #007bff;
       border: none;
       font-size: 20px;
       padding: 2px 4px;
@@ -160,7 +177,7 @@
         padding: 20px;
         margin-bottom: 20px;
         border-radius: 8px;
-        border: 1px solid #7e0202;
+        border: 1px solid #b8980b;
 
         h3 {
           font-size: 18px;
@@ -190,8 +207,10 @@
       }
 
       .single-deposit {
-        background-color: #e9f5ff;
-        border: 1px solid #722543;
+        // background-color: #e9f5ff;
+        backdrop-filter: blur(8px);
+        border: 1px solid #b8980b;
+        width: 50%;
 
         form {
           display: flex;
@@ -200,11 +219,12 @@
           justify-content: left;
         }
         label {
-          color: #722543;
+          color: #3d3d03;
+         
         }
         h3 {
           color: #0056b3;
-          text-decoration: underline;
+           
         }
 
         button {
@@ -212,14 +232,15 @@
           color: #fff;
 
           &:hover {
-            background-color: #004a99;
+            background-color: #b8980b;
           }
         }
       }
 
       .multiple-deposits {
-        background-color: #e9ffe9;
-        border: 1px solid #b3ffb3;
+        backdrop-filter: blur(8px);
+        border: 1px solid #b8980b;
+        width: 50%;
         height: 100%;
         overflow: scroll;
         overflow-x: hidden;
@@ -231,19 +252,18 @@
           justify-content: left;
         }
         label {
-          color: #28a745;
+          color: #3d3d03;
         }
         h3 {
-          color: #28a745;
-          text-decoration: underline;
+          color: #0056b3;
         }
 
         button {
-          background-color: #28a745;
+          background-color: #0056b3;
           color: #fff;
 
           &:hover {
-            background-color: #218838;
+            background-color: #b8980b;
           }
         }
       }

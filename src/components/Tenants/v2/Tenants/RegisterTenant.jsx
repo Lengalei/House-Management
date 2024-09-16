@@ -153,7 +153,7 @@ const RegisterTenant = () => {
     <div className="register-tenant">
       {!tenantData && (
         <div className="registration-card">
-          <h2>Tenant Registration</h2>
+          <h2>Tenant Registration</h2> <hr className="h" />
           <form onSubmit={handleSubmit}>
             <label htmlFor="name">Name</label>
             <input
@@ -276,7 +276,7 @@ const RegisterTenant = () => {
           >
             ×
           </button>
-          <h2>Tenant: {tenantData.name}</h2>
+          <h2><span>Tenant </span> : {tenantData.name}</h2>
           <div className="deposit-toggle">
             <button onClick={() => setShowSingleDeposit(!showSingleDeposit)}>
               {showSingleDeposit
