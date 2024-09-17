@@ -549,9 +549,7 @@ export const addSingleAmountDeposit = async (req, res) => {
     } = tenant.houseDetails;
 
     const totalRequiredDeposit =
-      parseFloat(houseRentDeposit) +
-      parseFloat(houseWaterDeposit) +
-      parseFloat(requiredInitialRent);
+      parseFloat(houseRentDeposit) + parseFloat(houseWaterDeposit);
 
     // Initialize amounts
     let remainingAmount = parseFloat(totalAmount);

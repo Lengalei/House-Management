@@ -277,7 +277,7 @@ const TenantPayments = () => {
                           {payment?.totalAmountPaid}
                         </p>
                         <p>
-                          <strong>Excess Payment:</strong>{' '}
+                          <strong>Excess Payment :</strong>{' '}
                           {payment?.overpay > 0 ? payment?.overpay : 'None'}
                         </p>
                         <p>

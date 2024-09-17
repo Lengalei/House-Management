@@ -200,13 +200,11 @@ export const updatePayment = async (req, res) => {
 
     //handle special water update
     if (Number(sentWaterDeficit) > 0) {
-      console.log('sentWaterDeficit: ', sentWaterDeficit);
       // Use sentWaterDeficit to reduce the current deficit
       const coverageAmount = Math.min(
         sentWaterDeficit,
         payment.waterBill.deficit
       ); // Cover only the deficit amount
-      console.log('coverageAmount: ', coverageAmount);
       // Subtract the covered amount from the deficit
       payment.waterBill.deficit -= coverageAmount;
 
@@ -298,15 +296,19 @@ export const updatePayment = async (req, res) => {
           payment.waterBill.amount += waterCover;
           payment.waterBill.deficit -= waterCover;
           overpay -= waterCover;
+          payment.overpay = overpay;
           payment.waterBill.transactions.push({
             amount: waterCover,
             referenceNumber: 'OVERPAY',
             date,
           });
-          recordExcessHistory(
-            waterCover,
-            `Overpay applied to cover water deficit`
-          );
+
+          payment.excessHistory.push({
+            initialOverpay: overpay + waterCover,
+            excessAmount: overpay,
+            description: `Excess payment from extra charges for ${month} ${year}`,
+            date,
+          });
 
           // Check if the water deficit has been fully covered
           if (payment.waterBill.deficit === 0) {
@@ -361,15 +363,18 @@ export const updatePayment = async (req, res) => {
         payment.garbageFee.amount += garbageCover;
         payment.garbageFee.deficit -= garbageCover;
         overpay -= garbageCover;
+        payment.overpay = overpay;
         payment.garbageFee.transactions.push({
           amount: garbageCover,
           referenceNumber: 'OVERPAY',
           date,
         });
-        recordExcessHistory(
-          garbageCover,
-          `Overpay applied to cover garbage deficit`
-        );
+        payment.excessHistory.push({
+          initialOverpay: overpay + garbageCover,
+          excessAmount: overpay,
+          description: `Overpay amount of ${garbageCover} applied to cover garbage deficit ${month} ${year}`,
+          date,
+        });
       }
 
       // Check if the garbage deficit has been fully covered
@@ -383,6 +388,7 @@ export const updatePayment = async (req, res) => {
       }
     }
 
+    payment.overpay = overpay;
     // 5. Update globalDeficit
     const updatedGlobalDeficit =
       payment.rent.deficit +
@@ -428,17 +434,18 @@ export const updatePayment = async (req, res) => {
   }
 };
 
-// monthly pay processing
+//monthly payment processing
 export const monthlyPayProcessing = async (req, res) => {
   const {
     tenantId,
-    newMonthlyAmount: amount,
+    newMonthlyAmount: amount, // newMonthlyAmount is assumed to be a number, but ensure it's numeric
     newPaymentDate: depositDate,
     referenceNumber: referenceNo,
-    extraCharges,
+    extraCharges: frontendExtraCharges,
     month,
     year,
   } = req.body;
+
   try {
     // Ensure depositDate is a Date object
     const dateObject = new Date(depositDate);
@@ -446,11 +453,11 @@ export const monthlyPayProcessing = async (req, res) => {
       throw new Error('Invalid depositDate');
     }
 
-    let extraChargesPaidAmount = parseFloat(extraCharges.paidAmount);
-    console.log('extraChargesPaidAmount: ', extraChargesPaidAmount);
-    let extraChargesExpectedAmount = parseFloat(extraCharges.expectedAmount);
-    console.log('extraChargesExpectedAmount: ', extraChargesExpectedAmount);
-    let description = extraCharges.description;
+    let extraChargesPaidAmount = parseFloat(frontendExtraCharges.paidAmount);
+    let extraChargesExpectedAmount = parseFloat(
+      frontendExtraCharges.expectedAmount
+    );
+    let description = frontendExtraCharges.description;
 
     // Convert month name to previous month
     const months = [
@@ -482,12 +489,11 @@ export const monthlyPayProcessing = async (req, res) => {
 
     let previousOverpay = 0;
     if (previousPayment && previousPayment.overpay > 0) {
-      previousOverpay = previousPayment.overpay;
+      previousOverpay = parseFloat(previousPayment.overpay); // Ensure it's numeric
     }
 
     // Add previous month's overpay to the current excess
-    let excess = previousOverpay;
-    excess += amount;
+    let excess = parseFloat(previousOverpay) + parseFloat(amount);
 
     // Fetch tenant data
     const tenant = await Tenant.findById(tenantId).populate('houseDetails');
@@ -498,15 +504,26 @@ export const monthlyPayProcessing = async (req, res) => {
 
     // Initialize the payment record
     let payment = await Payment.findOne({ tenant: tenantId, year, month });
-    console.log('found payment: ', payment);
     if (!payment) {
       payment = new Payment({
         tenant: tenantId,
         year,
         month,
         referenceNumber: referenceNo,
-        rent: { amount: 0, transactions: [], paid: false },
-        garbageFee: { amount: 0, transactions: [], paid: false },
+        rent: {
+          amount: 0,
+          transactions: [],
+          paid: false,
+          deficit: 0,
+          deficitHistory: [],
+        },
+        garbageFee: {
+          amount: 0,
+          transactions: [],
+          paid: false,
+          deficit: 0,
+          deficitHistory: [],
+        },
         extraCharges: {
           description: description,
           expected: 0,
@@ -524,6 +541,7 @@ export const monthlyPayProcessing = async (req, res) => {
         globalDeficitHistory: [],
       });
     }
+
     // Handle Rent Payment
     const currentRentAmount = parseFloat(payment.rent.amount);
     const rentDue = Math.max(rentAmount - currentRentAmount, 0);
@@ -540,7 +558,10 @@ export const monthlyPayProcessing = async (req, res) => {
     );
     payment.rent.paid = payment.rent.amount >= rentAmount;
 
-    // Handle rent deficit if any
+    // Deduct rent payment from excess
+    excess = parseFloat((excess - rentPayment).toFixed(2));
+
+    // Handle Rent Deficit
     const rentDeficit = rentAmount - payment.rent.amount;
     if (rentDeficit > 0) {
       payment.rent.deficit = parseFloat(rentDeficit.toFixed(2));
@@ -551,26 +572,25 @@ export const monthlyPayProcessing = async (req, res) => {
       });
     }
 
-    // Deduct rent payment from excess
-    excess = parseFloat((excess - rentPayment).toFixed(2));
-
     // Handle Garbage Fee Payment
     const currentGarbageAmount = parseFloat(payment.garbageFee.amount);
     const garbageDue = Math.max(garbageFeeAmount - currentGarbageAmount, 0);
     const garbagePayment = Math.min(excess, garbageDue);
 
-    payment.garbageFee.transactions.push({
-      amount: parseFloat(garbagePayment.toFixed(2)),
-      referenceNumber: referenceNo,
-      date: dateObject,
-    });
+    if (garbagePayment > 0) {
+      payment.garbageFee.transactions.push({
+        amount: parseFloat(garbagePayment.toFixed(2)),
+        referenceNumber: referenceNo,
+        date: dateObject,
+      });
+    }
 
     payment.garbageFee.amount = parseFloat(
       (currentGarbageAmount + garbagePayment).toFixed(2)
     );
     payment.garbageFee.paid = payment.garbageFee.amount >= garbageFeeAmount;
 
-    // Handle garbage deficit if any
+    // Handle Garbage Deficit
     const garbageDeficit = garbageFeeAmount - payment.garbageFee.amount;
     if (garbageDeficit > 0) {
       payment.garbageFee.deficit = parseFloat(garbageDeficit.toFixed(2));
@@ -584,80 +604,96 @@ export const monthlyPayProcessing = async (req, res) => {
     // Deduct garbage payment from excess
     excess = parseFloat((excess - garbagePayment).toFixed(2));
 
+    // Record the excess in overpay and excessHistory field before handling extraCharges
+    if (excess > 0) {
+      payment.excessHistory.push({
+        initialOverpay: payment.overpay,
+        excessAmount: excess,
+        description: `Excess payment from extra charges for ${month} ${year} prior to handling the extra charges`,
+        date: dateObject,
+      });
+      payment.overpay = parseFloat((payment.overpay + excess).toFixed(2));
+    }
+
     // Handle Extra Charges
     payment.extraCharges.expected = extraChargesExpectedAmount;
+
+    // Record initial extra charges amount
+    payment.extraCharges.transactions.push({
+      amount: extraChargesPaidAmount || 0,
+      referenceNumber: referenceNo,
+      date: dateObject,
+    });
+
     payment.extraCharges.amount = extraChargesPaidAmount;
 
-    if (extraChargesPaidAmount >= extraChargesExpectedAmount) {
-      // Extra charges paid in full or excess
-      payment.extraCharges.paid = true;
+    // First, cover any deficits in extra charges
+    let extraDeficit = extraChargesExpectedAmount - extraChargesPaidAmount;
+
+    // Use excess to cover extra charges deficit
+    const deficitCoverage = Math.min(excess, extraDeficit);
+    if (deficitCoverage > 0) {
       payment.extraCharges.transactions.push({
         amount: extraChargesPaidAmount,
         referenceNumber: referenceNo,
         date: dateObject,
       });
+      payment.extraCharges.amount += parseFloat(deficitCoverage.toFixed(2));
+      extraDeficit = parseFloat((extraDeficit - deficitCoverage).toFixed(2));
+      excess = parseFloat((excess - deficitCoverage).toFixed(2));
 
-      const extraExcess = extraChargesPaidAmount - extraChargesExpectedAmount;
-      if (extraExcess > 0) {
-        payment.overpay = parseFloat(
-          (payment.overpay + extraExcess).toFixed(2)
-        );
-        payment.excessHistory.push({
-          initialOverpay: excess,
-          excessAmount: extraExcess,
-          description: `Excess payment from extra charges on ${dateObject.toLocaleString()}`,
-          date: dateObject,
-        });
-      }
-    } else {
-      // Calculate the deficit for extra charges
-      let extraDeficit = extraChargesExpectedAmount - extraChargesPaidAmount;
-
-      // Check if there's enough overpay (excess) to cover the extra charges deficit
-      const deficitCoverage = Math.min(excess, extraDeficit); // Use excess to cover part or all of the deficit
-
-      if (deficitCoverage > 0) {
-        // Update extraCharges with the covered amount
-        payment.extraCharges.transactions.push({
-          amount: deficitCoverage,
-          referenceNumber: referenceNo,
-          date: dateObject,
-        });
-
-        payment.extraCharges.amount += parseFloat(deficitCoverage.toFixed(2));
-
-        // Adjust the extra deficit
-        extraDeficit = parseFloat((extraDeficit - deficitCoverage).toFixed(2));
-
-        // Deduct the used overpay from the excess
-        excess = parseFloat((excess - deficitCoverage).toFixed(2));
-
-        // Record the deficit coverage in the extraCharges deficit history
-        payment.extraCharges.deficitHistory.push({
-          amount: deficitCoverage,
-          description: `Covered deficit of extra charges using overpay for ${month} ${year}`,
-          date: dateObject,
-        });
-      }
-
-      // Update the extraCharges deficit
-      payment.extraCharges.deficit = extraDeficit;
-
-      if (extraDeficit > 0) {
-        payment.extraCharges.transactions.push({
-          amount: extraChargesPaidAmount,
-          referenceNumber: referenceNo,
-          date: dateObject,
-        });
-        payment.extraCharges.deficitHistory.push({
-          amount: extraDeficit,
-          description: `Remaining ${extraDeficit} deficit in extra charges for ${month} ${year}`,
-          date: dateObject,
-        });
-      }
+      payment.extraCharges.deficitHistory.push({
+        amount: deficitCoverage,
+        description: `Covered deficit of extra charges using overpay for ${month} ${year}`,
+        date: dateObject,
+      });
     }
 
-    // Update the total amount paid
+    // Record the new value of extra charges amount
+    if (extraChargesPaidAmount !== payment.extraCharges.amount) {
+      payment.extraCharges.transactions.push({
+        amount: payment.extraCharges.amount,
+        referenceNumber: referenceNo,
+        date: dateObject,
+      });
+    }
+
+    payment.extraCharges.deficit = extraDeficit;
+
+    // If all extra charges are paid and there's no deficit
+    if (extraDeficit <= 0) {
+      payment.extraCharges.paid = true;
+      payment.extraCharges.deficitHistory.push({
+        amount: 0,
+        description: `Extra Charges Deficit fully covered for by the excess amount for ${month} ${year}`,
+        date: dateObject,
+      });
+      if (excess > 0) {
+        payment.excessHistory.push({
+          initialOverpay: payment.overpay,
+          excessAmount: excess,
+          description: `Excess payment from extra charges for ${month} ${year}`,
+          date: dateObject,
+        });
+        payment.overpay = parseFloat(excess.toFixed(2));
+      }
+    } else {
+      // If extra charges are partially paid, record deficit
+      payment.extraCharges.deficitHistory.push({
+        amount: extraDeficit,
+        description: `Remaining deficit of extra charges for ${month} ${year}`,
+        date: dateObject,
+      });
+      payment.excessHistory.push({
+        initialOverpay: payment.overpay,
+        excessAmount: 0,
+        description: `Excess payment from extra charges for ${month} ${year}`,
+        date: dateObject,
+      });
+      payment.overpay = parseFloat(excess.toFixed(2));
+    }
+
+    // Update total amount paid
     payment.totalAmountPaid = parseFloat(
       (
         payment.rent.amount +
@@ -666,20 +702,20 @@ export const monthlyPayProcessing = async (req, res) => {
       ).toFixed(2)
     );
 
-    // Calculate and update global deficit
-    const globalDeficit =
-      rentDeficit + garbageDeficit + payment.extraCharges.deficit;
-    payment.globalDeficit = parseFloat(globalDeficit.toFixed(2));
+    // Handle Global Deficit (Sum of all Deficits: rent + garbage + extraCharges)
+    let globalDeficit =
+      rentDeficit + garbageDeficit + parseFloat(extraDeficit.toFixed(2));
     if (globalDeficit > 0) {
+      payment.globalDeficit = parseFloat(globalDeficit.toFixed(2));
       payment.globalDeficitHistory.push({
         year,
         month,
-        totalDeficitAmount: globalDeficit,
-        description: `Global deficit of ${globalDeficit} for ${month} ${year}`,
+        totalDeficitAmount: payment.globalDeficit,
+        description: `Global Deficit for the month of ${month} ${year}`,
       });
     }
 
-    // Create global transaction record
+    // Add global transaction history record
     payment.globalTransactionHistory.push({
       year,
       month,
@@ -691,13 +727,11 @@ export const monthlyPayProcessing = async (req, res) => {
       globalDeficit: payment.globalDeficit,
     });
 
-    // Save the payment record
     await payment.save();
-
     res.status(200).json(payment);
   } catch (error) {
-    console.error('Error creating payment record:', error);
-    res.status(500).json({ message: 'Server Error!', error });
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
