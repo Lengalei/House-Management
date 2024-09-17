@@ -1,5 +1,5 @@
 import './Login.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ForgotPassword from '../forgotPassword/ForgotPassword';
 import apiRequest from '../../../lib/apiRequest';
@@ -15,6 +15,23 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [adminBc, setAdminFromBc] = useState([]);
+
+  useEffect(() => {
+    const checkIfthereIsAnUserLoggedIn = async () => {
+      try {
+        const response = await apiRequest.get('/auth/getAdmins');
+        if (response.status) {
+          // console.log('admins found: ', response.data);
+          setAdminFromBc(response.data);
+        }
+      } catch (error) {
+        setError(error.response.data.message);
+      }
+    };
+    checkIfthereIsAnUserLoggedIn();
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -27,7 +44,7 @@ function Login() {
       });
 
       if (response.status) {
-        console.log('logged from login page', response.data);
+        // console.log('logged from login page', response.data);
         dispatch(setAdmin(response.data));
         localStorage.setItem('adminData', JSON.stringify(response.data));
         navigate('/');
@@ -76,12 +93,18 @@ function Login() {
               </span>
             </div>
             <span>
-              <h6>
-                Don{"'"}t have an Account?{' '}
-                <a className="forgot-password-link" href="/register">
-                  Sign Up
-                </a>
-              </h6>
+              {adminBc.length > 0 && adminBc[0]?.username ? (
+                <>
+                  <h6>Admin Found.Register Endpoint Not Allowed!</h6>
+                </>
+              ) : (
+                <h6>
+                  Don{"'"}t have an Account?{' '}
+                  <a className="forgot-password-link" href="/register">
+                    Sign Up
+                  </a>
+                </h6>
+              )}
             </span>
             {error && <span className="loginError">{error}!</span>}
             <button type="submit" className="LoginBtn">

@@ -14,7 +14,7 @@ function Dashboard() {
     const fetchHouses = async () => {
       const response = await apiRequest.get('/houses/getAllHouses');
       if (response.status) {
-        console.log('houses', response.data);
+        // console.log('houses', response.data);
         setHouses(response.data);
       }
     };
@@ -23,7 +23,7 @@ function Dashboard() {
     const fetchTenants = async () => {
       const response = await apiRequest.get('/v2/tenants/getAllTenants');
       if (response.status) {
-        console.log('AllTenants: ', response.data);
+        // console.log('AllTenants: ', response.data);
         setTenants(response.data);
       }
     };
@@ -32,7 +32,7 @@ function Dashboard() {
     const fetchAllPayments = async () => {
       const response = await apiRequest.get('/payments/getAllPayments');
       if (response.status) {
-        console.log('allPayments: ', response.data);
+        // console.log('allPayments: ', response.data);
         setPayments(response.data);
       }
     };

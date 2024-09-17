@@ -16,8 +16,8 @@
 }
 
 .navbar-logo {
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
 }
 .navbar-logo img {
   width: 100%;
@@ -34,15 +34,19 @@
 }
 
 .navbar-profile {
+  padding-top: 4px;
+  width: 15%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .profile-pic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
+  width: auto;
+  height: 60px;
+  border-radius: 30px;
+  filter: drop-shadow(2px 2px 4px crimson);
 }
 .profile-pic:hover {
   cursor: pointer;
@@ -147,7 +151,8 @@
 
 .dropdown-content a {
   color: var(--primary-color);
-  font-size: 16px;
+  font-size: 25px;
+  font-weight: 700;
 }
 
 .dropdown-content a:hover {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBell, FaEnvelope, FaCaretDown } from 'react-icons/fa';
+import { FaCaretDown } from 'react-icons/fa';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch } from 'react-redux';
 import { resetAdmin } from '../../features/Admin/adminSlice';
@@ -9,9 +9,9 @@ import { resetAdmin } from '../../features/Admin/adminSlice';
 const Navbar = () => {
   //const admin = useSelector((store) => store.adminData.adminDataValue);
   const admin = JSON.parse(localStorage.getItem('adminData'));
-  console.log('adminData: ', admin);
+  // console.log('adminData: ', admin);
 
-  console.log('logged from Nav: ', admin);
+  // console.log('logged from Nav: ', admin);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,7 +27,7 @@ const Navbar = () => {
     if (!res.status) {
       setError(res.data.error);
     } else {
-      console.log('Logouted Succesfully');
+      // console.log('Logouted Succesfully');
       localStorage.removeItem('adminData');
       dispatch(resetAdmin());
       navigate('/login');
@@ -42,8 +42,9 @@ const Navbar = () => {
         <img src="/homelogo.png" alt="" />
       </div>
       <div className="navbar-center">
-        <FaBell size={20} />
-        <FaEnvelope size={20} />
+        {/* <FaBell size={20} />
+        <FaEnvelope size={20} /> */}
+        <h3>Welcome {admin?.username}</h3>
       </div>
       {admin ? (
         <div className="navbar-profile">

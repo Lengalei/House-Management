@@ -55,7 +55,7 @@ const Sidebar = () => {
             <FaUsers className="icon" /> All Tenants
           </Link>
 
-          <Link to="/greyList" className="dash">
+          <Link to="/v2/incompleteDeposits" className="dash">
             <FaClipboardList className="icon" />
             Grey List
           </Link>

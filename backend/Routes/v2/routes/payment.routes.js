@@ -4,6 +4,7 @@ import {
   getUnpaidTenantPayments,
   updatePayment,
   monthlyPayProcessing,
+  ExtraAmountGivenInAmonth,
   //
   getGroupedPaymentsByTenant,
   getPaymentsByTenantId,
@@ -17,6 +18,7 @@ router.get('/unpaidPayments/:tenantId', getUnpaidTenantPayments);
 router.get('/fullyPaidPayments/:tenantId', getFullyPaidTenantPayments);
 router.put('/updatePayment/:paymentId', updatePayment);
 router.post('/monthlyPayProcessing', monthlyPayProcessing);
+router.put('/ExtraAmountGivenInAmonth/:paymentId', ExtraAmountGivenInAmonth);
 
 // Get all payments grouped by tenantId
 router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);

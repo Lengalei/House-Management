@@ -1053,6 +1053,53 @@ export const updateTenant = async (req, res) => {
   }
 };
 
+//update Tenant's HouseDetails rent and garbage Fee
+export const updateTenantHouseDetails = async (req, res) => {
+  const { tenantId } = req.params;
+  try {
+    const { rentDefault, garbageDefault } = req.body;
+
+    // Validate input
+    if (rentDefault === undefined || garbageDefault === undefined) {
+      return res.status(400).json({ message: 'All fields must be filled!' });
+    }
+
+    // Check if both values are numbers and non-negative
+    if (isNaN(rentDefault) || isNaN(garbageDefault)) {
+      return res
+        .status(400)
+        .json({ message: 'Rent and Garbage Fee must be valid numbers!' });
+    }
+
+    const rent = parseFloat(rentDefault);
+    const garbageFee = parseFloat(garbageDefault);
+
+    if (rent < 0 || garbageFee < 0) {
+      return res
+        .status(400)
+        .json({ message: 'Rent and Garbage Fee must be non-negative values!' });
+    }
+
+    // Find tenant
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'No Tenant Found!' });
+    }
+
+    // Update tenant details
+    tenant.houseDetails.rent = rent;
+    tenant.houseDetails.garbageFee = garbageFee;
+
+    await tenant.save();
+    res.status(200).json(tenant);
+  } catch (error) {
+    console.error('Error updating tenant house details:', error); // Add error logging
+    res.status(500).json({
+      message: 'An error occurred while updating tenant house details.',
+    });
+  }
+};
+
 // Delete a Tenant by ID
 export const deleteTenant = async (req, res) => {
   const id = req.params.id;

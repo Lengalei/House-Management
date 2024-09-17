@@ -5,6 +5,7 @@ import {
   addDeposits,
   addSingleAmountDeposit,
   tenantsWithIncompleteDeposits,
+  updateTenantHouseDetails,
   // updateWithMultipleDeposits,
   //
   getTenants,
@@ -38,6 +39,7 @@ router.get('/getSingleTenant/:id', getTenantById);
 // Route to update a tenant by ID
 router.put('/updateTenant/:id', updateTenant);
 
+router.put('/updateTenantHouseDetails/:tenantId', updateTenantHouseDetails);
 // Route to delete a tenant by ID
 router.delete('/deleteTenant/:id', deleteTenant);
 

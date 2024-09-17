@@ -214,3 +214,17 @@ export const adminUpdateProfile = async (req, res) => {
       .json({ error: 'Iternal server Error. Failled to Change Pass' });
   }
 };
+
+//get admins
+export const checkIfthereIsAnyAdmin = async (req, res) => {
+  try {
+    const admins = await User.find({});
+    if (!admins) {
+      return res.status(404).json({ message: 'No admins found!' });
+    }
+    res.status(200).json(admins);
+  } catch (error) {
+    console.log('error Occured fetching Admins: ', error);
+    res.status(500).json({ message: 'Server Error!', errro });
+  }
+};

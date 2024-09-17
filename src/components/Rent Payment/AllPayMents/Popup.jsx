@@ -28,7 +28,7 @@ const Popup = ({ payments, onClose }) => {
           {displayedPayments.map((payment) => (
             <div className="payment-mini-card" key={payment?._id}>
               <div className="mini-card-header">
-                <p>Month: {payment?.month}</p>
+                <p>Month: {payment?.month + `, ` + payment.year}</p>
                 <p>
                   Total Amount: {payment?.totalAmountPaid?.toLocaleString()}
                 </p>

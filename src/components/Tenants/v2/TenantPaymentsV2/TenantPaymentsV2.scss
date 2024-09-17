@@ -2,8 +2,10 @@
   text-transform: capitalize;
   padding: 5px;
   height: 100%;
+  max-width: 80%;
+  margin: 0 auto;
   .payments-cards {
-    height: 80%;
+    height: 85%;
     display: flex;
     justify-content: space-between;
 
@@ -12,7 +14,7 @@
       border: 1px solid #288b35;
       border-radius: 8px;
       padding: 8px;
-      height: 87%;
+      height: 95%;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
       .card-header {
@@ -45,7 +47,21 @@
 
       .card-body {
         // border: 1px solid yellow;
-        height: 80%;
+        padding: 0;
+        height: 70%;
+        .year-selector {
+          margin-bottom: 2px;
+          label {
+            margin: 0;
+            outline: 0;
+            padding: 0;
+            font-size: smaller;
+          }
+          in select {
+            height: 38px;
+            font-size: smaller;
+          }
+        }
 
         .mini-cards {
           display: flex;
@@ -76,6 +92,20 @@
           }
         }
       }
+      .addExtraAmount {
+        background-color: #ccc;
+        padding: 7px;
+        border-radius: 7px;
+        color: #dc3545;
+        position: absolute;
+        right: 58%;
+        top: 70%;
+      }
+      .addExtraAmount:hover {
+        background-color: antiquewhite;
+        color: #dc3545;
+        cursor: pointer;
+      }
     }
   }
 
@@ -89,6 +119,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .updateDefaults {
+      color: chocolate;
+    }
 
     .popup {
       background: #ddd;
@@ -171,7 +205,6 @@
     color: red;
     margin-top: 16px;
   }
-  /* Add these styles at the end of your SCSS file */
 
   .disabled-card {
     pointer-events: none; /* Prevent clicks */
@@ -195,6 +228,7 @@
       z-index: 2; /* Ensure the card body content is above the overlay */
     }
   }
+
   .water-bill-section {
     margin-bottom: 1rem;
   }

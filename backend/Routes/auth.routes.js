@@ -3,6 +3,7 @@ import {
   login,
   logout,
   register,
+  checkIfthereIsAnyAdmin,
   forgotPassword,
   resetPassword,
   adminChangePassword,
@@ -14,6 +15,7 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/logout', logout);
+router.get('/getAdmins', checkIfthereIsAnyAdmin);
 router.post('/forgotPassword', forgotPassword); // Add forgot password route
 router.post('/resetPassword', resetPassword); // Add reset password route
 router.put('/adminChangePassword', adminChangePassword); // Add reset password route
