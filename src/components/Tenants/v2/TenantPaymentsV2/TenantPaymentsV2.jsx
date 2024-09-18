@@ -351,7 +351,6 @@ const TenantPayments = () => {
       if (response.status) {
         console.log('All good');
         setAddInternalAmountPopup(false);
-        navigate('/rentpayment');
       }
     } catch (error) {
       setError(error.response.data.message);
@@ -360,7 +359,9 @@ const TenantPayments = () => {
 
   return (
     <div className="tenant-payments-container">
-      <h1>{tenantDetails?.name} Payment Management</h1>
+      <h1>
+        <span>{tenantDetails?.name}</span>'s Payment Track
+      </h1>
       {error && <span>{error}</span>}
       <div className="payments-cards">
         {/* Left Card */}
