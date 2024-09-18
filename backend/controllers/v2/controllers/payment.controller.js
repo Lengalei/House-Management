@@ -966,7 +966,7 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
     let tenant = await Tenant.findById(payment.tenant);
     if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
 
-    let remainingAmount = extraAmountProvided;
+    let remainingAmount = parseFloat(extraAmountProvided);
 
     // ----- Rent Deficit Handling -----
     if (payment.rent.amount < tenant.houseDetails.rent) {
@@ -995,7 +995,7 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
         });
       } else {
         rentDeficit -= amountToClear;
-        payment.rent.deficit = rentDeficit;
+        payment.rent.deficit = 0;
         payment.rent.deficitHistory.push({
           amount: 0,
           date: extraAmountGivenDate,
@@ -1028,7 +1028,6 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
       });
 
       // Update garbage deficit
-
       if (garbageDeficit > 0) {
         garbageDeficit -= amountToClear;
         payment.garbageFee.deficit = garbageDeficit;
@@ -1039,7 +1038,7 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
         });
       } else {
         garbageDeficit -= amountToClear;
-        payment.garbageFee.deficit = garbageDeficit;
+        payment.garbageFee.deficit = 0;
         payment.garbageFee.deficitHistory.push({
           amount: 0,
           date: extraAmountGivenDate,
