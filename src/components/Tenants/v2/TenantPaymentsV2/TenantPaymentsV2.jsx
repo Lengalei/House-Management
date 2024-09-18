@@ -420,6 +420,12 @@ const TenantPayments = () => {
                           {payment?.totalAmountPaid}
                         </p>
                         <p>
+                          <strong>Reference Number:</strong>{' '}
+                          {payment?.referenceNumber
+                            ? payment?.referenceNumber
+                            : 'None'}
+                        </p>
+                        <p>
                           <strong>Excess Payment:</strong>{' '}
                           {payment?.overpay > 0 ? payment?.overpay : 'None'}
                         </p>
@@ -443,30 +449,52 @@ const TenantPayments = () => {
                       <strong>Month:</strong>{' '}
                       <span className="monthOuts">{payment?.month}</span>
                     </p>
+                    {payment?.rent?.deficit ? (
+                      <p>
+                        <strong>Rent Deficit:</strong>
+                        {payment?.rent?.deficit > 0
+                          ? payment?.rent?.deficit
+                          : 'None'}
+                      </p>
+                    ) : (
+                      ''
+                    )}
+
                     <p>
-                      <strong>Rent Deficit:</strong>
-                      {payment?.rent?.deficit > 0
-                        ? payment?.rent?.deficit
-                        : 'None'}
-                    </p>
-                    <p>
-                      <strong>Water Deficit:</strong>{' '}
+                      <strong>Water Bill:</strong>{' '}
                       {payment?.waterBill?.deficit > 0
                         ? payment?.waterBill?.deficit
                         : 'Water Bill...'}
                     </p>
-                    <p>
-                      <strong>Garbage Fee Deficit:</strong>{' '}
-                      {payment?.garbageFee?.deficit > 0
-                        ? payment?.garbageFee?.deficit
-                        : 'None'}
-                    </p>
-                    <p>
-                      <strong>Current Global Deficit:</strong>{' '}
-                      {payment?.globalDeficit > 0
-                        ? payment?.globalDeficit
-                        : 'None'}
-                    </p>
+                    {payment?.garbageFee?.deficit ? (
+                      <p>
+                        <strong>Garbage Fee Deficit:</strong>{' '}
+                        {payment?.garbageFee?.deficit > 0
+                          ? payment?.garbageFee?.deficit
+                          : 'None'}
+                      </p>
+                    ) : (
+                      ''
+                    )}
+                    {payment?.globalDeficit ? (
+                      <p>
+                        <strong>Current Total Deficit:</strong>{' '}
+                        {payment?.globalDeficit > 0
+                          ? payment?.globalDeficit
+                          : '...'}
+                      </p>
+                    ) : (
+                      ''
+                    )}
+
+                    {payment?.overpay ? (
+                      <p>
+                        <strong>Current Excess To use:</strong>{' '}
+                        {payment?.overpay > 0 ? payment?.overpay : 'None'}
+                      </p>
+                    ) : (
+                      ''
+                    )}
                   </div>
                 ))}
               </div>
