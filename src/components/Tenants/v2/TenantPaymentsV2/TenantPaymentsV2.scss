@@ -1,28 +1,27 @@
 .tenant-payments-container {
   width: 100%;
   text-transform: capitalize;
-  background-image: url("/background354.jpeg");
+  background-image: url('/background354.jpeg');
   background-size: cover;
   padding: 5px;
   height: 100%;
   color: white;
   margin: 0 auto;
-  padding: 20px;
-  h1{
+  h1 {
     width: 100%;
     display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
   }
-  span{
-        color: darkgoldenrod;
-      }
+  span {
+    color: darkgoldenrod;
+  }
   .payments-cards {
     height: 85%;
     display: flex;
     justify-content: space-between;
-      
+
     .card {
       width: 45%;
       border-radius: 8px;
