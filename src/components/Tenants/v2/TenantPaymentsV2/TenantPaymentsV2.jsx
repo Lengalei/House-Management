@@ -351,6 +351,7 @@ const TenantPayments = () => {
       if (response.status) {
         console.log('All good');
         setAddInternalAmountPopup(false);
+        navigate('/rentpayment');
       }
     } catch (error) {
       setError(error.response.data.message);
@@ -603,7 +604,6 @@ const TenantPayments = () => {
                             }))
                           }
                           name="expectedAmount"
-                          required
                         />
                       </div>
                       <div className="form-group">
@@ -618,7 +618,6 @@ const TenantPayments = () => {
                             }))
                           }
                           name="paidAmount"
-                          required
                         />
                       </div>
                       <div className="form-group">
@@ -633,7 +632,6 @@ const TenantPayments = () => {
                             }))
                           }
                           name="description"
-                          required
                         />
                       </div>
                       <button
