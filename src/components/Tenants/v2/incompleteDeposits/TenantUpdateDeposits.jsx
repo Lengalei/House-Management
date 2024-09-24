@@ -103,6 +103,11 @@ const TenantUpdateDeposit = () => {
     }
   };
 
+  const formatLocalDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
   // Form rendering logic
   const renderToggleForm = () => {
     if (toggleUpdate) {
@@ -219,7 +224,7 @@ const TenantUpdateDeposit = () => {
               />
             </div>
             <div className="form-group">
-              <label>Payment Date:</label>
+              <label>New Payment Date:</label>
               <input
                 type="date"
                 name="paymentDate"
@@ -271,6 +276,11 @@ const TenantUpdateDeposit = () => {
 
           <p>
             <strong>Total Deficit:</strong> KSH {calculateTotalDeficit}
+          </p>
+
+          <p>
+            Last Payment Date:
+            {formatLocalDate(tenant?.deposits?.depositDate)}
           </p>
         </div>
       </div>

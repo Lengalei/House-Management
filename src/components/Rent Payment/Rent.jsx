@@ -176,9 +176,9 @@ const Rent = () => {
                 <tr>
                   <th>Tenant{`'`}s Name</th>
                   <th>House No.</th>
-                  {/* <th>All Payments</th>
-                  <th>All Balance</th>
-                  <th>Status</th> */}
+                  {/* <th>All Payments</th> */}
+                  {/* <th>All Balance</th> */}
+                  {/* <th>{} Status</th> */}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -193,8 +193,8 @@ const Rent = () => {
                           : ''}
                       </td>
                       {/* <td>{tenant.totalAmount}</td>
-                      <td>{tenant.balance}</td>
-                      <td>
+                      <td>{tenant.balance}</td> */}
+                      {/* <td>
                         {getStatus(tenant.balance, tenant.monthInQuestionPay)}
                       </td> */}
                       <td className="actions">

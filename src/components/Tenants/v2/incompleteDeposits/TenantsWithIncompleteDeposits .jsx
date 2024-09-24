@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-js-pagination';
 import './TenantsWithIncompleteDeposits.scss';
 import apiRequest from '../../../../lib/apiRequest';
 
 const TenantsWithIncompleteDeposits = () => {
   const [tenants, setTenants] = useState([]);
+  // console.log('tenant: ', tenants);
   const [currentPage, setCurrentPage] = useState(1);
   const tenantsPerPage = 6; // Adjust the number of cards per page
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const TenantsWithIncompleteDeposits = () => {
         const response = await apiRequest.get(
           '/v2/tenants/tenantWithIncompleteDepo'
         );
+        // console.log(response.data.tenants);
         setTenants(response.data.tenants);
       } catch (error) {
         console.error('Error fetching tenants:', error.message);
@@ -27,7 +29,9 @@ const TenantsWithIncompleteDeposits = () => {
 
   const calculateTotalDeficit = (tenant) => {
     return (
-      tenant.deposits.rentDepositDeficit + tenant.deposits.waterDepositDeficit
+      tenant.deposits.rentDepositDeficit +
+      tenant.deposits.waterDepositDeficit +
+      tenant.deposits.initialRentPaymentDeficit
     );
   };
 
@@ -41,7 +45,7 @@ const TenantsWithIncompleteDeposits = () => {
   };
 
   const handleCardClick = (tenant) => {
-    console.log('tenantToUpdateDepos: ', tenant);
+    // console.log('tenantToUpdateDepos: ', tenant);
     navigate('/v2/tenantUpdateDeposit', {
       state: { tenant },
     });
@@ -57,26 +61,39 @@ const TenantsWithIncompleteDeposits = () => {
 
   return (
     <div className="tenants-page">
-      <h1>Tenants with Incomplete Deposits</h1>
-      <div className="tenants-list">
-        {currentTenants.map((tenant) => (
-          <div
-            key={tenant._id}
-            className="tenant-card"
-            onClick={() => handleCardClick(tenant)}
-          >
-            <h2>{tenant.name}</h2>
-            <p>
-              <strong>Total Deficit:</strong> KSH{' '}
-              {formatNumber(calculateTotalDeficit(tenant))}
-            </p>
-            <p>
-              <strong>Last Payment Date:</strong>{' '}
-              {formatLocalDate(tenant.placementDate)}
-            </p>
+      {tenants?.length > 0 ? (
+        <>
+          <h1>Tenants with Incomplete Deposits</h1>
+          <div className="tenants-list">
+            {currentTenants.map((tenant) => (
+              <div
+                key={tenant._id}
+                className="tenant-card"
+                onClick={() => handleCardClick(tenant)}
+              >
+                <h2>{tenant.name}</h2>
+                <p>
+                  <strong>Total Deficit:</strong> KSH{' '}
+                  {formatNumber(calculateTotalDeficit(tenant))}
+                </p>
+                <p>
+                  <strong>Last Payment Date:</strong>{' '}
+                  {formatLocalDate(tenant.placementDate)}
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      ) : (
+        <div className="nothing">
+          <h4>No Tenant with Incomplete Deposits</h4>
+          <div className="nothingLinks">
+            <Link to="/listAllTenants">All Tenants</Link>
+            <Link to="/v2/registerTenant">Register Tenant</Link>
+          </div>
+        </div>
+      )}
+
       <div className="pagination">
         <ReactPaginate
           activePage={currentPage}

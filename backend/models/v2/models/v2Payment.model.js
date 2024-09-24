@@ -6,6 +6,21 @@ const transactionSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }, // Transaction date
   referenceNumber: { type: String, required: true }, // Reference number for the transaction
 });
+const waterTansactionSchema = new mongoose.Schema({
+  amount: { type: Number }, // Transaction amount
+  accumulatedAmount: { type: Number }, // Transaction amount
+  date: { type: Date, default: Date.now }, // Transaction date
+  referenceNumber: { type: String }, // Reference number for the transaction
+  description: { type: String }, // Reference number for the transaction
+});
+
+const extraChargesTransactionSchema = new mongoose.Schema({
+  amount: { type: Number }, // Transaction amount
+  expected: { type: Number }, // Transaction amount
+  date: { type: Date, default: Date.now }, // Transaction date
+  referenceNumber: { type: String }, // Reference number for the transaction
+  description: { type: String }, // Reference number for the transaction
+});
 
 const globalTransactionHistorySchema = new mongoose.Schema({
   year: { type: Number, required: true },
@@ -39,6 +54,14 @@ const excessHistorySchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }, // Date of the excess record
 });
 
+const referenceNoHistorySchema = new mongoose.Schema({
+  date: { type: Date },
+  previousRefNo: { type: String },
+  referenceNoUsed: { type: String },
+  amount: { type: Number },
+  description: { type: String },
+});
+
 const paymentSchema = new mongoose.Schema(
   {
     tenant: {
@@ -62,7 +85,7 @@ const paymentSchema = new mongoose.Schema(
       accumulatedAmount: { type: Number, default: 0 }, // Water bill for the month
       paid: { type: Boolean, default: false }, // Whether water bill is fully paid
       deficit: { type: Number, default: 0 }, // Amount needed to fully pay water bill
-      transactions: [transactionSchema], // Array of water-related transactions
+      transactions: [waterTansactionSchema], // Array of water-related transactions
       deficitHistory: [deficitHistorySchema], // Deficit history for water bill
     },
     garbageFee: {
@@ -73,15 +96,17 @@ const paymentSchema = new mongoose.Schema(
       deficitHistory: [deficitHistorySchema], // Deficit history for garbage fee
     },
     extraCharges: {
-      description: { type: String },
+      description: { type: String, default: 'None' },
       expected: { type: Number, default: 0 },
       amount: { type: Number, default: 0 },
       paid: { type: Boolean, default: false },
       deficit: { type: Number, default: 0 },
-      transactions: [transactionSchema],
+      transactions: [extraChargesTransactionSchema],
       deficitHistory: [deficitHistorySchema],
     },
 
+    isCleared: { type: Boolean, default: false },
+    referenceNoHistory: [referenceNoHistorySchema],
     totalAmountPaid: { type: Number, default: 0 }, // Total amount paid for the month
     globalTransactionHistory: [globalTransactionHistorySchema], // Global transaction history for this payment
     excessHistory: [excessHistorySchema], // History of excess payments

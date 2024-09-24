@@ -6,6 +6,8 @@ import {
   addSingleAmountDeposit,
   tenantsWithIncompleteDeposits,
   updateTenantHouseDetails,
+  checkTenantPaymentRecord,
+  getMostRecentPaymentByTenantId,
   // updateWithMultipleDeposits,
   //
   getTenants,
@@ -42,5 +44,11 @@ router.put('/updateTenant/:id', updateTenant);
 router.put('/updateTenantHouseDetails/:tenantId', updateTenantHouseDetails);
 // Route to delete a tenant by ID
 router.delete('/deleteTenant/:id', deleteTenant);
+
+router.get('/checkTenantPaymentRecord/:tenantId', checkTenantPaymentRecord);
+router.get(
+  '/getMostRecentPaymentByTenantId/:tenantId',
+  getMostRecentPaymentByTenantId
+);
 
 export default router;

@@ -4,6 +4,7 @@ import './TenantPaymentList.scss';
 import { MdDeleteForever } from 'react-icons/md';
 import apiRequest from '../../../lib/apiRequest';
 import MiniPaymentsPopup from './MiniPaymentsPopup/MiniPaymentsPopup';
+import Pagination from 'react-js-pagination'; // Import Pagination
 
 const TenantPaymentList = () => {
   const { tenantId } = useParams();
@@ -11,9 +12,13 @@ const TenantPaymentList = () => {
   const [onEntryOverPay, setOnEntryOverPay] = useState([]);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [paymentToDelete, setPaymentToDelete] = useState(null); // State for selected payment for deletion
+  const [showModal, setShowModal] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState(null);
   const [error, setError] = useState('');
+
+  // Pagination states
+  const [activePage, setActivePage] = useState(1);
+  const itemsPerPage = 4; // Define how many items you want to show per page
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -50,7 +55,7 @@ const TenantPaymentList = () => {
         setPayments(
           payments.filter((payment) => payment._id !== paymentToDelete)
         );
-        setShowModal(false); // Close modal on successful deletion
+        setShowModal(false);
         setPaymentToDelete(null);
       }
     } catch (error) {
@@ -67,6 +72,19 @@ const TenantPaymentList = () => {
     setShowModal(false);
     setPaymentToDelete(null);
   };
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setActivePage(pageNumber);
+  };
+
+  // Calculate displayed payments
+  const indexOfLastPayment = activePage * itemsPerPage;
+  const indexOfFirstPayment = indexOfLastPayment - itemsPerPage;
+  const currentPayments = payments.slice(
+    indexOfFirstPayment,
+    indexOfLastPayment
+  );
 
   return (
     <div className="tenant-payment-list">
@@ -85,9 +103,9 @@ const TenantPaymentList = () => {
           </tr>
         </thead>
         <tbody>
-          {payments.map((payment) => (
+          {currentPayments.map((payment) => (
             <tr key={payment?._id}>
-              <td>{payment?.month}</td>
+              <td>{payment?.month + ', ' + payment?.year}</td>
               <td>{payment?.rent?.amount || 'None'}</td>
               <td>{payment?.waterBill?.amount || 'None'}</td>
               <td>{payment?.garbageFee?.amount || 'None'}</td>
@@ -142,6 +160,26 @@ const TenantPaymentList = () => {
           </div>
         </div>
       )}
+
+      {/* Pagination component */}
+      <div className="pagination">
+        <Pagination
+          activePage={activePage}
+          itemsCountPerPage={itemsPerPage}
+          totalItemsCount={payments.length}
+          pageRangeDisplayed={5}
+          onChange={handlePageChange}
+          innerClass="pagination"
+          linkClass="page-link"
+          activeLinkClass="active"
+          previousLabel={<span className="arrow">&#9664;</span>} // Left arrow
+          nextLabel={<span className="arrow">&#9654;</span>} // Right arrow
+          firstLabel="First"
+          lastLabel="Last"
+          previousClass="arrow"
+          nextClass="arrow"
+        />
+      </div>
     </div>
   );
 };

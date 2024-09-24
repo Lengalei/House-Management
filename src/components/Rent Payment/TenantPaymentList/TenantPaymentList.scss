@@ -1,107 +1,189 @@
-// src/components/TenantPaymentList.scss
 .tenant-payment-list {
-  max-width: fit-content;
-  flex-wrap: wrap;
-  margin: auto;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  // Main container styling
+  padding: 20px;
   background-color: #f9f9f9;
+  background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 9, 9, 0.8)),
+    url('/public/background354.jpeg');
+  background-repeat: repeat;
+  background-size: cover;
+  height: 100%;
 
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  // Title styling
   h2 {
-    margin-bottom: 1rem;
     text-align: center;
+    color: wheat;
+    margin-bottom: 20px;
   }
 
+  // Error message styling
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  // Table styling
   table {
     width: 100%;
     border-collapse: collapse;
 
     th,
     td {
-      border: 1px solid #ddd;
-      padding: 0.8rem;
+      padding: 10px;
       text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+      color: wheat;
+      border-radius: 8px;
+
+      &.limited-width {
+        width: 20px; // Set a fixed width or max-width
+        max-width: 80px; // Limit width to prevent expansion
+        overflow: hidden; // Hide overflow text
+        white-space: nowrap; // Prevent text from wrapping
+        text-overflow: ellipsis; // Show ellipsis for overflowing text
+      }
     }
 
     th {
-      background-color: #f4f4f4;
+      background-color: #007bff;
+      color: white;
     }
 
-    button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: aquamarine;
-      cursor: pointer;
-      transition: all 300ms ease-in-out;
-
-      &.active {
-        background: #007bff;
-        color: white;
-      }
-
-      &:hover {
-        background: #007bff3b;
-        color: crimson;
-      }
-    }
-
-    .paymentRecordDeletebtn:hover {
-      cursor: pointer;
+    tr:hover {
+      background-color: #f1f1f123;
     }
   }
 
+  // Action button styling
+  button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #218838;
+    }
+  }
+
+  .paymentRecordDeletebtn {
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #dc3545; // Red on hover
+    }
+  }
+
+  // Modal styling
   .confirmation-modal {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+
+      p {
+        margin-bottom: 20px;
+        font-size: 16px;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: space-around;
+
+        .cancel-btn,
+        .confirm-btn {
+          padding: 10px 15px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &.cancel-btn {
+            background-color: #6c757d;
+            color: white;
+
+            &:hover {
+              background-color: #5a6268;
+            }
+          }
+
+          &.confirm-btn {
+            background-color: #dc3545;
+            color: white;
+
+            &:hover {
+              background-color: #c82333;
+            }
+          }
+        }
+      }
+    }
   }
 
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
-
-  .modal-actions {
-    margin-top: 20px;
+  // Pagination styling
+  .pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
-  }
+    align-items: center;
+    padding: 20px;
 
-  .confirm-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+    .page-link {
+      margin: 0 5px;
+      padding: 8px 12px;
+      border: 1px solid #007bff;
+      border-radius: 4px;
+      color: #007bff;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
 
-  .cancel-btn {
-    background-color: #f1f1f1;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+      &.active {
+        background-color: #007bff;
+        color: white;
+      }
 
-  .error-message {
-    color: red;
-    text-align: center;
-    margin-bottom: 15px;
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+
+    .arrow {
+      cursor: pointer;
+      font-size: 10px;
+      margin: 0 10px;
+      color: #007bff;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #0056b3;
+      }
+
+      &.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+    .pagination li {
+      list-style: none;
+    }
   }
 }

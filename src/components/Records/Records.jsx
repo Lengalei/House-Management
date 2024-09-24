@@ -30,15 +30,16 @@ const Records = () => {
         setLoading(true); // Set loading to true before fetching
         // Fetch rent records
         const rentResponse = await apiRequest.get('/v2/payments/allRents');
+        console.log('rentResponse: ', rentResponse);
         const rentData = rentResponse.data.groupedByYear;
 
         // Fetch water records
-        const waterResponse = await apiRequest.get('/payments/waterRecords');
+        const waterResponse = await apiRequest.get('/v2/payments/waterRecords');
         const waterData = waterResponse.data.groupedByYear;
 
         // Fetch garbage records
         const garbageResponse = await apiRequest.get(
-          '/payments/garbageRecords'
+          '/v2/payments/garbageRecords'
         );
         const garbageData = garbageResponse.data.groupedByYear;
 

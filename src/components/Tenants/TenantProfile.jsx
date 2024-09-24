@@ -133,7 +133,7 @@ function TenantProfile() {
                 <p>
                   Joining Date:{' '}
                   {tenant
-                    ? new Date(tenant.createdAt).toLocaleDateString()
+                    ? new Date(tenant.placementDate).toLocaleDateString()
                     : '24-06-2024'}
                 </p>
               </div>
