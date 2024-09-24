@@ -32,6 +32,7 @@ import RegisterTenant from './components/Tenants/v2/Tenants/RegisterTenant.jsx';
 import TenantsWithIncompleteDeposits from './components/Tenants/v2/incompleteDeposits/TenantsWithIncompleteDeposits .jsx';
 import TenantUpdateDeposits from './components/Tenants/v2/incompleteDeposits/TenantUpdateDeposits.jsx';
 import TenantPaymentsV2 from './components/Tenants/v2/TenantPaymentsV2/TenantPaymentsV2.jsx';
+import Clearance from './components/Clearance/Clearance.jsx';
 
 function App() {
   return (
@@ -87,6 +88,10 @@ function App() {
           <Route
             path="/v2/tenantPaymentsV2/:tenantId"
             element={<TenantPaymentsV2 />}
+          />
+          <Route
+            path="/clearTenant"
+            element={<Clearance/>}
           />
         </Route>
         <Route path="/*" element={<NotFound />} />

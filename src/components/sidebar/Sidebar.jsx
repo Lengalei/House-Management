@@ -4,11 +4,10 @@ import { FaClipboardList } from 'react-icons/fa';
 import { VscRecordSmall } from 'react-icons/vsc';
 import { TbSquarePercentage } from 'react-icons/tb';
 import { IoReceiptOutline } from 'react-icons/io5';
+import { GiReceiveMoney } from "react-icons/gi";
+import { MdOutlineFormatClear } from "react-icons/md";
 import {
   FaTachometerAlt,
-  // FaBell,
-  // FaEnvelope,
-  // FaUserPlus,
   FaUsers,
   FaUserTie,
   FaHouseUser,
@@ -41,7 +40,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -73,7 +72,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{' '}
+              <FaUsers className="icon" /> Tenants{" "}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -89,7 +88,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> CareTaker{' '}
+              <FaUserTie className="icon" /> CareTaker{" "}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -107,7 +106,10 @@ const Sidebar = () => {
             <FaHouseUser className="icon" /> Rent Payment
           </Link>
           <Link to="/allPayments" className="dash">
-            <FaHouseUser className="icon" /> All Payments
+            <GiReceiveMoney className="icon" /> All Payments
+          </Link>
+          <Link to="/clearTenant" className="dash">
+            <MdOutlineFormatClear className="icon" /> Clearance
           </Link>
         </div>
         <div className="management">

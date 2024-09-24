@@ -43,9 +43,9 @@
 }
 
 .profile-pic {
-  width: auto;
+  width: 60px;
   height: 60px;
-  border-radius: 30px;
+  border-radius: 50%;
   filter: drop-shadow(2px 2px 4px crimson);
 }
 .profile-pic:hover {
