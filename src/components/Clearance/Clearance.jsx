@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import "./Clearance.css";
+import { useState } from 'react';
+import './Clearance.css';
 
 function Clearance() {
-  const [name, setName] = useState("");
-  const [houseno, setHouseno] = useState("");
+  const [name, setName] = useState('');
+  const [houseno, setHouseno] = useState('');
 
   return (
     <div className="clearance">
       <h1>CLEAR TENANT</h1>
       <div className="forms">
         <form className="form1">
-          <h1>Tenant's Details</h1>
+          <h1>Tenant{`'`}s Details</h1>
           <div className="clear">
             <label htmlFor="">Name</label>
             <input
@@ -38,7 +38,7 @@ function Clearance() {
         </form>
 
         <form className="form2">
-          <h1>Tenant's bills</h1>
+          <h1>Tenant{`'`}s bills</h1>
           <div className="clear">
             <label htmlFor="">Water Bill</label>
             <input type="number" />
@@ -56,7 +56,6 @@ function Clearance() {
             <input type="number" />
           </div>
         </form>
-        {/* trying to push oooh */}
       </div>
 
       <div className="cleardiv">
