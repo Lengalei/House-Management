@@ -1,34 +1,51 @@
 .tenant-payments-container {
   width: 100%;
   text-transform: capitalize;
-  background-image: url("/background354.jpeg");
+  background-image: url('/background354.jpeg');
   background-size: cover;
-  padding: 5px;
   height: 100%;
   color: brown;
   margin: 0 auto;
-  padding: 20px;
-  h1{
+  padding-left: 50px;
+  padding-right: 50px;
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50% -50%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(236, 15, 15, 0.5); /* Semi-transparent background */
+    z-index: 1100; /* Ensure loader is above modal */
+  }
+
+  h1 {
     width: 100%;
     display: flex;
   align-items: center;
-  color: darkgoldenrod;
   justify-content: center;
   margin-bottom: 30px;
   }
-  span{
-        color: darkgoldenrod;
-      }
+  span {
+    color: darkgoldenrod;
+  }
   .payments-cards {
-    height: 85%;
+    height: 75%;
     display: flex;
     justify-content: space-between;
-      
+    // border: 1px solid crimson;
+
     .card {
       width: 45%;
       border-radius: 8px;
       padding: 8px;
-      height: 95%;
+      height: 100%;
+      overflow: scroll;
+      overflow-x: hidden;
       color: black;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -37,6 +54,12 @@
         justify-content: space-between;
         margin-bottom: 16px;
 
+        .outstandingWithGlobalDeficit {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
         .tab-button {
           background: #f1f1f1;
           border: none;
@@ -93,6 +116,15 @@
             cursor: pointer;
             transition: all 0.3s ease-in-out;
 
+            .ReferenceNoHistory {
+              border: 1px solid #ddd;
+              background-color: antiquewhite;
+              border-radius: 8px;
+              padding: 2px;
+              cursor: pointer;
+              transition: all 0.3s ease-in-out;
+            }
+
             .monthOuts {
               color: #007bff;
             }
@@ -114,7 +146,7 @@
         color: #dc3545;
         position: absolute;
         right: 58%;
-        top: 70%;
+        top: 80%;
       }
       .addExtraAmount:hover {
         background-color: antiquewhite;
@@ -326,6 +358,119 @@
         border: 1px solid wheat;
         border-radius: 8px;
         padding: 1px 7px;
+      }
+    }
+  }
+}
+
+.card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-body {
+    .section {
+      margin-bottom: 20px;
+
+      h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+
+        label {
+          display: block;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+
+        input {
+          width: 100%;
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+      }
+
+      .extra-charges-dropdown {
+        margin-bottom: 20px;
+
+        .dropdown-label {
+          display: flex;
+          justify-content: space-between;
+          cursor: pointer;
+          padding: 10px;
+          background-color: #f9f9f9;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+
+          .dropdown-toggle {
+            font-size: 14px;
+          }
+        }
+
+        .extra-charges-dropdown-content {
+          margin-top: 10px;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          background-color: #fafafa;
+
+          .form-group {
+            margin-bottom: 10px;
+
+            input {
+              width: 100%;
+              padding: 8px;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+            }
+          }
+        }
+      }
+
+      .close-dropdown-btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+
+    .section-1,
+    .section-2 {
+      background-color: #28a74638;
+      padding: 2px;
+      border: 1px solid rgba(220, 20, 60, 0.151);
+      border-radius: 7px;
+    }
+    .confirm-btn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #218838;
       }
     }
   }

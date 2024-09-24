@@ -30,7 +30,7 @@ function Dashboard() {
 
     //fetchAllPayments
     const fetchAllPayments = async () => {
-      const response = await apiRequest.get('/payments/getAllPayments');
+      const response = await apiRequest.get('/v2/payments/getAllPayments');
       if (response.status) {
         // console.log('allPayments: ', response.data);
         setPayments(response.data);
@@ -63,7 +63,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>{tenants?.length} Total Tenants</p>
+              <p>Total Tenants:{tenants?.length}</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -71,7 +71,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>{houses?.length} Total houses</p>
+              <p>Total houses: {houses?.length}</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -79,7 +79,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>{vacantHouses?.length} Vacant Houses</p>
+              <p>Vacant Houses:{vacantHouses?.length}</p>
             </div>
             <div className="box">
               <FaHouseUser
@@ -87,7 +87,7 @@ function Dashboard() {
                 color="var(--primary-color)"
                 className="fa"
               />
-              <p>{payments} Total earnings</p>
+              <p>Total earnings: {payments}</p>
             </div>
           </div>
           <Charts />

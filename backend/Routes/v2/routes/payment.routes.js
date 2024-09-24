@@ -8,7 +8,10 @@ import {
   //
   getGroupedPaymentsByTenant,
   getPaymentsByTenantId,
+  getAllPayments,
   getAllRentsPaid,
+  getAllWaterRecords,
+  getAllGarbageRecords,
   getPaymentsByTenant,
   deletePayment,
 } from '../../../controllers/v2/controllers/payment.controller.js';
@@ -24,7 +27,10 @@ router.put('/ExtraAmountGivenInAmonth/:paymentId', ExtraAmountGivenInAmonth);
 router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);
 // Route to get Payments By TenantId
 router.get('/getPaymentsByTenantId/:tenant', getPaymentsByTenantId);
+router.get('/getAllPayments', getAllPayments);
 router.get('/allRents', getAllRentsPaid);
+router.get('/waterRecords', getAllWaterRecords);
+router.get('/garbageRecords', getAllGarbageRecords);
 router.get('/paymentsByTenant/:tenantId', getPaymentsByTenant);
 router.delete('/deletePayment/:paymentId', deletePayment);
 export default router;

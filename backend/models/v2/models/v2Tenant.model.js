@@ -32,6 +32,13 @@ const houseDetailsSchema = new mongoose.Schema({
   garbageFee: { type: Number, required: true }, // Monthly garbage fee
 });
 
+const depositDateHistorySchema = new mongoose.Schema({
+  date: { type: Date },
+  referenceNoUsed: { type: String },
+  amount: { type: Number },
+  description: { type: String },
+});
+
 const tenantSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -75,6 +82,7 @@ const tenantSchema = new mongoose.Schema(
       initialRentPaymentDeficitHistory: [excessDeficitHistorySchema], // Deficit history for initial rent payment
 
       depositDate: { type: Date },
+      depositDateHistory: [depositDateHistorySchema],
       referenceNo: { type: String },
       isCleared: { type: Boolean, default: false }, // Deposit clearance status
     },

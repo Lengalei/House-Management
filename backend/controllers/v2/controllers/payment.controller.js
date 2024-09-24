@@ -1,6 +1,7 @@
 import Tenant from '../../../models/v2/models/v2Tenant.model.js';
 import Payment from '../../../models/v2/models/v2Payment.model.js';
 import mongoose from 'mongoose';
+import { clearDeficitsForPreviousPayments } from '../../../utils/v2/utils/paymentHelper.js';
 
 // Register initial rent payment and create a payment record
 export const registerInitialRentPayment = async (req, res) => {
@@ -76,9 +77,7 @@ export const getFullyPaidTenantPayments = async (req, res) => {
     // Query to find payments where rent, water, and garbage fee are all fully paid
     const fullyPaidPayments = await Payment.find({
       tenant: tenantId, // Match the tenant by their ID
-      'rent.paid': true,
-      'waterBill.paid': true,
-      'garbageFee.paid': true,
+      isCleared: true,
     });
 
     // If no fully paid payments found, return a message
@@ -138,6 +137,21 @@ export const updatePayment = async (req, res) => {
         date,
       });
     };
+
+    //update the referenceNoHistory array history
+    const paymentCount = payment.referenceNoHistory.length;
+    payment.referenceNoHistory.push({
+      date,
+      previousRefNo: payment.referenceNumber,
+      referenceNoUsed: referenceNumber,
+      amount:
+        parseFloat(rentDeficit) +
+        parseFloat(paidWaterBill) +
+        parseFloat(sentWaterDeficit) +
+        parseFloat(garbageDeficit),
+      description: `Payment record number of tinkering:#${paymentCount + 1}`,
+    });
+    payment.referenceNumber = referenceNumber;
 
     // 2. Process Rent Deficit
     const rentAmount = tenant.houseDetails.rent;
@@ -439,27 +453,18 @@ export const updatePayment = async (req, res) => {
 export const monthlyPayProcessing = async (req, res) => {
   const {
     tenantId,
-    newMonthlyAmount: amount, // newMonthlyAmount is assumed to be a number, but ensure it's numeric
-    newPaymentDate: depositDate,
+    newMonthlyAmount,
     referenceNumber: referenceNo,
+    newPaymentDate: depositDate,
     extraCharges: frontendExtraCharges,
+    previousMonthExtraCharges,
     month,
     year,
+    previousAccumulatedWaterBill: accumulatedWaterBill,
   } = req.body;
 
   try {
-    // Ensure depositDate is a Date object
-    const dateObject = new Date(depositDate);
-    if (isNaN(dateObject.getTime())) {
-      throw new Error('Invalid depositDate');
-    }
-
-    let extraChargesPaidAmount = parseFloat(frontendExtraCharges.paidAmount);
-    let extraChargesExpectedAmount = parseFloat(
-      frontendExtraCharges.expectedAmount
-    );
-    let description = frontendExtraCharges.description;
-
+    let amount = newMonthlyAmount;
     // Convert month name to previous month
     const months = [
       'January',
@@ -481,20 +486,115 @@ export const monthlyPayProcessing = async (req, res) => {
     const prevMonth = monthIndex === 0 ? 11 : monthIndex - 1;
     const prevYear = monthIndex === 0 ? year - 1 : year;
 
-    // Fetch previous payment record for the preceding month
+    // Fetch previous payment record for the tenant
     const previousPayment = await Payment.findOne({
       tenant: tenantId,
       year: prevYear,
       month: months[prevMonth],
     });
 
-    let previousOverpay = 0;
-    if (previousPayment && previousPayment.overpay > 0) {
-      previousOverpay = parseFloat(previousPayment.overpay); // Ensure it's numeric
+    if (!previousPayment) {
+      return res.status(404).json({
+        message: 'No payment record found for this tenant.',
+      });
     }
 
+    let previousMonthExtraChargesExpectedAmount = parseFloat(
+      previousMonthExtraCharges?.expectedAmount <= 0
+        ? 0
+        : previousMonthExtraCharges?.expectedAmount
+    );
+    let previousMonthDescription = previousMonthExtraCharges.description;
+    // Handle previous month water bill with new accumulated amount logic
+    if (parseFloat(accumulatedWaterBill) > 0) {
+      // Set the accumulatedAmount with the value we get from the frontend
+      previousPayment.waterBill.accumulatedAmount =
+        parseFloat(accumulatedWaterBill) || 0;
+
+      // Add the accumulated water bill as a transaction
+      previousPayment.waterBill.transactions.push({
+        amount: 0,
+        accumulatedAmount: parseFloat(accumulatedWaterBill) || 0,
+        date: depositDate,
+        referenceNumber: referenceNo,
+        description: 'Accumulated water bill recorded',
+      });
+
+      const remainingWaterDeficit = parseFloat(accumulatedWaterBill);
+      previousPayment.waterBill.deficit += remainingWaterDeficit;
+
+      // Add a deficit transaction history
+      previousPayment.waterBill.deficitHistory.push({
+        amount: remainingWaterDeficit,
+        date: depositDate,
+        description: 'Water bill deficit recorded',
+      });
+
+      // Water bill not fully paid
+      previousPayment.waterBill.paid = false;
+    }
+
+    //handle previous month extra charges
+    if (previousMonthExtraChargesExpectedAmount > 0) {
+      // Set the extraCharges ExpectedAmount with the value we get from the frontend
+      previousPayment.extraCharges.expected =
+        previousMonthExtraChargesExpectedAmount;
+      previousPayment.extraCharges.description = previousMonthDescription;
+
+      // Add the extraCharges expected transaction
+      previousPayment.extraCharges.transactions.push({
+        amount: 0,
+        expected: previousMonthExtraChargesExpectedAmount,
+        date: depositDate,
+        referenceNumber: referenceNo,
+        previousMonthDescription,
+      });
+
+      const extraChargesDeficit = previousMonthExtraChargesExpectedAmount;
+      previousPayment.extraCharges.deficit += extraChargesDeficit;
+
+      // Add a deficit transaction history
+      previousPayment.extraCharges.deficitHistory.push({
+        amount: extraChargesDeficit,
+        date: depositDate,
+        description: 'ExtraCharges bill deficit recorded',
+      });
+
+      // ExtraCharges not fully paid
+      previousPayment.extraCharges.paid = false;
+    }
+
+    // Save the updated payment record
+    await previousPayment.save();
+    // console.log('updatePreviousPayment: ', previousPayment);
+
+    //handle previous payment deficits
+    const remainingAmount = await clearDeficitsForPreviousPayments(
+      tenantId,
+      amount,
+      depositDate,
+      referenceNo
+    );
+    amount = parseFloat(remainingAmount);
+    console.log('amountAfterPreviousDeficitHandling: ', amount);
+
+    // Ensure depositDate is a Date objectn
+    const dateObject = new Date(depositDate);
+    if (isNaN(dateObject.getTime())) {
+      throw new Error('Invalid depositDate');
+    }
+
+    let extraChargesExpectedAmount = parseFloat(
+      frontendExtraCharges?.expectedAmount <= 0
+        ? 0
+        : frontendExtraCharges?.expectedAmount
+    );
+    let description = frontendExtraCharges.description;
+    let extraChargesPaidAmount =
+      parseFloat(frontendExtraCharges.paidAmount) || 0;
+
     // Add previous month's overpay to the current excess
-    let excess = parseFloat(previousOverpay) + parseFloat(amount);
+    let excess = parseFloat(amount);
 
     // Fetch tenant data
     const tenant = await Tenant.findById(tenantId).populate('houseDetails');
@@ -510,7 +610,6 @@ export const monthlyPayProcessing = async (req, res) => {
         tenant: tenantId,
         year,
         month,
-        referenceNumber: referenceNo,
         rent: {
           amount: 0,
           transactions: [],
@@ -543,6 +642,19 @@ export const monthlyPayProcessing = async (req, res) => {
       });
     }
 
+    const paymentCount = payment.referenceNoHistory.length;
+    payment.referenceNoHistory.push({
+      date: depositDate,
+      previousRefNo: payment.referenceNumber,
+      referenceNoUsed: referenceNo,
+      amount,
+      description: `Payment record number of tinkering:#${
+        paymentCount + 1
+      } doneIn monthProcessingFunc`,
+    });
+
+    payment.referenceNumber = referenceNo; // Set the new reference number used
+
     // Handle Rent Payment
     const currentRentAmount = parseFloat(payment.rent.amount);
     const rentDue = Math.max(rentAmount - currentRentAmount, 0);
@@ -560,7 +672,7 @@ export const monthlyPayProcessing = async (req, res) => {
     payment.rent.paid = payment.rent.amount >= rentAmount;
 
     // Deduct rent payment from excess
-    excess = parseFloat((excess - rentPayment).toFixed(2));
+    excess = parseFloat(excess) - parseFloat(rentPayment);
 
     // Handle Rent Deficit
     const rentDeficit = rentAmount - payment.rent.amount;
@@ -603,17 +715,17 @@ export const monthlyPayProcessing = async (req, res) => {
     }
 
     // Deduct garbage payment from excess
-    excess = parseFloat((excess - garbagePayment).toFixed(2));
+    excess = parseFloat(excess) - parseFloat(garbagePayment);
 
     // Record the excess in overpay and excessHistory field before handling extraCharges
     if (excess > 0) {
       payment.excessHistory.push({
         initialOverpay: payment.overpay,
-        excessAmount: excess,
+        excessAmount: parseFloat(excess),
         description: `Excess payment from extra charges for ${month} ${year} prior to handling the extra charges`,
         date: dateObject,
       });
-      payment.overpay = parseFloat((payment.overpay + excess).toFixed(2));
+      payment.overpay = parseFloat(payment.overpay) + parseFloat(excess);
     }
 
     // Handle Extra Charges
@@ -622,8 +734,10 @@ export const monthlyPayProcessing = async (req, res) => {
     // Record initial extra charges amount
     payment.extraCharges.transactions.push({
       amount: extraChargesPaidAmount || 0,
+      expected: extraChargesExpectedAmount || 0,
       referenceNumber: referenceNo,
       date: dateObject,
+      description,
     });
 
     payment.extraCharges.amount = extraChargesPaidAmount;
@@ -641,7 +755,7 @@ export const monthlyPayProcessing = async (req, res) => {
       });
       payment.extraCharges.amount += parseFloat(deficitCoverage.toFixed(2));
       extraDeficit = parseFloat((extraDeficit - deficitCoverage).toFixed(2));
-      excess = parseFloat((excess - deficitCoverage).toFixed(2));
+      excess = parseFloat(excess) - parseFloat(deficitCoverage);
 
       payment.extraCharges.deficitHistory.push({
         amount: deficitCoverage,
@@ -654,8 +768,10 @@ export const monthlyPayProcessing = async (req, res) => {
     if (extraChargesPaidAmount !== payment.extraCharges.amount) {
       payment.extraCharges.transactions.push({
         amount: payment.extraCharges.amount,
+        expected: payment.extraCharges.expected,
         referenceNumber: referenceNo,
         date: dateObject,
+        description,
       });
     }
 
@@ -672,7 +788,7 @@ export const monthlyPayProcessing = async (req, res) => {
       if (excess > 0) {
         payment.excessHistory.push({
           initialOverpay: payment.overpay,
-          excessAmount: excess,
+          excessAmount: parseFloat(excess),
           description: `Excess payment from extra charges for ${month} ${year}`,
           date: dateObject,
         });
@@ -705,7 +821,9 @@ export const monthlyPayProcessing = async (req, res) => {
 
     // Handle Global Deficit (Sum of all Deficits: rent + garbage + extraCharges)
     let globalDeficit =
-      rentDeficit + garbageDeficit + parseFloat(extraDeficit.toFixed(2));
+      parseFloat(rentDeficit) +
+      parseFloat(garbageDeficit) +
+      parseFloat(extraDeficit.toFixed(2));
     if (globalDeficit > 0) {
       payment.globalDeficit = parseFloat(globalDeficit.toFixed(2));
       payment.globalDeficitHistory.push({
@@ -887,6 +1005,133 @@ export const getAllRentsPaid = async (req, res) => {
   } catch (err) {
     console.error('Error fetching total rent for all payments:', err.message);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Controller to get all water payment records
+export const getAllWaterRecords = async (req, res) => {
+  try {
+    const waterPayments = await Payment.find({
+      'waterBill.amount': { $gt: 0 },
+    });
+
+    if (!waterPayments || waterPayments.length === 0) {
+      return res.status(400).json({ message: 'No water payments made yet' });
+    }
+
+    const groupedByYear = waterPayments.reduce((acc, payment) => {
+      const year = payment.year;
+      const amount = payment.waterBill.amount || 0;
+
+      if (!acc[year]) {
+        acc[year] = {
+          totalAmount: 0,
+          months: {},
+        };
+      }
+
+      acc[year].totalAmount += amount;
+
+      const month = payment?.month;
+
+      if (!acc[year].months[month]) {
+        acc[year].months[month] = 0;
+      }
+
+      acc[year].months[month] += amount;
+
+      return acc;
+    }, {});
+
+    const response = Object.keys(groupedByYear).map((year) => ({
+      year,
+      totalAmount: groupedByYear[year].totalAmount,
+      months: Object.keys(groupedByYear[year].months).map((month) => ({
+        month,
+        totalAmount: groupedByYear[year].months[month],
+      })),
+    }));
+
+    res.status(200).json({ groupedByYear: response });
+  } catch (err) {
+    console.error('Error fetching water payment records:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Controller to get all garbage payment records
+export const getAllGarbageRecords = async (req, res) => {
+  try {
+    const garbagePayments = await Payment.find({
+      'garbageFee.amount': { $gt: 0 },
+    });
+
+    if (!garbagePayments || garbagePayments.length === 0) {
+      return res.status(400).json({ message: 'No garbage payments made yet' });
+    }
+
+    const groupedByYear = garbagePayments.reduce((acc, payment) => {
+      const year = payment?.year;
+      const amount = payment.garbageFee.amount || 0;
+
+      if (!acc[year]) {
+        acc[year] = {
+          totalAmount: 0,
+          months: {},
+        };
+      }
+
+      acc[year].totalAmount += amount;
+
+      const month = payment?.month;
+
+      if (!acc[year].months[month]) {
+        acc[year].months[month] = 0;
+      }
+
+      acc[year].months[month] += amount;
+
+      return acc;
+    }, {});
+
+    const response = Object.keys(groupedByYear).map((year) => ({
+      year,
+      totalAmount: groupedByYear[year].totalAmount,
+      months: Object.keys(groupedByYear[year].months).map((month) => ({
+        month,
+        totalAmount: groupedByYear[year].months[month],
+      })),
+    }));
+
+    res.status(200).json({ groupedByYear: response });
+  } catch (err) {
+    console.error('Error fetching garbage payment records:', err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getAllPayments = async (req, res) => {
+  try {
+    // Fetch all payments
+    const payments = await Payment.find();
+
+    // Check if payments exist
+    if (!payments || payments.length === 0) {
+      return res.status(400).json({ message: 'No payments made yet' });
+    }
+
+    // Calculate the total amount
+    const totalAmount = payments.reduce((total, payment) => {
+      const amount = parseFloat(payment.totalAmountPaid);
+      if (!isNaN(amount)) {
+        return total + amount;
+      }
+      return total;
+    }, 0);
+    res.status(200).json(totalAmount);
+  } catch (err) {
+    console.error('Error fetching payments for all tenants:', err);
+    res.status(500).json({ message: err.message });
   }
 };
 

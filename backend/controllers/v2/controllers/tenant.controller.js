@@ -124,7 +124,7 @@ export const createTenant = async (req, res) => {
   }
 };
 
-//add multiple depist values
+//add multiple deposit values
 export const addDeposits = async (req, res) => {
   try {
     const {
@@ -183,7 +183,22 @@ export const addDeposits = async (req, res) => {
     }
 
     // Update depositDate and referenceNo in main record
+    // Get the number of records in depositDateHistory
+    const depositCount = tenant.deposits.depositDateHistory.length;
     tenant.deposits.depositDate = depositDate;
+    tenant.deposits.depositDateHistory.push({
+      date: depositDate,
+      referenceNoUsed: referenceNo,
+      amount:
+        parseFloat(rentDeposit) +
+        parseFloat(waterDeposit) +
+        parseFloat(initialRentPayment),
+      description: `Deposit #${depositCount + 1}: Total amount of ${
+        parseFloat(rentDeposit) +
+        parseFloat(waterDeposit) +
+        parseFloat(initialRentPayment)
+      }`,
+    });
     tenant.deposits.referenceNo = referenceNo;
 
     // Record deposits in global deposit history
@@ -408,80 +423,107 @@ export const addDeposits = async (req, res) => {
       });
     }
 
-    // Calculate excess from initial rent payment
-    const excessInitialRent =
-      remainingInitialRentPayment > tenant.houseDetails.rent
-        ? remainingInitialRentPayment - tenant.houseDetails.rent
-        : 0;
+    // Check if the initial rent payment exactly equals the rent amount
+    if (remainingInitialRentPayment === tenant.houseDetails.rent) {
+      tenant.deposits.initialRentPayment = remainingInitialRentPayment;
+      tenant.deposits.initialRentPaymentHistory.push({
+        date: depositDate,
+        amount: remainingInitialRentPayment,
+        description: `Exact initial rent payment of ${remainingInitialRentPayment} recorded`,
+      });
 
-    if (excessInitialRent > 0) {
-      totalExcessDeposit += excessInitialRent;
+      tenant.deposits.initialRentPaymentDeficit = 0;
+      tenant.deposits.initialRentPaymentExcess = 0;
+
+      tenant.deposits.initialRentPaymentDeficitHistory.push({
+        date: depositDate,
+        amount: 0,
+        description: `No deficit as exact rent payment received`,
+      });
+
       tenant.deposits.initialRentPaymentExcessHistory.push({
         date: depositDate,
-        amount: excessInitialRent,
-        description: `Excess amount of ${excessInitialRent} from initial rent payment recorded`,
+        amount: 0,
+        description: `No excess as exact rent payment received`,
       });
-      tenant.deposits.initialRentPaymentExcess += excessInitialRent;
-      remainingInitialRentPayment -= excessInitialRent;
-    }
+    } else {
+      // Original logic for excess and shortfall
 
-    // Handle insufficient initial rent payment
-    if (remainingInitialRentPayment < tenant.houseDetails.rent) {
-      const rentShortfall =
-        tenant.houseDetails.rent - remainingInitialRentPayment;
+      // Calculate excess from initial rent payment
+      const excessInitialRent =
+        remainingInitialRentPayment > tenant.houseDetails.rent
+          ? remainingInitialRentPayment - tenant.houseDetails.rent
+          : 0;
 
-      // Record the deficit before using the excess deposit
-      if (rentShortfall > 0) {
-        tenant.deposits.initialRentPaymentDeficit = rentShortfall;
-        tenant.deposits.initialRentPaymentDeficitHistory.push({
+      if (excessInitialRent > 0) {
+        totalExcessDeposit += excessInitialRent;
+        tenant.deposits.initialRentPaymentExcessHistory.push({
           date: depositDate,
-          amount: rentShortfall,
-          description: `InitialRentPay shortfall of ${rentShortfall} recorded before applying excess deposits`,
+          amount: excessInitialRent,
+          description: `Excess amount of ${excessInitialRent} from initial rent payment recorded`,
         });
+        tenant.deposits.initialRentPaymentExcess += excessInitialRent;
+        remainingInitialRentPayment -= excessInitialRent;
       }
 
-      if (totalExcessDeposit >= rentShortfall) {
-        // Cover the shortfall with excess deposit
-        remainingInitialRentPayment += rentShortfall;
-        totalExcessDeposit -= rentShortfall;
-
-        tenant.deposits.excessHistory.push({
-          date: depositDate,
-          amount: -rentShortfall, // Negative to show usage
-          description: `Excess deposit of ${rentShortfall} used to cover rent shortfall`,
-        });
-
-        // After coverage, check if there is any remaining deficit
-        tenant.deposits.initialRentPaymentDeficit = 0;
-        tenant.deposits.initialRentPaymentDeficitHistory.push({
-          date: depositDate,
-          amount: 0,
-          description: `Rent shortfall of ${0} recorded after applying excess deposits`,
-        });
-      } else {
-        // Use the remaining excess deposit and still have a shortfall
-        remainingInitialRentPayment += totalExcessDeposit;
-        tenant.excessAmount = 0;
-        tenant.excessHistory.push({
-          date: depositDate,
-          amount: -totalExcessDeposit, // Negative to show usage
-          description: `Excess deposit of ${totalExcessDeposit} used to cover rent shortfall`,
-        });
-
-        totalExcessDeposit = 0;
-
-        // Calculate remaining shortfall after applying excess deposit
-        const rentShortfallAfterCoverage =
+      // Handle insufficient initial rent payment
+      if (remainingInitialRentPayment < tenant.houseDetails.rent) {
+        const rentShortfall =
           tenant.houseDetails.rent - remainingInitialRentPayment;
 
-        if (rentShortfallAfterCoverage > 0) {
-          tenant.deposits.initialRentPaymentDeficit =
-            rentShortfallAfterCoverage;
+        // Record the deficit before using the excess deposit
+        if (rentShortfall > 0) {
+          tenant.deposits.initialRentPaymentDeficit = rentShortfall;
           tenant.deposits.initialRentPaymentDeficitHistory.push({
             date: depositDate,
-            amount: rentShortfallAfterCoverage,
-            description: `Rent shortfall of ${rentShortfallAfterCoverage} recorded after applying excess deposits`,
+            amount: rentShortfall,
+            description: `InitialRentPay shortfall of ${rentShortfall} recorded before applying excess deposits`,
           });
+        }
+
+        if (totalExcessDeposit >= rentShortfall) {
+          // Cover the shortfall with excess deposit
+          remainingInitialRentPayment += rentShortfall;
+          totalExcessDeposit -= rentShortfall;
+
+          tenant.deposits.excessHistory.push({
+            date: depositDate,
+            amount: -rentShortfall, // Negative to show usage
+            description: `Excess deposit of ${rentShortfall} used to cover rent shortfall`,
+          });
+
+          // After coverage, check if there is any remaining deficit
+          tenant.deposits.initialRentPaymentDeficit = 0;
+          tenant.deposits.initialRentPaymentDeficitHistory.push({
+            date: depositDate,
+            amount: 0,
+            description: `Rent shortfall of ${0} recorded after applying excess deposits`,
+          });
+        } else {
+          // Use the remaining excess deposit and still have a shortfall
+          remainingInitialRentPayment += totalExcessDeposit;
+          tenant.excessAmount = 0;
+          tenant.excessHistory.push({
+            date: depositDate,
+            amount: -totalExcessDeposit, // Negative to show usage
+            description: `Excess deposit of ${totalExcessDeposit} used to cover rent shortfall`,
+          });
+
+          totalExcessDeposit = 0;
+
+          // Calculate remaining shortfall after applying excess deposit
+          const rentShortfallAfterCoverage =
+            tenant.houseDetails.rent - remainingInitialRentPayment;
+
+          if (rentShortfallAfterCoverage > 0) {
+            tenant.deposits.initialRentPaymentDeficit =
+              rentShortfallAfterCoverage;
+            tenant.deposits.initialRentPaymentDeficitHistory.push({
+              date: depositDate,
+              amount: rentShortfallAfterCoverage,
+              description: `Rent shortfall of ${rentShortfallAfterCoverage} recorded after applying excess deposits`,
+            });
+          }
         }
       }
     }
@@ -498,13 +540,21 @@ export const addDeposits = async (req, res) => {
 
     const formattedPlacementDate = new Date(tenant.placementDate);
 
-    // Create the payment record
-    await createPaymentRecord(
-      tenantId,
-      remainingInitialRentPayment + totalExcessDeposit,
-      formattedPlacementDate,
-      referenceNo
-    );
+    // Update isCleared status
+    tenant.deposits.isCleared =
+      tenant.deposits.rentDeposit >= tenant.houseDetails.rentDeposit &&
+      tenant.deposits.waterDeposit >= tenant.houseDetails.waterDeposit &&
+      tenant.deposits.initialRentPayment >= tenant.houseDetails.rent;
+
+    if (tenant.deposits.isCleared) {
+      // Create the payment record
+      await createPaymentRecord(
+        tenantId,
+        remainingInitialRentPayment + totalExcessDeposit,
+        formattedPlacementDate,
+        referenceNo
+      );
+    }
 
     // After creating the payment, set excess to 0 and record it
     tenant.excessHistory.push({
@@ -516,11 +566,6 @@ export const addDeposits = async (req, res) => {
 
     // Set initialRentPayment in deposits with the remaining value or the initial value if not used
     tenant.deposits.initialRentPayment = remainingInitialRentPayment;
-
-    // Update isCleared status
-    tenant.deposits.isCleared =
-      tenant.deposits.rentDeposit >= tenant.houseDetails.rentDeposit &&
-      tenant.deposits.waterDeposit >= tenant.houseDetails.waterDeposit;
 
     await tenant.save();
 
@@ -549,7 +594,9 @@ export const addSingleAmountDeposit = async (req, res) => {
     } = tenant.houseDetails;
 
     const totalRequiredDeposit =
-      parseFloat(houseRentDeposit) + parseFloat(houseWaterDeposit);
+      parseFloat(houseRentDeposit) +
+      parseFloat(houseWaterDeposit) +
+      parseFloat(requiredInitialRent);
 
     // Initialize amounts
     let remainingAmount = parseFloat(totalAmount);
@@ -559,7 +606,17 @@ export const addSingleAmountDeposit = async (req, res) => {
     let excessAmount = 0;
 
     // Update depositDate and referenceNo in the main record
+    // Get the number of records in depositDateHistory
+    const depositCount = tenant.deposits.depositDateHistory.length;
     tenant.deposits.depositDate = depositDate;
+    tenant.deposits.depositDateHistory.push({
+      date: depositDate,
+      referenceNoUsed: referenceNo,
+      amount: parseFloat(remainingAmount),
+      description: `Deposit #${depositCount + 1}: Total amount of ${parseFloat(
+        remainingAmount
+      )}`,
+    });
     tenant.deposits.referenceNo = referenceNo;
 
     // Allocate to rent deposit first
@@ -684,26 +741,49 @@ export const addSingleAmountDeposit = async (req, res) => {
       });
 
       const formattedPlacementDate = new Date(tenant.placementDate);
-      // Create a payment record with the initial rent payment and any excess amount
-      await createPaymentRecord(
-        tenantId,
-        initialRentPayment + excessAmount,
-        formattedPlacementDate,
-        referenceNo
-      );
 
-      // After payment is created, update the excess amount to 0
-      tenant.excessAmount = 0;
-      tenant.excessHistory.push({
+      // This section contains the main change
+      // Changed logic for checking whether deposits and initial rent are fully satisfied or greater
+      if (
+        tenant.deposits.rentDeposit >= houseRentDeposit && // Ensure rent deposit is fully paid or more
+        tenant.deposits.waterDeposit >= houseWaterDeposit && // Ensure water deposit is fully paid or more
+        tenant.deposits.initialRentPayment >= requiredInitialRent // Ensure initial rent payment is fully paid or more
+      ) {
+        // Create a payment record with the initial rent payment and any excess amount
+        await createPaymentRecord(
+          tenantId,
+          initialRentPayment + excessAmount, // No change here
+          formattedPlacementDate, // No change here
+          referenceNo // No change here
+        );
+
+        // After payment is created, update the excess amount to 0
+        tenant.excessAmount = 0;
+        tenant.excessHistory.push({
+          date: depositDate,
+          amount: 0,
+          description: 'Excess used up after payment creation',
+        });
+      }
+    } else {
+      // Deposits are not satisfied, record the full deficit for initial rent payment
+      const fullInitialRentDeficit = requiredInitialRent;
+
+      // Record the deficit
+      tenant.deposits.initialRentPaymentDeficit += fullInitialRentDeficit;
+      tenant.deposits.initialRentPaymentDeficitHistory.push({
         date: depositDate,
-        amount: 0,
-        description: 'Excess used up after payment creation',
+        amount: fullInitialRentDeficit,
+        description:
+          'Full initial rent payment deficit due to insufficient deposits',
       });
     }
 
     // Update the clearance status
     const totalPaidDeposit =
-      tenant.deposits.rentDeposit + tenant.deposits.waterDeposit;
+      tenant.deposits.rentDeposit +
+      tenant.deposits.waterDeposit +
+      tenant.deposits.initialRentPayment;
     const shortfall = totalRequiredDeposit - totalPaidDeposit;
 
     tenant.deposits.isCleared = shortfall <= 0;
@@ -752,6 +832,20 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
 
     const { houseDetails, deposits } = tenant;
     let remainingPayment = parseFloat(paymentAmount);
+
+    // Update depositDate and referenceNo in main record
+    // Get the number of records in depositDateHistory
+    const depositCount = tenant.deposits.depositDateHistory.length;
+    tenant.deposits.depositDate = depositDate;
+    tenant.deposits.depositDateHistory.push({
+      date: depositDate,
+      referenceNoUsed: referenceNo,
+      amount: parseFloat(remainingPayment),
+      description: `Deposit #${depositCount + 1}: Total amount of ${parseFloat(
+        remainingPayment
+      )}`,
+    });
+    tenant.deposits.referenceNo = referenceNo;
 
     // Step 1: Handle Rent Deposit
     if (deposits.rentDepositDeficit > 0) {
@@ -953,12 +1047,20 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
 
     const formattedPlacementDate = new Date(tenant.placementDate);
 
-    await createPaymentRecord(
-      tenantId,
-      totalAmount,
-      formattedPlacementDate,
-      referenceNo
-    );
+    // Update isCleared field and add global record of totals
+    tenant.deposits.isCleared =
+      deposits.rentDeposit >= houseDetails.rentDeposit &&
+      deposits.waterDeposit >= houseDetails.waterDeposit &&
+      deposits.initialRentPayment >= houseDetails.rent;
+
+    if (tenant.deposits.isCleared) {
+      await createPaymentRecord(
+        tenantId,
+        totalAmount,
+        formattedPlacementDate,
+        referenceNo
+      );
+    }
 
     // Reset the excessAmount after processing payment
     tenant.excessAmount = 0;
@@ -968,11 +1070,6 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
       description:
         'Excess amount recorded after covering deficits and creating payment',
     });
-
-    // Update isCleared field and add global record of totals
-    tenant.deposits.isCleared =
-      deposits.rentDeposit >= houseDetails.rentDeposit &&
-      deposits.waterDeposit >= houseDetails.waterDeposit;
 
     const totalDepositAmount =
       parseFloat(deposits.rentDeposit) +
@@ -1021,7 +1118,9 @@ export const tenantsWithIncompleteDeposits = async (req, res) => {
 // Get all Tenants
 export const getTenants = async (req, res) => {
   try {
-    const tenants = await Tenant.find().sort({ createdAt: -1 });
+    const tenants = await Tenant.find({ 'deposits.isCleared': true }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(tenants);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -1042,7 +1141,7 @@ export const getTenantById = async (req, res) => {
 // Update a Tenant by ID
 export const updateTenant = async (req, res) => {
   try {
-    const tenant = await Tenant.findByIdAndUpdate(req.params.id, req.body, {
+    const tenant = await Tenant.findByIdAndUpdate(req.params.id, ...req.body, {
       new: true,
       runValidators: true,
     });
@@ -1151,5 +1250,52 @@ export const deleteTenant = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+//check if tenant has any payment records
+export const checkTenantPaymentRecord = async (req, res) => {
+  const { tenantId } = req.params;
+  try {
+    const tenantPayments = await Payment.find({ tenant: tenantId });
+    if (!tenantPayments) {
+      return res
+        .status(404)
+        .json({ message: 'No payments for this Tenant', status: false });
+    }
+
+    res.status(200).json({ tenantPayments, status: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
+// Controller to fetch the most recent payment made by a tenant using tenant ID
+export const getMostRecentPaymentByTenantId = async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+
+    // Find the most recent payment for the tenant, sorted by the creation date
+    const mostRecentPayment = await Payment.find({ tenant: tenantId })
+      .sort({ createdAt: -1 })
+      .populate('tenant');
+
+    if (!mostRecentPayment) {
+      return res.status(404).json({
+        message: 'No payment record found for this tenant.',
+      });
+    }
+
+    // Return the most recent payment data
+    return res.status(200).json({
+      message: 'Most recent payment fetched successfully.',
+      mostRecentPayment,
+    });
+  } catch (error) {
+    console.error('Error fetching recent payment:', error);
+    return res.status(500).json({
+      message: 'Server error while fetching the most recent payment.',
+      error: error.message,
+    });
   }
 };

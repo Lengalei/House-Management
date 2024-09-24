@@ -13,6 +13,7 @@
   padding: 10px 20px;
   z-index: 1000;
   /* border: 1px solid firebrick; */
+  border-bottom: 1px solid firebrick;
 }
 
 .navbar-logo {

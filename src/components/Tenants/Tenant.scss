@@ -1,10 +1,11 @@
 .tenant {
   display: flex;
   justify-content: center;
-  background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)), url(/register.jpeg);
+  background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
+    url('/public/register.jpeg');
   align-items: center;
   height: 100%;
- 
+
   // background-color: #f2f2f2;
 
   .registration {
@@ -12,9 +13,13 @@
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-     margin-bottom: 40px;
+    margin-bottom: 40px;
     width: 90%;
+    height: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
     max-width: 600px;
+    border: 1px solid firebrick;
 
     h3 {
       text-align: center;
