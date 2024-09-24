@@ -1,0 +1,93 @@
+.apartment-list-page {
+  padding: 20px;
+  background-color: aliceblue;
+  height: 85%;
+  max-width: 75%;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid crimson;
+  border-radius: 15px;
+
+  h2 {
+    text-align: center;
+    text-transform: capitalize;
+    color: olive;
+    text-decoration: underline;
+  }
+
+  .apartment-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .apartment-card {
+      width: 48%;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .apartment-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .arrow-button {
+        background-color: #0066ff;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 20px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #004db3;
+        }
+      }
+    }
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+
+    .page-item {
+      display: inline-block;
+      margin: 0 5px;
+
+      .page-link {
+        color: #0066ff;
+        padding: 8px 16px;
+        text-decoration: none;
+        border: 1px solid #0066ff;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #0066ff;
+          color: #fff;
+        }
+      }
+
+      &.active .page-link {
+        background-color: #0066ff;
+        color: #fff;
+        border: none;
+      }
+    }
+  }
+}

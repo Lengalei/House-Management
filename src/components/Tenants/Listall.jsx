@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaTrashAlt } from 'react-icons/fa';
 import './Listall.scss';
 import { useEffect, useState } from 'react';
@@ -71,6 +71,8 @@ const Listall = () => {
     },
   ];
 
+  const navigate = useNavigate();
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false); // State for modal visibility
@@ -137,6 +139,11 @@ const Listall = () => {
     }
   };
 
+  const handleTenantClearance = (tenant) => {
+    navigate(`/clearTenant/${tenant._id}`, {
+      state: { tenant },
+    });
+  };
   return (
     <div className="summary2">
       <div className="tenantslist">
@@ -184,6 +191,14 @@ const Listall = () => {
                         >
                           More Details
                         </Link>
+                        <button
+                          onClick={() => {
+                            handleTenantClearance(tenant);
+                          }}
+                          className="edit-btn"
+                        >
+                          Clear Tenant
+                        </button>
                         <button
                           onClick={() => handleOpenModal(tenant._id)}
                           className="delete-btn"

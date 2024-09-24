@@ -2,10 +2,10 @@
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  height: 100%;
-  overflow: scroll;
-  overflow-x: hidden;
-  border: 1px solid red;
+  height: 90%;
+  // overflow: scroll;
+  // overflow-x: hidden;
+  // border: 1px solid red;
 }
 
 .loader {
@@ -75,7 +75,9 @@ h2 {
 
 .house-list {
   margin-bottom: 40px;
-  height: max-content;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
   .house-card {
     display: flex;
     align-items: center;

@@ -1,0 +1,131 @@
+.apartment-registration-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 20px;
+  max-width: 80%;
+  margin: 0 auto;
+  height: 100%;
+  //   background-color: #ccc;
+
+  .card {
+    flex: 1;
+    background-color: aliceblue;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(236, 7, 7, 0.884);
+    height: 90%;
+    overflow: scroll;
+    overflow-x: hidden;
+    // border: 1px solid firebrick;
+
+    &-left {
+      flex: 0.5;
+      form {
+        .form-group {
+          margin-bottom: 15px;
+
+          label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+          }
+
+          input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+          }
+        }
+
+        .btn-primary {
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
+      }
+    }
+
+    &-right {
+      flex: 0.5;
+      .apartment-card {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+
+        &:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          color: #343a40;
+        }
+
+        p {
+          font-size: 1rem;
+          color: #6c757d;
+        }
+
+        .btn-secondary {
+          background-color: #28a745;
+          color: white;
+          padding: 8px 15px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: #218838;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    list-style: none;
+
+    .page-item {
+      margin: 0 5px;
+
+      .page-link {
+        padding: 8px 12px;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+        color: #007bff;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #007bff;
+          color: white;
+        }
+      }
+
+      &.active .page-link {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+    }
+  }
+}

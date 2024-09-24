@@ -505,6 +505,7 @@ export const monthlyPayProcessing = async (req, res) => {
         : previousMonthExtraCharges?.expectedAmount
     );
     let previousMonthDescription = previousMonthExtraCharges.description;
+
     // Handle previous month water bill with new accumulated amount logic
     if (parseFloat(accumulatedWaterBill) > 0) {
       // Set the accumulatedAmount with the value we get from the frontend
@@ -530,6 +531,31 @@ export const monthlyPayProcessing = async (req, res) => {
         description: 'Water bill deficit recorded',
       });
 
+      //update the global record
+      previousPayment.globalDeficitHistory.push({
+        year: Number(previousPayment.year),
+        month: previousPayment.month,
+        totalDeficitAmount:
+          parseFloat(previousPayment?.globalDeficit || 0) +
+          parseFloat(remainingWaterDeficit || 0),
+        description: `Just added the water deficit to be cleared by the helper function`,
+      });
+      previousPayment.globalDeficit =
+        parseFloat(previousPayment.globalDeficit) +
+        parseFloat(previousPayment.waterBill.deficit);
+
+      previousPayment.globalTransactionHistory.push({
+        year: previousPayment.year,
+        month: previousPayment.month,
+        totalRentAmount: parseFloat(previousPayment.rent.amount),
+        totalWaterAmount: parseFloat(previousPayment.waterBill.amount),
+        totalGarbageFee: parseFloat(previousPayment.garbageFee.amount),
+        totalAmount: parseFloat(previousPayment.totalAmountPaid),
+        referenceNumber: referenceNo,
+        globalDeficit:
+          parseFloat(previousPayment.globalDeficit) +
+          parseFloat(remainingWaterDeficit),
+      });
       // Water bill not fully paid
       previousPayment.waterBill.paid = false;
     }
@@ -560,6 +586,32 @@ export const monthlyPayProcessing = async (req, res) => {
         description: 'ExtraCharges bill deficit recorded',
       });
 
+      //update the global record
+      previousPayment.globalDeficitHistory.push({
+        year: Number(previousPayment.year),
+        month: previousPayment.month,
+        totalDeficitAmount:
+          parseFloat(previousPayment?.globalDeficit || 0) +
+          parseFloat(extraChargesDeficit || 0),
+        description: `Just added the extraCharges deficit to be cleared by the helper function`,
+      });
+      previousPayment.globalDeficit =
+        parseFloat(previousPayment.globalDeficit) +
+        parseFloat(previousPayment.waterBill.deficit);
+
+      previousPayment.globalTransactionHistory.push({
+        year: Number(previousPayment.year),
+        month: previousPayment.month,
+        totalRentAmount: parseFloat(previousPayment.rent.amount),
+        totalWaterAmount: parseFloat(previousPayment.waterBill.amount),
+        totalGarbageFee: parseFloat(previousPayment.garbageFee.amount),
+        totalAmount: parseFloat(previousPayment.totalAmountPaid),
+        referenceNumber: referenceNo,
+        globalDeficit:
+          parseFloat(previousPayment.globalDeficit) +
+          parseFloat(extraChargesDeficit),
+      });
+
       // ExtraCharges not fully paid
       previousPayment.extraCharges.paid = false;
     }
@@ -576,7 +628,7 @@ export const monthlyPayProcessing = async (req, res) => {
       referenceNo
     );
     amount = parseFloat(remainingAmount);
-    console.log('amountAfterPreviousDeficitHandling: ', amount);
+    // console.log('amountAfterPreviousDeficitHandling: ', amount);
 
     // Ensure depositDate is a Date objectn
     const dateObject = new Date(depositDate);
@@ -595,6 +647,7 @@ export const monthlyPayProcessing = async (req, res) => {
 
     // Add previous month's overpay to the current excess
     let excess = parseFloat(amount);
+    // console.log('excessAmountPriorTOCurrentMonthHandling: ', excess);
 
     // Fetch tenant data
     const tenant = await Tenant.findById(tenantId).populate('houseDetails');
@@ -647,7 +700,7 @@ export const monthlyPayProcessing = async (req, res) => {
       date: depositDate,
       previousRefNo: payment.referenceNumber,
       referenceNoUsed: referenceNo,
-      amount,
+      amount: excess,
       description: `Payment record number of tinkering:#${
         paymentCount + 1
       } doneIn monthProcessingFunc`,

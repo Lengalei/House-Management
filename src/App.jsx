@@ -33,6 +33,8 @@ import TenantsWithIncompleteDeposits from './components/Tenants/v2/incompleteDep
 import TenantUpdateDeposits from './components/Tenants/v2/incompleteDeposits/TenantUpdateDeposits.jsx';
 import TenantPaymentsV2 from './components/Tenants/v2/TenantPaymentsV2/TenantPaymentsV2.jsx';
 import Clearance from './components/Clearance/Clearance.jsx';
+import ApartmentRegistration from './components/houses/Apartments/ApartmentRegistration .jsx';
+import ApartmentListPage from './components/houses/Apartments/ApartmentListPage.jsx';
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
           <Route path="/listAllLandlord" element={<ListLandlord />} />
           <Route path="/profileSettings" element={<Admin />} />
           <Route path="/addHouse" element={<RegisterHouse />} />
+          <Route path="/addAppartment" element={<ApartmentRegistration />} />
+          <Route path="/apartments" element={<ApartmentListPage />} />
           {/* Tenant Payment */}
           <Route path="/rentpayment" element={<Rent />} />
           <Route
@@ -89,10 +93,7 @@ function App() {
             path="/v2/tenantPaymentsV2/:tenantId"
             element={<TenantPaymentsV2 />}
           />
-          <Route
-            path="/clearTenant"
-            element={<Clearance/>}
-          />
+          <Route path="/clearTenant/:tenantId" element={<Clearance />} />
         </Route>
         <Route path="/*" element={<NotFound />} />
       </Routes>

@@ -1299,3 +1299,20 @@ export const getMostRecentPaymentByTenantId = async (req, res) => {
     });
   }
 };
+
+//clear tenant
+export const clearTenant = async (req, res) => {
+  const { tenantId } = req.params;
+  try {
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'No Such Tenant found' });
+    }
+
+    //check if the tenant has any payment deficits
+    //calculate the amount to be deducted from the deposits
+    //after all this delete tenant and  return the remaining amount to be sent to the leaving Tenant
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

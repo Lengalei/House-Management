@@ -4,8 +4,8 @@ import { FaClipboardList } from 'react-icons/fa';
 import { VscRecordSmall } from 'react-icons/vsc';
 import { TbSquarePercentage } from 'react-icons/tb';
 import { IoReceiptOutline } from 'react-icons/io5';
-import { GiReceiveMoney } from "react-icons/gi";
-import { MdOutlineFormatClear } from "react-icons/md";
+import { GiReceiveMoney } from 'react-icons/gi';
+import { MdOutlineFormatClear } from 'react-icons/md';
 import {
   FaTachometerAlt,
   FaUsers,
@@ -21,6 +21,7 @@ import './sidebar.css';
 const Sidebar = () => {
   const [tenantDropdownOpen, setTenantDropdownOpen] = useState(false);
   const [landlordDropdownOpen, setLandlordDropdownOpen] = useState(false);
+  const [addAppartmentOpen, setAddAppartmentOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleTenantDropdown = () => {
@@ -29,6 +30,10 @@ const Sidebar = () => {
 
   const toggleLandlordDropdown = () => {
     setLandlordDropdownOpen(!landlordDropdownOpen);
+  };
+
+  const toggleAddAppartmentOpen = () => {
+    setAddAppartmentOpen(!addAppartmentOpen);
   };
 
   const toggleSidebar = () => {
@@ -40,7 +45,7 @@ const Sidebar = () => {
       <button className="hamburger-menu" onClick={toggleSidebar}>
         <FaBars />
       </button>
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <button className="close-btn" onClick={toggleSidebar}>
           <FaTimes />
         </button>
@@ -53,7 +58,6 @@ const Sidebar = () => {
           <Link to="/listAllTenants" className="dash">
             <FaUsers className="icon" /> All Tenants
           </Link>
-
           <Link to="/v2/incompleteDeposits" className="dash">
             <FaClipboardList className="icon" />
             Grey List
@@ -62,9 +66,23 @@ const Sidebar = () => {
             <VscRecordSmall className="icon" />
             Records
           </Link>
-          <Link to="/addHouse" className="dash">
-            <FaHouseUser className="icon" /> Register House
-          </Link>
+
+          <div className="dropdown">
+            <div className="dash" onClick={toggleAddAppartmentOpen}>
+              <FaUsers className="icon" /> Appartments
+              <FaCaretDown className="caret" />
+            </div>
+            {addAppartmentOpen && (
+              <div className="dropdown-content">
+                <Link to="/addAppartment" className="dash">
+                  Add Appartment
+                </Link>
+                <Link to="/apartments" className="dash">
+                  All Apartments
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="management">
@@ -72,7 +90,7 @@ const Sidebar = () => {
           <hr className="h" />
           <div className="dropdown">
             <div className="dash" onClick={toggleTenantDropdown}>
-              <FaUsers className="icon" /> Tenants{" "}
+              <FaUsers className="icon" /> Tenants{' '}
               <FaCaretDown className="caret" />
             </div>
             {tenantDropdownOpen && (
@@ -88,7 +106,7 @@ const Sidebar = () => {
           </div>
           <div className="dropdown">
             <div className="dash" onClick={toggleLandlordDropdown}>
-              <FaUserTie className="icon" /> CareTaker{" "}
+              <FaUserTie className="icon" /> CareTaker{' '}
               <FaCaretDown className="caret" />
             </div>
             {landlordDropdownOpen && (
@@ -108,9 +126,9 @@ const Sidebar = () => {
           <Link to="/allPayments" className="dash">
             <GiReceiveMoney className="icon" /> All Payments
           </Link>
-          <Link to="/clearTenant" className="dash">
+          {/* <Link to="/clearTenant" className="dash">
             <MdOutlineFormatClear className="icon" /> Clearance
-          </Link>
+          </Link> */}
         </div>
         <div className="management">
           <h4 className="h2">TAX</h4>

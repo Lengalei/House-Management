@@ -19,8 +19,8 @@ function RequireAuth() {
   const admin = useSelector((store) => store.adminData.adminDataValue);
   const adminData = JSON.parse(localStorage.getItem('adminData'));
 
-  console.log('adminDataStoredInLocalStorage: ', adminData);
-  console.log('adminValueInSlice: ', admin);
+  // console.log('adminDataStoredInLocalStorage: ', adminData);
+  // console.log('adminValueInSlice: ', admin);
 
   if (adminData && adminData.username) {
     return (

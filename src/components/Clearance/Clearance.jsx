@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import './Clearance.css';
+import './Clearance.scss';
+import { useLocation } from 'react-router-dom';
 
 function Clearance() {
-  const [name, setName] = useState('');
-  const [houseno, setHouseno] = useState('');
+  const location = useLocation();
+  const { tenant } = location.state || {};
 
   return (
     <div className="clearance">
@@ -12,28 +12,23 @@ function Clearance() {
         <form className="form1">
           <h1>Tenant{`'`}s Details</h1>
           <div className="clear">
-            <label htmlFor="">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => {
-                e.target.value(setName);
-              }}
-            />
+            <label htmlFor="">Name: {tenant?.name}</label>
           </div>
           <div className="clear">
-            <label htmlFor="">House No</label>
-            <input
-              type="text"
-              value={houseno}
-              onChange={(e) => {
-                e.target.value(setHouseno);
-              }}
-            />
+            <label htmlFor="">House No: {tenant?.houseDetails?.houseNo}</label>
           </div>
           <div className="clear">
-            <label htmlFor="">Cash at Hand</label>
-            <input type="text" />
+            <label htmlFor="">
+              House Deposit: {tenant?.houseDetails.rentDeposit}{' '}
+            </label>
+            <label htmlFor="">
+              Water Deposit{tenant?.houseDetails?.waterDeposit}
+            </label>
+            <label htmlFor="">
+              Cash at Hand
+              {tenant?.houseDetails.rentDeposit +
+                tenant?.houseDetails?.waterDeposit}
+            </label>
           </div>
         </form>
 
