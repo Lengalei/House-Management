@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './TenantPaymentsV2.scss';
 import apiRequest from '../../../../lib/apiRequest';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { ThreeDots } from 'react-loader-spinner';
 
@@ -11,7 +11,7 @@ const TenantPayments = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { tenantId } = useParams();
   const [selectedTab, setSelectedTab] = useState('complete'); // Toggle between Complete and Outstanding
   const [showPopup, setShowPopup] = useState(false); // Popup for updating default values
@@ -127,6 +127,8 @@ const TenantPayments = () => {
 
   const [previousMonth, setPreviousMonth] = useState('');
   const [previousYear, setPreviousYear] = useState('');
+  const [mostRecentPayment, setMostRecentPayments] = useState({});
+  // console.log(mostRecentPayment);
   const getMostRecentPaymentByTenantId = async (tenantId) => {
     try {
       const response = await apiRequest.get(
@@ -136,7 +138,7 @@ const TenantPayments = () => {
         setPreviousMonth(response.data.mostRecentPayment[0].month);
         // console.log(response.data);
         setPreviousYear(response.data.mostRecentPayment[0].year);
-
+        setMostRecentPayments(response.data.mostRecentPayment[0]);
         // Example structure of returned data
         const paymentsData = response.data.mostRecentPayment; // Assume this is an array with 'year' and 'month' keys
 
@@ -394,7 +396,10 @@ const TenantPayments = () => {
       );
       if (response.status === 200) {
         console.log(`responseFromBackend: `, response.data);
-        navigate('/rentpayment');
+        // navigate('/rentpayment');
+        fetchUnpaidPayments(tenantId);
+        fetchFullyPaidPayments(tenantId);
+        getMostRecentPaymentByTenantId(tenantId);
 
         setError('');
       }
@@ -439,6 +444,9 @@ const TenantPayments = () => {
       );
       if (response.status) {
         console.log('All good');
+        fetchUnpaidPayments(tenantId);
+        fetchFullyPaidPayments(tenantId);
+        getMostRecentPaymentByTenantId(tenantId);
         setAddInternalAmountPopup(false);
       }
     } catch (error) {
@@ -452,6 +460,20 @@ const TenantPayments = () => {
     (total, payment) => total + payment.globalDeficit,
     0 // Initial value of the sum
   );
+
+  // State to track if overpay is transferred to monthly amount
+  const [isOverpayTransferred, setIsOverpayTransferred] = useState(false);
+
+  // Function to handle overpay transfer
+  const handleOverpayTransfer = () => {
+    if (!isOverpayTransferred) {
+      setNewMonthlyAmount(mostRecentPayment?.overpay || 0); // Transfer overpay to monthly amount
+      setIsOverpayTransferred(true); // Mark overpay as transferred
+    } else {
+      setNewMonthlyAmount(''); // Reset the monthly amount
+      setIsOverpayTransferred(false); // Mark overpay as not transferred
+    }
+  };
 
   return (
     <div className="tenant-payments-container">
@@ -679,18 +701,44 @@ const TenantPayments = () => {
                     {/* Section 1: Monthly Payment Info */}
                     <div className="section section-1">
                       <h3>{nextMonth + ', ' + currentYear} Payment Info</h3>
-                      {outstandingPayments?.map((payment, index) => (
-                        <div key={index}>
-                          {payment?.overpay ? (
-                            <p>
-                              <strong>Current Overpay:</strong>{' '}
-                              {payment?.overpay > 0 ? payment?.overpay : 'None'}
-                            </p>
-                          ) : (
-                            ''
-                          )}
-                        </div>
-                      ))}
+                      <div>
+                        {mostRecentPayment?.overpay !== undefined && (
+                          <div className="overpay-section">
+                            {isOverpayTransferred ? (
+                              <p>
+                                <strong>Current Overpay:</strong> None
+                                <span
+                                  className="overpay-toggle"
+                                  onClick={handleOverpayTransfer}
+                                  style={{
+                                    cursor: 'pointer',
+                                    marginLeft: '10px',
+                                  }}
+                                >
+                                  ⬆
+                                </span>
+                              </p>
+                            ) : (
+                              <p>
+                                <strong>Current Overpay:</strong>{' '}
+                                {mostRecentPayment?.overpay > 0
+                                  ? mostRecentPayment?.overpay
+                                  : 'None'}
+                                <span
+                                  className="overpay-toggle"
+                                  onClick={handleOverpayTransfer}
+                                  style={{
+                                    cursor: 'pointer',
+                                    marginLeft: '10px',
+                                  }}
+                                >
+                                  ⬇
+                                </span>
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
 
                       <div className="form-group">
                         <label>Monthly Amount:</label>
@@ -1131,7 +1179,10 @@ const TenantPayments = () => {
             {showPaymentPopup && (
               <div className="popup-overlay">
                 <div className="popup-content">
-                  <h2>{previousMonth + `,` + currentYear} Pending Payments</h2>
+                  <h2>
+                    {selectedPayment.month + `,` + selectedPayment.year} Pending
+                    Payments
+                  </h2>
                   <form onSubmit={handlePaymentUpdate}>
                     {/* Rent Deficit */}
                     {selectedPayment?.rent?.deficit ? (
