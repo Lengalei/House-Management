@@ -42,9 +42,8 @@ const Navbar = () => {
         <img src="/homelogo.png" alt="" />
       </div>
       <div className="navbar-center">
-        {/* <FaBell size={20} />
-        <FaEnvelope size={20} /> */}
-        <h3>Welcome {admin?.username}</h3>
+        <img src="/welcomegif2.gif" alt="welcome" />
+        {/* <h3>Welcome {admin?.username}</h3> */}
       </div>
       {admin ? (
         <div className="navbar-profile">

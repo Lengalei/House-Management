@@ -7,31 +7,8 @@ function Clearance() {
 
   return (
     <div className="clearance">
-      <h1>CLEAR TENANT</h1>
+      <h1>CLEAR TENANT</h1> <hr className="h" />
       <div className="forms">
-        <form className="form1">
-          <h1>Tenant{`'`}s Details</h1>
-          <div className="clear">
-            <label htmlFor="">Name: {tenant?.name}</label>
-          </div>
-          <div className="clear">
-            <label htmlFor="">House No: {tenant?.houseDetails?.houseNo}</label>
-          </div>
-          <div className="clear">
-            <label htmlFor="">
-              House Deposit: {tenant?.houseDetails.rentDeposit}{' '}
-            </label>
-            <label htmlFor="">
-              Water Deposit{tenant?.houseDetails?.waterDeposit}
-            </label>
-            <label htmlFor="">
-              Cash at Hand
-              {tenant?.houseDetails.rentDeposit +
-                tenant?.houseDetails?.waterDeposit}
-            </label>
-          </div>
-        </form>
-
         <form className="form2">
           <h1>Tenant{`'`}s bills</h1>
           <div className="clear">
@@ -51,14 +28,53 @@ function Clearance() {
             <input type="number" />
           </div>
         </form>
-      </div>
 
-      <div className="cleardiv">
-        <div className="clear">
-          <label htmlFor="">Refund</label>
-          <input type="number" />
+        <div className="formright">
+          <form className="form1">
+            <h1>Tenant{`'`}s Details</h1>
+            <div className="clear title">
+              <h4>
+                Name : <span>{tenant?.name}</span>
+              </h4>
+            </div>
+            <div className="clear title2">
+              <h5>
+                House No : <span>{tenant?.houseDetails?.houseNo}</span>
+              </h5>
+            </div>
+            <div className="form1Clear">
+              <label htmlFor="">
+                House Deposit :{" "}
+                <span className="clearspan">
+                  {tenant?.houseDetails.rentDeposit}{" "}
+                </span>
+              </label>{" "}
+              <hr />
+              <label htmlFor="">
+                Water Deposit :{" "}
+                <span className="clearspan">
+                  {tenant?.houseDetails?.waterDeposit}
+                </span>
+              </label>
+              <hr />
+              <label htmlFor="">
+                Cash at Hand :
+                <span className="clearspan">
+                  {tenant?.houseDetails.rentDeposit +
+                    tenant?.houseDetails?.waterDeposit}
+                </span>
+              </label>
+            </div>
+          </form>
+
+          <div className="cleardiv">
+            <div className="clear">
+              <label htmlFor="">Refund</label>
+              <input type="number" />
+            </div>
+            <button className="btn">Clear</button>
+          </div>
         </div>
-        <button className="btn">Clear</button>
       </div>
     </div>
   );
