@@ -93,6 +93,7 @@ const tenantSchema = new mongoose.Schema(
     // Emergency contact
     emergencyContactNumber: { type: Number, required: true },
     emergencyContactName: { type: String, required: true },
+    toBeCleared: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

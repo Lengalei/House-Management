@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
+import cron from 'node-cron';
 import Tenant from '../../../models/v2/models/v2Tenant.model.js';
 import { createPaymentRecord } from '../../../utils/v2/utils/paymentHelper.js';
 import House from '../../../models/houses.js';
 import Payment from '../../../models/v2/models/v2Payment.model.js';
+import ScheduledJob from '../../../models/v2/models/ScheduledJob.js';
 
 // Register Tenant Details
 export const createTenant = async (req, res) => {
@@ -1118,7 +1120,37 @@ export const tenantsWithIncompleteDeposits = async (req, res) => {
 // Get all Tenants
 export const getTenants = async (req, res) => {
   try {
-    const tenants = await Tenant.find({ 'deposits.isCleared': true }).sort({
+    const tenants = await Tenant.find({
+      'deposits.isCleared': true,
+      toBeCleared: false,
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(tenants);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const getListAllTenants = async (req, res) => {
+  try {
+    const tenants = await Tenant.find({
+      'deposits.isCleared': true,
+    }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(tenants);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all to be cleared Tenants
+export const getToBeClearedTenants = async (req, res) => {
+  try {
+    const tenants = await Tenant.find({
+      'deposits.isCleared': true,
+      toBeCleared: true,
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(tenants);
@@ -1300,19 +1332,529 @@ export const getMostRecentPaymentByTenantId = async (req, res) => {
   }
 };
 
-//clear tenant
+// clear tenant
 export const clearTenant = async (req, res) => {
   const { tenantId } = req.params;
+  const { date, waterBill, garbageFee, extraCharges } = req.body;
+
+  try {
+    // Convert the date to a JavaScript Date object and Extract the month and year
+    const parsedDate = new Date(date);
+    const month = parsedDate.toLocaleString('default', { month: 'long' });
+    const year = parsedDate.getFullYear();
+
+    // Fetch tenant by ID
+    const tenant = await Tenant.findById(tenantId);
+
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    // Check if there are any previous uncleared payments
+    const mostRecentPayment = await Payment.find({
+      tenant: tenantId,
+      isCleared: false,
+    });
+    if (mostRecentPayment.length > 0) {
+      return res.status(404).json({
+        message: 'Complete pending payments to clear Tenant',
+        mostRecentPayment,
+      });
+    }
+
+    // Retrieve tenant's water and rent deposits
+    let { waterDeposit, rentDeposit } = tenant.deposits;
+
+    // Check if there is any previous (last) payment overpay value
+    // Convert month name to previous month
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const monthIndex = months.indexOf(month);
+    if (monthIndex === -1) throw new Error('Invalid month name');
+
+    const prevMonth = monthIndex === 0 ? 11 : monthIndex - 1;
+    const prevYear = monthIndex === 0 ? year - 1 : year;
+
+    // Fetch previous payment record for the tenant
+    const previousPayment = await Payment.findOne({
+      tenant: tenantId,
+      year: prevYear,
+      month: months[prevMonth],
+    });
+    if (previousPayment) {
+      if (parseFloat(previousPayment.overpay) > 0) {
+        waterDeposit =
+          parseFloat(waterDeposit) + parseFloat(previousPayment.overpay);
+        previousPayment.excessHistory.push({
+          initialOverpay: previousPayment.overpay,
+          excessAmount: 0,
+          description: `Excess Amount of ${previousPayment.overpay} added to waterDeposit to be used in clearing Tenant`,
+          date,
+        });
+        previousPayment.overpay = 0;
+        await previousPayment.save();
+      }
+    }
+
+    // Start creating a new payment record
+    const payment = new Payment({
+      tenant: tenant._id,
+      month,
+      year,
+      rent: {
+        amount: 0,
+        paid: true,
+      },
+      waterBill: {
+        accumulatedAmount: parseFloat(waterBill) || 0, // Ensure it's a number
+        amount: 0,
+        paid: false,
+        transactions: [],
+        deficitHistory: [],
+      },
+      garbageFee: {
+        amount: parseFloat(garbageFee) || 0, // Ensure it's a number
+        paid: false,
+        transactions: [],
+        deficitHistory: [],
+      },
+      extraCharges: {
+        expected: parseFloat(extraCharges) || 0, // Ensure it's a number
+        amount: 0,
+        paid: false,
+        transactions: [],
+        deficitHistory: [],
+      },
+      isCleared: false,
+      totalAmountPaid: 0,
+    });
+
+    payment.referenceNumber = tenant.deposits.referenceNo;
+
+    // Handle Water Bill first
+    let waterBillDeficit = 0;
+    let amountUsedForWaterBill = 0;
+
+    // Deduct from the water deposit first for the water bill
+    if (parseFloat(waterDeposit) >= parseFloat(waterBill)) {
+      payment.waterBill.amount = parseFloat(waterBill); // Fully covered by water deposit
+      payment.waterBill.paid = true;
+      amountUsedForWaterBill = parseFloat(waterBill);
+      tenant.deposits.waterDeposit -= amountUsedForWaterBill; // Ensure the value is a number
+    } else {
+      // Partial payment from water deposit, the rest will be paid from rent deposit
+      payment.waterBill.amount = parseFloat(waterDeposit);
+      waterBillDeficit = parseFloat(waterBill) - parseFloat(waterDeposit);
+      amountUsedForWaterBill = parseFloat(waterDeposit);
+      tenant.deposits.waterDeposit = 0;
+      payment.waterBill.deficit = waterBillDeficit;
+
+      // Use rent deposit for the remaining deficit
+      if (parseFloat(rentDeposit) >= waterBillDeficit) {
+        tenant.deposits.rentDeposit -= waterBillDeficit; // Ensure the value is a number
+        payment.waterBill.amount += waterBillDeficit; // Fully covered by rent deposit now
+        payment.waterBill.paid = true;
+        waterBillDeficit = 0; // No deficit left
+      } else {
+        // Rent deposit is not enough, record the remaining deficit
+        payment.waterBill.amount += parseFloat(rentDeposit);
+        waterBillDeficit -= parseFloat(rentDeposit);
+        tenant.deposits.rentDeposit = 0;
+        payment.waterBill.paid = false;
+        // Add deficit record for water bill
+        payment.waterBill.deficitHistory.push({
+          date,
+          amount: waterBillDeficit,
+          description: `Water bill deficit for ${month}/${year}`,
+        });
+      }
+    }
+
+    // Record the water bill transaction
+    payment.waterBill.transactions.push({
+      date,
+      accumulatedAmount: parseFloat(waterBill), // Ensure it's a number
+      amount: payment.waterBill.amount,
+      referenceNumber: tenant.deposits.referenceNo,
+      description: `Water bill of ${waterBill} for ${month}/${year} covered partially/fully`,
+    });
+
+    // Add the water deposit usage history
+    tenant.deposits.waterDepositHistory.push({
+      date,
+      amount: amountUsedForWaterBill,
+      referenceNo: tenant.deposits.referenceNo,
+      previousAmount: waterDeposit,
+    });
+
+    // If rent deposit was used, record the rent deposit usage
+    if (amountUsedForWaterBill < parseFloat(waterBill)) {
+      const amountUsedFromRentDeposit =
+        parseFloat(waterBill) - amountUsedForWaterBill;
+      tenant.deposits.rentDepositHistory.push({
+        date,
+        amount: amountUsedFromRentDeposit,
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: rentDeposit,
+      });
+    }
+
+    // Handle Garbage Fee
+    let amountUsedForGarbage = 0;
+
+    // First, try using the remaining water deposit for the garbage fee
+    if (parseFloat(tenant.deposits.waterDeposit) >= parseFloat(garbageFee)) {
+      payment.garbageFee.amount = parseFloat(garbageFee); // Fully covered by water deposit
+      amountUsedForGarbage = parseFloat(garbageFee);
+      payment.garbageFee.paid = true;
+      tenant.deposits.waterDeposit -= amountUsedForGarbage; // Ensure the value is a number
+    } else {
+      // Use up the remaining water deposit, move to rent deposit if necessary
+      amountUsedForGarbage = parseFloat(tenant.deposits.waterDeposit);
+      payment.garbageFee.amount = amountUsedForGarbage;
+      tenant.deposits.waterDeposit = 0;
+
+      // Use rent deposit for the remaining garbage fee
+      let garbageFeeDeficit = parseFloat(garbageFee) - amountUsedForGarbage;
+      if (parseFloat(rentDeposit) >= garbageFeeDeficit) {
+        tenant.deposits.rentDeposit -= garbageFeeDeficit; // Ensure the value is a number
+        payment.garbageFee.amount += garbageFeeDeficit; // Fully covered now
+        payment.garbageFee.paid = true;
+        garbageFeeDeficit = 0;
+      } else {
+        // Rent deposit is also insufficient
+        payment.garbageFee.amount += parseFloat(rentDeposit);
+        garbageFeeDeficit -= parseFloat(rentDeposit);
+        tenant.deposits.rentDeposit = 0;
+        payment.garbageFee.deficit = garbageFeeDeficit;
+        payment.garbageFee.paid = false;
+
+        // Add deficit record for garbage fee
+        payment.garbageFee.deficitHistory.push({
+          date,
+          amount: garbageFeeDeficit,
+          description: `Garbage fee deficit of ${garbageFeeDeficit} for ${month}/${year}`,
+        });
+      }
+    }
+
+    // Record garbage fee transaction
+    payment.garbageFee.transactions.push({
+      date,
+      amount: payment.garbageFee.amount,
+      referenceNumber: tenant.deposits.referenceNo,
+      description: `Garbage fee of ${garbageFee} for ${month}/${year} covered partially/fully`,
+    });
+
+    // Add water deposit history for garbage fee usage (if any)
+    if (amountUsedForGarbage > 0) {
+      tenant.deposits.waterDepositHistory.push({
+        date,
+        amount: amountUsedForGarbage,
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: waterDeposit,
+      });
+    }
+
+    // If rent deposit was used for garbage fee, record the rent deposit usage
+    if (payment.garbageFee.amount > amountUsedForGarbage) {
+      const amountUsedFromRentDepositForGarbage =
+        payment.garbageFee.amount - amountUsedForGarbage;
+      tenant.deposits.rentDepositHistory.push({
+        date,
+        amount: amountUsedFromRentDepositForGarbage,
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: rentDeposit,
+      });
+    }
+
+    // Handle Extra Charges
+    let amountUsedForExtraCharges = 0;
+
+    // Try using any remaining water deposit for extra charges
+    if (parseFloat(tenant.deposits.waterDeposit) >= parseFloat(extraCharges)) {
+      payment.extraCharges.amount = parseFloat(extraCharges); // Fully covered by water deposit
+      amountUsedForExtraCharges = parseFloat(extraCharges);
+      payment.extraCharges.paid = true;
+      tenant.deposits.waterDeposit -= amountUsedForExtraCharges; // Ensure the value is a number
+    } else {
+      // Use the remaining water deposit first
+      amountUsedForExtraCharges = parseFloat(tenant.deposits.waterDeposit);
+      payment.extraCharges.amount = amountUsedForExtraCharges;
+      tenant.deposits.waterDeposit = 0;
+
+      // Use rent deposit for the remaining extra charges
+      let extraChargesDeficit =
+        parseFloat(extraCharges) - amountUsedForExtraCharges;
+      if (parseFloat(rentDeposit) >= extraChargesDeficit) {
+        tenant.deposits.rentDeposit -= extraChargesDeficit; // Ensure the value is a number
+        payment.extraCharges.amount += extraChargesDeficit; // Fully covered now
+        payment.extraCharges.paid = true;
+        extraChargesDeficit = 0;
+      } else {
+        // Rent deposit is also insufficient
+        payment.extraCharges.amount += parseFloat(rentDeposit);
+        extraChargesDeficit -= parseFloat(rentDeposit);
+        tenant.deposits.rentDeposit = 0;
+        payment.extraCharges.paid = false;
+        payment.extraCharges.deficit = parseFloat(extraChargesDeficit);
+
+        // Add deficit record for extra charges
+        payment.extraCharges.deficitHistory.push({
+          date,
+          amount: parseFloat(extraChargesDeficit),
+          description: `Extra charges deficit of ${extraChargesDeficit} for ${month}/${year}`,
+        });
+      }
+    }
+
+    // Record the transaction for extra charges
+    payment.extraCharges.transactions.push({
+      date,
+      amount: parseFloat(payment.extraCharges.amount),
+      expected: payment.extraCharges.expected,
+      referenceNumber: tenant.deposits.referenceNo,
+      description: `Extra charges of ${extraCharges} for ${month}/${year} covered partially/fully`,
+    });
+
+    // If any deposits were used, add them to the history
+    if (parseFloat(amountUsedForExtraCharges) > 0) {
+      tenant.deposits.waterDepositHistory.push({
+        date,
+        amount: parseFloat(amountUsedForExtraCharges),
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: waterDeposit,
+      });
+    }
+
+    // If rent deposit was used for extra charges, record that usage
+    if (payment.extraCharges.amount > amountUsedForExtraCharges) {
+      const amountUsedFromRentDepositForExtraCharges =
+        payment.extraCharges.amount - amountUsedForExtraCharges;
+      tenant.deposits.rentDepositHistory.push({
+        date,
+        amount: parseFloat(amountUsedFromRentDepositForExtraCharges),
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: rentDeposit,
+      });
+    }
+
+    //calculate global deficit amount
+    const globalDeficitpayment =
+      parseFloat(waterBill.deficit) ||
+      0 + parseFloat(garbageFee.deficit) ||
+      0 + parseFloat(extraCharges.deficit) ||
+      0;
+
+    if (parseFloat(globalDeficitpayment) > 0) {
+      payment.globalDeficit = globalDeficitpayment;
+      payment.globalDeficitHistory.push({
+        year: payment.year,
+        month: payment.month,
+        totalDeficitAmount: payment.globalDeficit,
+        description: `Global deficit found when clearing Tenant `,
+      });
+    }
+
+    // Calculate total amount paid
+    const globalTotalAmountPaid =
+      (parseFloat(payment.waterBill.amount) || 0) +
+      (parseFloat(payment.garbageFee.amount) || 0) +
+      (parseFloat(payment.extraCharges.amount) || 0);
+
+    console.log('globalTotalAmountPaid: ', globalTotalAmountPaid);
+    payment.totalAmountPaid = parseFloat(globalTotalAmountPaid);
+    //add global transaction
+    payment.globalTransactionHistory.push({
+      year: payment.year,
+      month: payment.month,
+      totalRentAmount: payment.rent.amount,
+      totalWaterAmount: payment.waterBill.amount,
+      totalGarbageFee: payment.garbageFee.amount,
+      totalAmount: parseFloat(globalTotalAmountPaid).toFixed(2),
+      referenceNumber: tenant.deposits.referenceNo,
+      globalDeficit: payment.globalDeficit,
+    });
+
+    //add reference number history
+    const paymentCount = previousPayment.referenceNoHistory.length;
+    payment.referenceNoHistory.push({
+      date,
+      previousRefNo: tenant.deposits.referenceNo,
+      referenceNoUsed: tenant.deposits.referenceNo,
+      amount: payment.totalAmountPaid,
+      description: `Payment record number of tinkering:#${
+        paymentCount + 1
+      } doneIn Clear Tenant`,
+    });
+
+    //update the isCleared Boolean value
+    payment.isCleared =
+      payment.rent.paid &&
+      payment.waterBill.paid &&
+      payment.garbageFee.paid &&
+      payment.extraCharges.paid;
+
+    // Mark the tenant to be cleared
+    tenant.toBeCleared = true;
+
+    // Record the payment and update tenant's deposits
+    await payment.save();
+    await tenant.save();
+
+    // Calculate the scheduled time (48 hours from now)
+    const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    const scheduledHour = scheduledTime.getUTCHours();
+    const scheduledMinute = scheduledTime.getUTCMinutes();
+
+    // Save the scheduled job in the database
+    await ScheduledJob.findOneAndUpdate(
+      { tenantId },
+      { scheduledTime, isActive: true },
+      { upsert: true } // Create a new record if no match is found
+    );
+
+    // Schedule the deletion job using cron
+    const job = cron.schedule(
+      `${scheduledMinute} ${scheduledHour} * * *`, // Cron expression
+      async () => {
+        console.log(`Running tenant deletion job for tenant ${tenantId}...`);
+        await deleteTenantById(tenantId);
+        job.stop(); // Stop the job after executing
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      }
+    );
+
+    res.status(200).json({
+      message: 'Tenant cleared successfully',
+      payment,
+      tenant,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error clearing tenant', error });
+  }
+};
+
+// Function to check payments and delete a specific tenant
+const deleteTenantById = async (tenantId) => {
   try {
     const tenant = await Tenant.findById(tenantId);
     if (!tenant) {
-      return res.status(404).json({ message: 'No Such Tenant found' });
+      console.error(`Tenant ${tenantId} not found.`);
+      return { success: false, message: `Tenant ${tenantId} not found.` };
     }
 
-    //check if the tenant has any payment deficits
-    //calculate the amount to be deducted from the deposits
-    //after all this delete tenant and  return the remaining amount to be sent to the leaving Tenant
+    // Check if the tenant has any pending payments
+    const pendingPayments = await Payment.find({
+      tenantId: tenant._id,
+      isCleared: false,
+    });
+
+    if (pendingPayments.length > 0) {
+      console.error(
+        `Tenant ${tenantId} has pending payments:`,
+        pendingPayments
+      );
+      return {
+        success: false,
+        message: `Tenant ${tenantId} has pending payments.`,
+      };
+    }
+
+    // 1. Delete all payment records associated with the tenant
+    const deleteResult = await Payment.deleteMany({ tenant: tenant._id });
+    const paymentsDeleted = deleteResult.deletedCount; // Number of payments deleted
+
+    // Log the number of deleted payments for tracking
+    console.log(
+      `${paymentsDeleted} payment(s) deleted for tenant ${tenant._id}`
+    );
+
+    // 2. Find the tenant's house by houseName and houseNo from tenant's houseDetails
+    const houseNo = tenant.houseDetails.houseNo;
+    console.log('houseNo: ', houseNo);
+    let houseName = 'House ' + houseNo;
+    const house = await House.findOne({ houseName: houseName });
+    if (!house) {
+      console.error(`House ${houseName} not found for tenant ${tenantId}.`);
+      return { success: false, message: 'House not found!' };
+    }
+
+    // 3. Set the isOccupied flag of the house to false
+    house.isOccupied = false;
+    await house.save();
+
+    // If no pending payments, delete the tenant
+    await Tenant.deleteOne({ _id: tenantId });
+    console.log(`Tenant ${tenantId} deleted.`);
+
+    // Mark the job as inactive in the database
+    await ScheduledJob.findOneAndUpdate({ tenantId }, { isActive: false });
+
+    return {
+      success: true,
+      message: `Tenant ${tenantId} deleted successfully.`,
+    };
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error deleting tenant:', error);
+    return { success: false, message: 'Error deleting tenant.', error };
   }
 };
+
+// Function to restore scheduled jobs on application startup
+export const restoreScheduledJobs = async () => {
+  const scheduledJobs = await ScheduledJob.find({ isActive: true });
+
+  for (const job of scheduledJobs) {
+    const timeDiff = job.scheduledTime - new Date();
+    if (timeDiff > 0) {
+      const scheduledHour = job.scheduledTime.getUTCHours();
+      const scheduledMinute = job.scheduledTime.getUTCMinutes();
+      cron.schedule(
+        `${scheduledMinute} ${scheduledHour} * * *`,
+        async () => {
+          console.log(
+            `Restoring tenant deletion job for tenant ${job.tenantId}...`
+          );
+          const result = await deleteTenantById(job.tenantId);
+          if (!result.success) {
+            console.error(
+              `Failed to delete tenant ${job.tenantId}: ${result.message}`
+            );
+          }
+        },
+        {
+          scheduled: true,
+          timezone: 'UTC',
+        }
+      );
+    } else {
+      // If the scheduled time has already passed, we should delete the tenant immediately
+      const result = await deleteTenantById(job.tenantId);
+      if (!result.success) {
+        console.error(
+          `Failed to delete tenant ${job.tenantId}: ${result.message}`
+        );
+      }
+    }
+  }
+};
+
+// Call restore function on application startup
+restoreScheduledJobs();

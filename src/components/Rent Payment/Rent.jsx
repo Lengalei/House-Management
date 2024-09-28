@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
-import { ThreeDots } from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 
 const Rent = () => {
   const navigate = useNavigate();
@@ -88,7 +88,7 @@ const Rent = () => {
       setError('');
       setLoading(true);
       try {
-        const res = await apiRequest.get('/v2/tenants/getAllTenants');
+        const res = await apiRequest.get('/v2/tenants/getToBeClearedFalse');
         console.log('allTenantsRes: ', res.data);
         if (res.status) {
           if (res?.data?.length === 0) {
@@ -160,12 +160,11 @@ const Rent = () => {
         {error && <span>{error}</span>}
         {loading ? (
           <div className="loader">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
+            <TailSpin
+              height="100"
+              width="100"
               color="#4fa94d"
-              ariaLabel="three-dots-loading"
+              ariaLabel="loading"
               visible={true}
             />
           </div>
@@ -177,7 +176,7 @@ const Rent = () => {
                   <th>Tenant{`'`}s Name</th>
                   <th>House No.</th>
                   {/* <th>All Payments</th> */}
-                  {/* <th>All Balance</th> */}
+                  {/* <th>Month</th> */}
                   {/* <th>{} Status</th> */}
                   <th>Actions</th>
                 </tr>
@@ -192,9 +191,9 @@ const Rent = () => {
                           ? tenant?.houseDetails?.houseNo
                           : ''}
                       </td>
-                      {/* <td>{tenant.totalAmount}</td>
-                      <td>{tenant.balance}</td> */}
-                      {/* <td>
+                      {/* <td>{tenant.totalAmount}</td> */}
+                      {/* <td>{tenant.balance}</td>
+                      <td>
                         {getStatus(tenant.balance, tenant.monthInQuestionPay)}
                       </td> */}
                       <td className="actions">

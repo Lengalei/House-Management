@@ -8,27 +8,14 @@
   margin: 0 auto;
   padding-left: 50px;
   padding-right: 50px;
-
-  .loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50% -50%);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(236, 15, 15, 0.5); /* Semi-transparent background */
-    z-index: 1100; /* Ensure loader is above modal */
-  }
+  position: relative;
 
   h1 {
     width: 100%;
     display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
   }
   span {
     color: darkgoldenrod;
@@ -166,6 +153,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    h2 {
+      text-decoration: underline;
+    }
 
     .updateDefaults {
       color: chocolate;
@@ -358,6 +349,90 @@
         border: 1px solid wheat;
         border-radius: 8px;
         padding: 1px 7px;
+      }
+    }
+  }
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+
+    .modal-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cancel-btn,
+    .confirm-btn {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .cancel-btn {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .confirm-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+  }
+  div {
+    background-color: cornsilk;
+    h2 {
+      text-decoration: underline;
+    }
+
+    .closeAndUpdateBtns {
+      display: flex;
+      justify-content: space-around;
+      max-width: 50%;
+      margin: 0 auto;
+      // border: 1px solid crimson;
+
+      .confirm-btn {
+        background-color: #28a745;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #218838;
+        }
       }
     }
   }

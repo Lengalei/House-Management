@@ -18,7 +18,12 @@ const userSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: false,
+      default: true, // Ensure only admin users are created with this schema
+    },
+    role: {
+      type: String,
+      enum: ['super_admin', 'admin', 'moderator'], // Define specific roles
+      default: 'admin', // Default role is admin
     },
     profile: {
       type: String,
@@ -27,5 +32,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model('User', userSchema); // Corrected the model name capitalization
+const User = mongoose.model('User', userSchema);
 export default User;

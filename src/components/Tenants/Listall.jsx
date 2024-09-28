@@ -6,6 +6,7 @@ import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { ThreeDots } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Listall = () => {
   const fallbackTenants = [
@@ -85,12 +86,13 @@ const Listall = () => {
       setError('');
       setLoading(true);
       try {
-        const res = await apiRequest.get('/v2/tenants/getAllTenants');
+        const res = await apiRequest.get('/v2/tenants/getToBeClearedFalse');
         if (res.status) {
           if (res?.data?.length === 0) {
             dispatch(setTenants(fallbackTenants));
           } else {
             dispatch(setTenants(res.data));
+            toast.success('Tenants fetched ');
           }
         } else {
           setError('Failed to fetch tenants. Using fallback data.');
@@ -98,6 +100,7 @@ const Listall = () => {
         }
       } catch (error) {
         setError('Error fetching tenants. Using fallback data.');
+        toast.error(error.response.data.message);
         dispatch(setTenants(fallbackTenants));
       } finally {
         setLoading(false);
@@ -112,11 +115,11 @@ const Listall = () => {
       const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
       if (res.status === 200) {
         dispatch(setTenants(tenants.filter((tenant) => tenant._id !== _id)));
-      } else {
-        console.error('Failed to delete tenant');
+        toast.success('Tenant deleted Successfully!');
       }
     } catch (error) {
       console.error(error.message);
+      toast.error(error.response.data.message || 'Error Deleting Tenant!');
     } finally {
       setLoading(false);
     }
@@ -168,7 +171,7 @@ const Listall = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>House No</th>
-                  <th>Phone</th>
+                  <th>To Be Cleared</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -183,7 +186,7 @@ const Listall = () => {
                           ? tenant.houseDetails?.houseNo
                           : ''}
                       </td>
-                      <td>{tenant.phone || tenant.phoneNo}</td>
+                      <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
                       <td className="actions">
                         <Link
                           to={`/tenantProfile/${tenant._id}`}
@@ -228,6 +231,8 @@ const Listall = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

@@ -148,4 +148,19 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  .generateBtn {
+    background: #28a745;
+    border: none;
+    padding: 8px 16px;
+    width: max-content;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+  }
+
+  .generateBtn:hover {
+    background-color: #28a74638;
+  }
 }

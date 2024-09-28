@@ -588,6 +588,14 @@ export const clearDeficitsForPreviousPayments = async (
   referenceNo
 ) => {
   try {
+    // Ensure amount is a valid number
+    if (isNaN(amount) || amount === null || amount === undefined) {
+      throw new Error(
+        'Invalid amount passed to clearDeficitsForPreviousPayments'
+      );
+    }
+    amount = parseFloat(amount); // Ensure amount is a number
+
     // Fetch all previous payments for the tenant where isCleared is false, starting from the oldest
     const previousPayments = await Payment.find({
       tenant: tenantId,
@@ -595,8 +603,6 @@ export const clearDeficitsForPreviousPayments = async (
     }).sort({ createdAt: 1 });
 
     for (const previousPayment of previousPayments) {
-      if (amount <= 0) break; // If no more amount is available, break the loop
-
       let usedAmount = 0; // Keep track of how much of the amount is used for this payment
 
       // Check for overpay in this previous payment
@@ -614,6 +620,8 @@ export const clearDeficitsForPreviousPayments = async (
         previousPayment.overpay = 0;
       }
 
+      if (amount <= 0) break; // If no more amount is available, break the loop
+
       // Clear rent deficit (either fully or partially)
       if (
         previousPayment?.rent &&
@@ -626,7 +634,7 @@ export const clearDeficitsForPreviousPayments = async (
         const rentCoverage = Math.min(previousPayment?.rent?.deficit, amount);
         previousPayment.rent.amount += rentCoverage;
         previousPayment.rent.deficit -= rentCoverage;
-        amount -= rentCoverage.toFixed(2); // Ensuring precision by fixing the amount
+        amount -= rentCoverage;
         usedAmount += rentCoverage;
         // console.log(
         //   `Covered rent deficit: ${rentCoverage}, Remaining Amount: ${amount}`
@@ -643,7 +651,7 @@ export const clearDeficitsForPreviousPayments = async (
         previousPayment.rent.deficitHistory.push({
           amount: -rentCoverage,
           date: depositDate,
-          description: `Covered rent deficit of ${rentCoverage}`,
+          description: `Covered rent deficit of ${rentCoverage} and remaining rent deficit is ${previousPayment.rent.deficit}`,
         });
 
         if (previousPayment.rent.deficit <= 0) {
@@ -668,7 +676,7 @@ export const clearDeficitsForPreviousPayments = async (
         );
         previousPayment.waterBill.amount += waterCoverage;
         previousPayment.waterBill.deficit -= waterCoverage;
-        amount -= waterCoverage.toFixed(2); // Ensuring precision by fixing the amount
+        amount -= waterCoverage;
         usedAmount += waterCoverage;
         // console.log(
         //   `Covered water deficit: ${waterCoverage}, Remaining Amount: ${amount}`
@@ -685,7 +693,7 @@ export const clearDeficitsForPreviousPayments = async (
         previousPayment.waterBill.deficitHistory.push({
           amount: -waterCoverage,
           date: depositDate,
-          description: `Covered water bill deficit of ${waterCoverage}`,
+          description: `Covered water bill deficit of ${waterCoverage} and remaining waterBill deficit is ${previousPayment.waterBill.deficit}`,
         });
 
         if (
@@ -711,7 +719,7 @@ export const clearDeficitsForPreviousPayments = async (
         );
         previousPayment.garbageFee.amount += garbageCoverage;
         previousPayment.garbageFee.deficit -= garbageCoverage;
-        amount -= garbageCoverage.toFixed(2); // Ensuring precision by fixing the amount
+        amount -= garbageCoverage;
         usedAmount += garbageCoverage;
         // console.log(
         //   `Covered garbage deficit: ${garbageCoverage}, Remaining Amount: ${amount}`
@@ -726,7 +734,7 @@ export const clearDeficitsForPreviousPayments = async (
         previousPayment.garbageFee.deficitHistory.push({
           amount: -garbageCoverage,
           date: depositDate,
-          description: `Covered garbage fee deficit of ${garbageCoverage}`,
+          description: `Covered garbage fee deficit of ${garbageCoverage} and remaining garbageFee deficit is ${previousPayment.garbageFee.deficit}`,
         });
 
         if (previousPayment.garbageFee.deficit <= 0) {
@@ -749,7 +757,7 @@ export const clearDeficitsForPreviousPayments = async (
         );
         previousPayment.extraCharges.amount += extraChargesCoverage;
         previousPayment.extraCharges.deficit -= extraChargesCoverage;
-        amount -= extraChargesCoverage.toFixed(2); // Ensuring precision by fixing the amount
+        amount -= extraChargesCoverage;
         usedAmount += extraChargesCoverage;
         // console.log(
         //   `Covered garbage deficit: ${extraChargesCoverage}, Remaining Amount: ${amount}`
@@ -766,7 +774,7 @@ export const clearDeficitsForPreviousPayments = async (
         previousPayment.extraCharges.deficitHistory.push({
           amount: -extraChargesCoverage,
           date: depositDate,
-          description: `Covered extra charges deficit of ${extraChargesCoverage}`,
+          description: `Covered extra charges deficit of ${extraChargesCoverage} and remaining extraCharges deficit is ${previousPayment.extraCharges.deficit}`,
         });
 
         if (
@@ -778,18 +786,16 @@ export const clearDeficitsForPreviousPayments = async (
       }
 
       // Calculate the total global deficit after handling all charges
-      const rentDeficit = parseFloat(previousPayment.rent.deficit || 0).toFixed(
-        2
-      );
+      const rentDeficit = parseFloat(previousPayment.rent.deficit || 0);
       const waterBillDeficit = parseFloat(
         previousPayment.waterBill.deficit || 0
-      ).toFixed(2);
+      );
       const garbageDeficit = parseFloat(
         previousPayment.garbageFee.deficit || 0
-      ).toFixed(2);
+      );
       const extraDeficit = parseFloat(
         previousPayment.extraCharges.deficit || 0
-      ).toFixed(2);
+      );
 
       const globalDeficit =
         parseFloat(rentDeficit) +
@@ -797,7 +803,7 @@ export const clearDeficitsForPreviousPayments = async (
         parseFloat(garbageDeficit) +
         parseFloat(extraDeficit);
 
-      previousPayment.globalDeficit = parseFloat(globalDeficit.toFixed(2));
+      previousPayment.globalDeficit = parseFloat(globalDeficit);
       previousPayment.globalDeficitHistory.push({
         year: previousPayment.year,
         month: previousPayment.month,
@@ -856,7 +862,7 @@ export const clearDeficitsForPreviousPayments = async (
       await previousPayment.save();
     }
 
-    return amount.toFixed(2); // Return the remaining amount after clearing deficits, ensuring precision
+    return parseFloat(amount).toFixed(2);
   } catch (error) {
     throw new Error(`Error clearing deficits: ${error.message}`);
   }

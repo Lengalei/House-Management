@@ -8,9 +8,9 @@ import mongoose from 'mongoose';
 
 // Function to generate tokens
 const generateTokens = (user) => {
-  const age = 1000 * 60 * 60 * 24 * 30; // 30 days for rememberMe, 2 days otherwise
+  const age = 1000 * 60 * 60 * 24 * 30; // 30 days
   const accessToken = jwt.sign(
-    { id: user.id, isAdmin: false },
+    { id: user._id, isAdmin: false },
     process.env.JWT_SECRET_KEY,
     { expiresIn: age }
   );
@@ -21,9 +21,9 @@ const generateTokens = (user) => {
   };
 };
 
-// Register function
-export const register = async (req, res) => {
-  const { email, username, password } = req.body;
+// Register function for admins
+export const registerAdmin = async (req, res) => {
+  const { email, username, password, role } = req.body;
 
   try {
     // Validate email
@@ -41,11 +41,18 @@ export const register = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Validate role - Optional step
+    const validRoles = ['super_admin', 'admin', 'moderator'];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({ message: 'Invalid role' });
+    }
+
     // Create a new user and save to DB
     const newUser = await User.create({
       email,
       username,
       password: hashedPassword,
+      role: role || 'admin',
     });
 
     // Clear sensitive fields before sending user data
@@ -54,8 +61,8 @@ export const register = async (req, res) => {
     // Set cookie and respond with user data and token
     res.status(200).json(newUser);
   } catch (err) {
-    console.error('Error registering user:', err);
-    res.status(500).json({ message: 'Failed to create user' });
+    console.error('Error registering admin:', err);
+    res.status(500).json({ message: 'Failed to create admin' });
   }
 };
 
@@ -87,7 +94,6 @@ export const login = async (req, res) => {
         // secure: true, // Set to true if using HTTPS
         // sameSite: 'None', // Adjust as per your security requirements
       })
-
       .json(user);
   } catch (err) {
     console.error(err);

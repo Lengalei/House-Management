@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import './RegisterTenant.scss';
 import { useNavigate } from 'react-router-dom';
 import apiRequest from '../../../../lib/apiRequest';
+import { TailSpin } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 const RegisterTenant = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ const RegisterTenant = () => {
     emergencyContactName: '',
   });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
@@ -57,6 +60,7 @@ const RegisterTenant = () => {
 
   useEffect(() => {
     const fetchHouses = async () => {
+      setLoading(true);
       try {
         const response = await apiRequest.get('/houses/getAllHouses');
         const houseData = response.data;
@@ -70,9 +74,13 @@ const RegisterTenant = () => {
           return acc;
         }, {});
 
+        // toast.success('Houses Fetched Successfully');
         setFloorHouses(organizedHouses);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching houses:', error);
+        toast.error(error.response.data.message || 'Error Fetching Houses');
+        setLoading(false);
       }
     };
 
@@ -117,16 +125,23 @@ const RegisterTenant = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await apiRequest.post(
         '/v2/tenants/createTenant',
         formData
       );
-      setTenantData(response.data);
-      setIsDepositPopupVisible(true);
+      if (response.status) {
+        setTenantData(response.data);
+        setIsDepositPopupVisible(true);
+        setLoading(false);
+        toast.success('Success Tenant Creation');
+      }
     } catch (error) {
-      console.error('Error registering tenant:', error);
+      // console.error('Error registering tenant:', error);
       setError(error.response.data.message);
+      setLoading(false);
+      toast.error(error.response.data.message || 'Error Creating Tenant');
     } finally {
       setError('');
     }
@@ -134,16 +149,23 @@ const RegisterTenant = () => {
 
   const handleDeposit = async (url, depositData, e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await apiRequest.post(url, {
         ...depositData,
         tenantId: tenantData._id,
       });
-      const isCleared = response.data.tenant.deposits.isCleared;
-      navigate(isCleared ? '/listAllTenants' : '/v2/incompleteDeposits');
+      if (response.status) {
+        const isCleared = response.data.tenant.deposits.isCleared;
+        navigate(isCleared ? '/listAllTenants' : '/v2/incompleteDeposits');
+        setLoading(false);
+        toast.success('Success Deposits Addition');
+      }
     } catch (error) {
       setError(error.response.data.message);
+      toast.error(error.response.data.message || 'Error Adding Deposits');
       console.error('Error processing deposit:', error);
+      setLoading(false);
     } finally {
       setError('');
     }
@@ -276,7 +298,9 @@ const RegisterTenant = () => {
           >
             ×
           </button>
-          <h2><span>Tenant </span> : {tenantData.name}</h2>
+          <h2>
+            <span>Tenant </span> : {tenantData.name}
+          </h2>
           <div className="deposit-toggle">
             <button onClick={() => setShowSingleDeposit(!showSingleDeposit)}>
               {showSingleDeposit
@@ -393,6 +417,20 @@ const RegisterTenant = () => {
           </div>
         </div>
       )}
+
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
+
+      <ToastContainer />
     </div>
   );
 };

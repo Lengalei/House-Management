@@ -147,6 +147,10 @@ const Sidebar = () => {
           <Link to="profileSettings" className="dash">
             <FaCog className="icon" /> Profile Settings
           </Link>
+          <Link to="/admins" className="dash">
+            <FaCog className="icon" />
+            Admins
+          </Link>
         </div>
       </div>
     </>

@@ -10,6 +10,7 @@ const TenantPaymentList = () => {
   const { tenantId } = useParams();
   const [payments, setPayments] = useState([]);
   const [onEntryOverPay, setOnEntryOverPay] = useState([]);
+  const [tenant, setTenant] = useState();
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -27,6 +28,7 @@ const TenantPaymentList = () => {
           `/v2/payments/paymentsByTenant/${tenantId}`
         );
         setPayments(response.data.payments);
+        setTenant(response.data.tenant);
         setOnEntryOverPay(response.data.onEntryOverPay);
       } catch (error) {
         setError('Failed to fetch payments.');
@@ -89,7 +91,7 @@ const TenantPaymentList = () => {
   return (
     <div className="tenant-payment-list">
       {error && <span className="error-message">{error}</span>}
-      <h2>Tenant Payment History</h2>
+      <h2>{tenant?.name} Payment History</h2>
       <table>
         <thead>
           <tr>

@@ -35,6 +35,8 @@ import TenantPaymentsV2 from './components/Tenants/v2/TenantPaymentsV2/TenantPay
 import Clearance from './components/Clearance/Clearance.jsx';
 import ApartmentRegistration from './components/houses/Apartments/ApartmentRegistration .jsx';
 import ApartmentListPage from './components/houses/Apartments/ApartmentListPage.jsx';
+import AdminPage from './components/Userprofile/AdminPage/AdminPage.jsx';
+import AdminEditPage from './components/Userprofile/AdminPage/EditAdmin/AdminEditPage.jsx';
 
 function App() {
   return (
@@ -59,6 +61,8 @@ function App() {
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/listAllLandlord" element={<ListLandlord />} />
           <Route path="/profileSettings" element={<Admin />} />
+          <Route path="/admins" element={<AdminPage />} />
+          <Route path="/editAdmin/:id" element={<AdminEditPage />} />
           <Route path="/addHouse" element={<RegisterHouse />} />
           <Route path="/addAppartment" element={<ApartmentRegistration />} />
           <Route path="/apartments" element={<ApartmentListPage />} />

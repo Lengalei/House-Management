@@ -2,7 +2,7 @@ import express from 'express';
 import {
   login,
   logout,
-  register,
+  registerAdmin,
   checkIfthereIsAnyAdmin,
   forgotPassword,
   resetPassword,
@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.post('/register', register);
+router.post('/register', registerAdmin);
 router.post('/login', login);
 router.get('/logout', logout);
 router.get('/getAdmins', checkIfthereIsAnyAdmin);

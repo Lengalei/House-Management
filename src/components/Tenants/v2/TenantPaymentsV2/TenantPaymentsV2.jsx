@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import './TenantPaymentsV2.scss';
 import apiRequest from '../../../../lib/apiRequest';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ThreeDots } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TenantPayments = () => {
   const location = useLocation();
   const tenantDetails = location.state?.tenantDetails;
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // const navigate = useNavigate();
   const { tenantId } = useParams();
   const [selectedTab, setSelectedTab] = useState('complete'); // Toggle between Complete and Outstanding
   const [showPopup, setShowPopup] = useState(false); // Popup for updating default values
@@ -272,38 +273,40 @@ const TenantPayments = () => {
 
   const handleAddPayment = async (e) => {
     e.preventDefault();
+    // setLoading(true);
+    handleShowModal();
+  };
+
+  // State to track if overpay is transferred to monthly amount
+  const [isOverpayTransferred, setIsOverpayTransferred] = useState(false);
+
+  // Actual function to send payment after confirmation
+  const handleConfirmAddPayment = async () => {
     setLoading(true);
-    // Handle adding payment here
+    setShowConfirmationModal(false); // Close the modal when confirmed
+
     try {
       const response = await apiRequest.post(
         '/v2/payments/monthlyPayProcessing',
         {
           tenantId,
-          newMonthlyAmount,
+          newMonthlyAmount: isOverpayTransferred ? 0 : newMonthlyAmount,
           referenceNumber,
           newPaymentDate,
           extraCharges: selectedExtraCharge,
           previousMonthExtraCharges: previousMonthSelectedExtraCharge,
           month: nextMonth,
           year: currentYear || nextYear,
-          //
           previousAccumulatedWaterBill,
-          // rentDeficit,
-          // waterDeficit,
-          // garbageDeficit,
-          // previousPaidWaterBill,
-          // previousOtherChargesDeficit,
         }
       );
+
       if (response.status) {
         // Reset form fields
         setNewMonthlyAmount('');
         setReferenceNumber('');
         setNewPaymentDate('');
-        setSelectedExtraCharge({
-          expectedAmount: '',
-          description: '',
-        });
+        setSelectedExtraCharge({ expectedAmount: '', description: '' });
         setPreviousMonthSelectedExtraCharge({
           expectedAmount: '',
           description: '',
@@ -315,15 +318,16 @@ const TenantPayments = () => {
         getMostRecentPaymentByTenantId(tenantId);
 
         setError('');
+        toast.success(`Success`);
       }
     } catch (error) {
-      console.log('error occurred: ', error);
+      console.log('Error occurred:', error);
       setError(error?.response?.data?.message);
+      toast.error(error.response?.data?.message || 'Failed to clear tenant');
     } finally {
       setLoading(false);
     }
   };
-
   const [rentDefault, setRentDefault] = useState('');
   const [garbageDefault, setGarbageDefault] = useState('');
 
@@ -333,7 +337,14 @@ const TenantPayments = () => {
     try {
       const response = await apiRequest.put(
         `/v2/tenants/updateTenantHouseDetails/${tenantId}`,
-        { rentDefault, garbageDefault }
+        {
+          rentDefault: rentDefault
+            ? rentDefault
+            : tenantDetails.houseDetails.rent,
+          garbageDefault: garbageDefault
+            ? garbageDefault
+            : tenantDetails.houseDetails.garbageFee,
+        }
       );
       if (response.status) {
         console.log(response.data);
@@ -343,8 +354,10 @@ const TenantPayments = () => {
       setShowPopup(false);
 
       setError('');
+      toast.success(`Success Updating Defaults`);
     } catch (error) {
       setError(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Failed to clear tenant');
     }
   };
   useEffect(() => {
@@ -396,10 +409,7 @@ const TenantPayments = () => {
       );
       if (response.status === 200) {
         console.log(`responseFromBackend: `, response.data);
-        // navigate('/rentpayment');
-        fetchUnpaidPayments(tenantId);
-        fetchFullyPaidPayments(tenantId);
-        getMostRecentPaymentByTenantId(tenantId);
+        navigate(`/rentpayment`);
 
         setError('');
       }
@@ -461,9 +471,6 @@ const TenantPayments = () => {
     0 // Initial value of the sum
   );
 
-  // State to track if overpay is transferred to monthly amount
-  const [isOverpayTransferred, setIsOverpayTransferred] = useState(false);
-
   // Function to handle overpay transfer
   const handleOverpayTransfer = () => {
     if (!isOverpayTransferred) {
@@ -475,17 +482,101 @@ const TenantPayments = () => {
     }
   };
 
+  // New states for modal handling
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showUpdatePaymentModal, setShowUpdatePaymentModal] = useState(false);
+  const [displayUpdatebtn, setDisplayUpdatebtn] = useState(false);
+
+  const handleUpdateArrowClick = () => {
+    setDisplayUpdatebtn(!displayUpdatebtn);
+  };
+
+  // Handle showing and closing the confirmation modal
+  const handleShowModal = () => setShowConfirmationModal(true);
+  const handleCloseModal = () => setShowConfirmationModal(false);
+
+  const displayUpdatePopup = (payment) => {
+    setSelectedPayment(payment);
+    setShowUpdatePaymentModal(true);
+  };
+  const closeUpdatePopup = () => {
+    setShowUpdatePaymentModal(false);
+  };
+
+  const [updatedRentDeficit, setUpdatedRentDeficit] = useState('');
+  const [updatedWaterDeficit, setUpdatedWaterDeficit] = useState('');
+  const [updatedAccumulatedWaterBill, setUpdatedAccumulatedWaterBill] =
+    useState('');
+  const [updatedGarbageDeficit, setUpdatedGarbageDeficit] = useState('');
+  const [updatedExtraCharges, setUpdatedExtraCharges] = useState('');
+  const [updatedReferenceNumber, setUpdatedReferenceNumber] = useState('');
+
+  //handle deficit updates
+  const handleDeficitsUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await apiRequest.put(
+        `/v2/payments/updateDeficit/${selectedPayment._id}`,
+        {
+          updatedRentDeficit: updatedRentDeficit
+            ? updatedRentDeficit
+            : selectedPayment.rent.deficit,
+          updatedWaterDeficit: updatedWaterDeficit
+            ? updatedWaterDeficit
+            : selectedPayment.waterBill.deficit,
+          updatedAccumulatedWaterBill: updatedAccumulatedWaterBill
+            ? updatedAccumulatedWaterBill
+            : selectedPayment.waterBill.accumulatedAmount,
+          updatedGarbageDeficit: updatedGarbageDeficit
+            ? updatedGarbageDeficit
+            : selectedPayment.garbageFee.deficit,
+          updatedReferenceNumber: updatedReferenceNumber
+            ? updatedReferenceNumber
+            : selectedPayment.referenceNumber,
+          updatedExtraCharges: updatedExtraCharges
+            ? updatedExtraCharges
+            : selectedPayment.extraCharges.deficit,
+        }
+      );
+      if (response.status) {
+        toast.success('Sucess');
+        /**********/
+        fetchUnpaidPayments(tenantId);
+        fetchFullyPaidPayments(tenantId);
+        getMostRecentPaymentByTenantId(tenantId);
+
+        //reset deficit update values
+        setUpdatedRentDeficit('');
+        setUpdatedWaterDeficit('');
+        setUpdatedAccumulatedWaterBill('');
+        setUpdatedGarbageDeficit('');
+        setUpdatedExtraCharges('');
+        setUpdatedReferenceNumber('');
+        setError('');
+        setShowUpdatePaymentModal(false);
+      }
+    } catch (error) {
+      console.log(error.response.data.message);
+      setError(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+    }
+  };
+
   return (
     <div className="tenant-payments-container">
+      <ToastContainer />
       <>
         {loading ? (
-          <div className="loader">
+          <div className="loader-container">
             <ThreeDots
-              height="80"
-              width="80"
+              height="100"
+              width="100"
               radius="9"
               color="#4fa94d"
               ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClass="loader"
               visible={true}
             />
           </div>
@@ -604,61 +695,79 @@ const TenantPayments = () => {
                   ) : (
                     <div className="mini-cards">
                       {outstandingPayments?.map((payment, index) => (
-                        <div
-                          key={index}
-                          className="mini-card outstanding"
-                          onClick={() => handlePaymentClick(payment)}
-                        >
-                          <p>
-                            <strong>Month:</strong>{' '}
-                            <span className="monthOuts">{payment?.month}</span>
-                          </p>
-                          {payment?.rent?.deficit ? (
+                        <div key={index} className="mini-card outstanding">
+                          <div onClick={() => handlePaymentClick(payment)}>
                             <p>
-                              <strong>Rent Deficit:</strong>
-                              {payment?.rent?.deficit > 0
-                                ? payment?.rent?.deficit
-                                : 'None'}
+                              <strong>Month:</strong>{' '}
+                              <span className="monthOuts">
+                                {payment?.month}
+                              </span>
                             </p>
-                          ) : (
-                            ''
-                          )}
+                            {payment?.rent?.deficit ? (
+                              <p>
+                                <strong>Rent Deficit:</strong>
+                                {payment?.rent?.deficit > 0
+                                  ? payment?.rent?.deficit
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
 
-                          <p>
-                            <strong>Water Bill:</strong>{' '}
-                            {payment?.waterBill?.deficit > 0
-                              ? payment?.waterBill?.deficit
-                              : 'Water Bill...'}
-                          </p>
-                          {payment?.garbageFee?.deficit ? (
                             <p>
-                              <strong>Garbage Fee Deficit:</strong>{' '}
-                              {payment?.garbageFee?.deficit > 0
-                                ? payment?.garbageFee?.deficit
-                                : 'None'}
+                              <strong>Water Bill:</strong>{' '}
+                              {payment?.waterBill?.deficit > 0
+                                ? payment?.waterBill?.deficit
+                                : 'Water Bill...'}
                             </p>
-                          ) : (
-                            ''
-                          )}
-                          {payment?.globalDeficit ? (
-                            <p>
-                              <strong>{payment?.month} Total Deficit:</strong>{' '}
-                              {payment?.globalDeficit > 0
-                                ? payment?.globalDeficit
-                                : '...'}
-                            </p>
-                          ) : (
-                            ''
-                          )}
+                            {payment?.garbageFee?.deficit ? (
+                              <p>
+                                <strong>Garbage Fee Deficit:</strong>{' '}
+                                {payment?.garbageFee?.deficit > 0
+                                  ? payment?.garbageFee?.deficit
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+                            {payment?.globalDeficit ? (
+                              <p>
+                                <strong>{payment?.month} Total Deficit:</strong>{' '}
+                                {payment?.globalDeficit > 0
+                                  ? payment?.globalDeficit
+                                  : '...'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
 
-                          {payment?.overpay ? (
-                            <p>
-                              <strong>Current Excess To use:</strong>{' '}
-                              {payment?.overpay > 0 ? payment?.overpay : 'None'}
-                            </p>
-                          ) : (
-                            ''
-                          )}
+                            {payment?.overpay ? (
+                              <p>
+                                <strong>Current Excess To use:</strong>{' '}
+                                {payment?.overpay > 0
+                                  ? payment?.overpay
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+                          <p
+                            onClick={() => {
+                              handleUpdateArrowClick();
+                            }}
+                          >
+                            {displayUpdatebtn ? '⬆' : '⬇'}
+                            <br />
+                            {displayUpdatebtn && (
+                              <button
+                                className="confirm-btn"
+                                onClick={() => displayUpdatePopup(payment)}
+                              >
+                                Deficit Errors?
+                              </button>
+                            )}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -1180,8 +1289,9 @@ const TenantPayments = () => {
               <div className="popup-overlay">
                 <div className="popup-content">
                   <h2>
+                    Complete{' '}
                     {selectedPayment.month + `,` + selectedPayment.year} Pending
-                    Payments
+                    Payment
                   </h2>
                   <form onSubmit={handlePaymentUpdate}>
                     {/* Rent Deficit */}
@@ -1300,6 +1410,191 @@ const TenantPayments = () => {
                       Cancel
                     </button>
                   </form>
+                </div>
+              </div>
+            )}
+            {showUpdatePaymentModal && (
+              <div className="confirmation-modal">
+                <div className="popup-content">
+                  <h2>
+                    Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
+                    Deficits
+                  </h2>
+                  <form onSubmit={handleDeficitsUpdate}>
+                    {/* Rent Deficit */}
+                    {selectedPayment?.rent?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Rent Deficit:{' '}
+                          {selectedPayment?.rent?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedRentDeficit}
+                          onChange={(e) =>
+                            setUpdatedRentDeficit(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
+
+                    {/* Water Deficit */}
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      <>
+                        <div className="form-group">
+                          <label>
+                            Current Water Bill{' '}
+                            {selectedPayment?.waterBill?.deficit || ''}
+                          </label>
+                          <input
+                            type="number"
+                            value={updatedWaterDeficit}
+                            onChange={(e) =>
+                              setUpdatedWaterDeficit(e.target.value)
+                            }
+                            placeholder="New deficit value"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
+
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      ''
+                    ) : (
+                      <>
+                        {' '}
+                        <div className="form-group water-bill-section">
+                          <label
+                            onClick={toggleWaterBillDropdown}
+                            className="water-bill-label"
+                          >
+                            <span className="water-bill-icon">💧</span> Water
+                            Bill{' '}
+                            <span className="dropdown-toggle">
+                              {waterBillDropdownOpen ? '⬆' : '⬇'}
+                            </span>
+                          </label>
+                          {waterBillDropdownOpen && (
+                            <div className="water-bill-dropdown">
+                              <div className="form-group">
+                                <label>Accumulated Water Bill:</label>
+                                <input
+                                  type="number"
+                                  value={updatedAccumulatedWaterBill}
+                                  onChange={(e) =>
+                                    setUpdatedAccumulatedWaterBill(
+                                      e.target.value
+                                    )
+                                  }
+                                  name="accumulatedWaterBill"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="close-dropdown-btn"
+                                onClick={toggleWaterBillDropdown}
+                              >
+                                ⬆
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {/* New Water Bill Dropdown Section */}
+
+                    {/* Garbage Deficit */}
+                    {selectedPayment?.garbageFee?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Garbage Deficit:{' '}
+                          {selectedPayment?.garbageFee?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedGarbageDeficit}
+                          onChange={(e) =>
+                            setUpdatedGarbageDeficit(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
+
+                    {/*Extra Charges*/}
+                    {selectedPayment?.extraCharges?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Extra Charges Deficit:{' '}
+                          {selectedPayment?.extraCharges?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedExtraCharges}
+                          onChange={(e) =>
+                            setUpdatedExtraCharges(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
+
+                    {/* Reference Number */}
+                    <div className="form-group">
+                      <label>
+                        Current RefNo: `
+                        {selectedPayment?.referenceNumber.toUpperCase()}`
+                      </label>
+                      <input
+                        type="text"
+                        name="referenceNumber"
+                        value={updatedReferenceNumber}
+                        onChange={(e) =>
+                          setUpdatedReferenceNumber(e.target.value)
+                        }
+                        placeholder="New RefNo"
+                      />
+                    </div>
+
+                    {/* Submit and Cancel Buttons */}
+                    <div className="closeAndUpdateBtns">
+                      {' '}
+                      <button type="submit" className="confirm-btn">
+                        Update Deficits
+                      </button>
+                      <button
+                        type="button"
+                        className="confirm-btn"
+                        onClick={() => {
+                          closeUpdatePopup();
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+            {/* Confirmation Modal */}
+            {showConfirmationModal && (
+              <div className="confirmation-modal">
+                <div className="modal-content">
+                  <p>Are you sure you want to proceed with this payment?</p>
+                  <div className="modal-actions">
+                    <button className="cancel-btn" onClick={handleCloseModal}>
+                      Cancel
+                    </button>
+                    <button
+                      className="confirm-btn"
+                      onClick={handleConfirmAddPayment}
+                    >
+                      Yes, Proceed
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

@@ -5,6 +5,8 @@ import {
   updatePayment,
   monthlyPayProcessing,
   ExtraAmountGivenInAmonth,
+  getTenantPaymentsForCurrentMonth,
+  updatePaymentDeficit,
   //
   getGroupedPaymentsByTenant,
   getPaymentsByTenantId,
@@ -15,13 +17,22 @@ import {
   getPaymentsByTenant,
   deletePayment,
 } from '../../../controllers/v2/controllers/payment.controller.js';
+import { authorizeRoles } from '../../../middleware/authorizeRoles.js';
 const router = express.Router();
 
 router.get('/unpaidPayments/:tenantId', getUnpaidTenantPayments);
 router.get('/fullyPaidPayments/:tenantId', getFullyPaidTenantPayments);
 router.put('/updatePayment/:paymentId', updatePayment);
-router.post('/monthlyPayProcessing', monthlyPayProcessing);
-router.put('/ExtraAmountGivenInAmonth/:paymentId', ExtraAmountGivenInAmonth);
+router.post(
+  '/monthlyPayProcessing',
+  authorizeRoles('super_admin'),
+  monthlyPayProcessing
+);
+router.put(
+  '/ExtraAmountGivenInAmonth/:paymentId',
+  authorizeRoles('super_admin'),
+  ExtraAmountGivenInAmonth
+);
 
 // Get all payments grouped by tenantId
 router.get('/getGroupedPaymentsByTenant', getGroupedPaymentsByTenant);
@@ -32,5 +43,21 @@ router.get('/allRents', getAllRentsPaid);
 router.get('/waterRecords', getAllWaterRecords);
 router.get('/garbageRecords', getAllGarbageRecords);
 router.get('/paymentsByTenant/:tenantId', getPaymentsByTenant);
-router.delete('/deletePayment/:paymentId', deletePayment);
+router.delete(
+  '/deletePayment/:paymentId',
+  authorizeRoles('super_admin', 'admin'),
+  deletePayment
+);
+
+//update deficit values
+router.put(
+  '/updateDeficit/:paymentId',
+  authorizeRoles('super_admin'),
+  updatePaymentDeficit
+);
+
+router.get(
+  '/getTenantPaymentsForCurrentMonth',
+  getTenantPaymentsForCurrentMonth
+);
 export default router;

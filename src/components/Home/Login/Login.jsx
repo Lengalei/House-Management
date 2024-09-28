@@ -5,6 +5,8 @@ import ForgotPassword from '../forgotPassword/ForgotPassword';
 import apiRequest from '../../../lib/apiRequest';
 import { useDispatch } from 'react-redux';
 import { setAdmin } from '../../../features/Admin/adminSlice';
+import { TailSpin } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -12,6 +14,7 @@ function Login() {
   const [error, setError] = useState('');
   const [isForgotPassword, setIsForgotPassword] = useState(false); // State to toggle between login and forgot password
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -35,7 +38,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-
+    setLoading(true);
     try {
       const response = await apiRequest.post('/auth/login', {
         username,
@@ -47,11 +50,13 @@ function Login() {
         // console.log('logged from login page', response.data);
         dispatch(setAdmin(response.data));
         localStorage.setItem('adminData', JSON.stringify(response.data));
+        setLoading(false);
+        toast.success('Success Login');
         navigate('/');
-      } else {
-        setError('Failed to login.');
       }
     } catch (err) {
+      setLoading(false);
+      toast.error(error.response.data.message || 'Failed To login!');
       setError(err.response?.data?.message || 'Failed to login.');
     }
   };
@@ -113,6 +118,20 @@ function Login() {
           </form>
         </div>
       )}
+
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
+
+      <ToastContainer />
     </div>
   );
 }

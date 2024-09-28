@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './Records.scss';
 import apiRequest from '../../lib/apiRequest';
 import { Bars } from 'react-loader-spinner'; // Importing the spinner component from react-loader-spinner
+import * as XLSX from 'xlsx'; // Importing xlsx library for generating Excel files
 
 const Records = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -30,7 +31,6 @@ const Records = () => {
         setLoading(true); // Set loading to true before fetching
         // Fetch rent records
         const rentResponse = await apiRequest.get('/v2/payments/allRents');
-        console.log('rentResponse: ', rentResponse);
         const rentData = rentResponse.data.groupedByYear;
 
         // Fetch water records
@@ -125,6 +125,31 @@ const Records = () => {
     }).format(number);
   };
 
+  const downloadRecords = () => {
+    if (!selectedRecord || !selectedYear[selectedRecord]) return;
+
+    const year = selectedYear[selectedRecord];
+    const data = records[selectedRecord][year] || [];
+
+    // Prepare the data in a format suitable for Excel
+    const formattedData = data.map((record) => ({
+      Month: record.month,
+      Amount: record.amount,
+    }));
+
+    // Create a new workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      `${selectedRecord} Records`
+    );
+
+    // Create the Excel file and trigger download
+    XLSX.writeFile(workbook, `${selectedRecord}-records-${year}.xlsx`);
+  };
+
   const renderTable = () => {
     if (loading) {
       return (
@@ -186,6 +211,11 @@ const Records = () => {
         </div>
         <div className="total-amount">
           <strong>Total Amount:</strong> {formatNumber(totalAmount)}
+        </div>
+        <div className="download-button">
+          <button className="generateBtn" onClick={downloadRecords}>
+            Download Records
+          </button>
         </div>
       </div>
     );
