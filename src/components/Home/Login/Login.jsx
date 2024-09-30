@@ -1,6 +1,6 @@
 import './Login.css';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ForgotPassword from '../forgotPassword/ForgotPassword';
 import apiRequest from '../../../lib/apiRequest';
 import { useDispatch } from 'react-redux';
@@ -105,9 +105,9 @@ function Login() {
               ) : (
                 <h6>
                   Don{"'"}t have an Account?{' '}
-                  <a className="forgot-password-link" href="/register">
+                  <Link to={'/register'} className="forgot-password-link">
                     Sign Up
-                  </a>
+                  </Link>
                 </h6>
               )}
             </span>

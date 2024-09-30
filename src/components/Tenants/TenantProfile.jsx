@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ThreeDots } from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 
 function TenantProfile() {
   const { _id } = useParams();
@@ -26,9 +26,9 @@ function TenantProfile() {
         setError(res.data.error);
         toast.error(res.data.error);
       } else {
-        console.log(res.data);
+        // console.log(res.data);
         setTenant(res.data);
-        console.log(res.data);
+        // console.log(res.data);
         // toast.success('Tenant data fetched successfully');
       }
       setLoading(false);
@@ -43,7 +43,7 @@ function TenantProfile() {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant deleted!');
+      // console.log('tenant deleted!');
 
       toast.success('Tenant deleted successfully');
       setTimeout(() => {
@@ -65,7 +65,7 @@ function TenantProfile() {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant blacklisted!');
+      // console.log('tenant blacklisted!');
       toast.success('Tenant blacklisted successfully');
       setTimeout(() => {
         navigate(`/tenantProfile/${_id}`);
@@ -81,7 +81,7 @@ function TenantProfile() {
       setError(res.data.error);
       toast.error(res.data.error);
     } else {
-      console.log('tenant whitelisted!');
+      // console.log('tenant whitelisted!');
       toast.success('Tenant whitelisted successfully');
       setTimeout(() => {
         navigate(`/tenantProfile/${_id}`);
@@ -94,12 +94,13 @@ function TenantProfile() {
     <div className="TenantProfile">
       <ToastContainer />
       {loading && (
-        <div className="loader">
-          <ThreeDots
-            className="threeDots"
-            color="#3f51b5"
-            height={80}
-            width={80}
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
           />
         </div>
       )}

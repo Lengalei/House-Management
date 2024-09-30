@@ -22,6 +22,7 @@ const RegisterTenant = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
+  const [selectedApartment, setSelectedApartment] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [isHousePopupVisible, setIsHousePopupVisible] = useState(false);
@@ -45,7 +46,7 @@ const RegisterTenant = () => {
 
   const [showSingleDeposit, setShowSingleDeposit] = useState(true); // Default to single deposit
   const [houses, setHouses] = useState([]);
-  const [floorHouses, setFloorHouses] = useState({});
+  const [organizedData, setOrganizedData] = useState({});
 
   const floors = [
     { floorNumber: 0, name: 'Ground Floor' },
@@ -66,16 +67,22 @@ const RegisterTenant = () => {
         const houseData = response.data;
         setHouses(houseData);
 
-        // Organize houses by floor
+        // Organize houses by apartment and floor
         const organizedHouses = houseData.reduce((acc, house) => {
+          const apartmentId = house.apartment._id;
           const floor = house.floor;
-          if (!acc[floor]) acc[floor] = [];
-          acc[floor].push(house);
+
+          if (!acc[apartmentId])
+            acc[apartmentId] = { apartment: house.apartment, floors: {} };
+
+          if (!acc[apartmentId].floors[floor])
+            acc[apartmentId].floors[floor] = [];
+          acc[apartmentId].floors[floor].push(house);
+
           return acc;
         }, {});
 
-        // toast.success('Houses Fetched Successfully');
-        setFloorHouses(organizedHouses);
+        setOrganizedData(organizedHouses);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching houses:', error);
@@ -94,7 +101,6 @@ const RegisterTenant = () => {
     });
   };
 
-  // Separate handlers for single and multiple deposit data
   const handleSingleDepositChange = (e) => {
     setSingleDepositData({
       ...singleDepositData,
@@ -107,6 +113,12 @@ const RegisterTenant = () => {
       ...multipleDepositData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleApartmentSelection = (apartment) => {
+    setSelectedApartment(apartment);
+    setSelectedFloor(null);
+    setSelectedHouse(null);
   };
 
   const handleFloorSelection = (floor) => {
@@ -127,10 +139,10 @@ const RegisterTenant = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await apiRequest.post(
-        '/v2/tenants/createTenant',
-        formData
-      );
+      const response = await apiRequest.post('/v2/tenants/createTenant', {
+        ...formData,
+        apartmentId: selectedApartment?._id,
+      });
       if (response.status) {
         setTenantData(response.data);
         setIsDepositPopupVisible(true);
@@ -138,7 +150,6 @@ const RegisterTenant = () => {
         toast.success('Success Tenant Creation');
       }
     } catch (error) {
-      // console.error('Error registering tenant:', error);
       setError(error.response.data.message);
       setLoading(false);
       toast.error(error.response.data.message || 'Error Creating Tenant');
@@ -257,40 +268,70 @@ const RegisterTenant = () => {
           >
             ×
           </button>
-          <h3>Select a Floor</h3>
-          {floors.map((floorObj) => (
-            <div
-              key={floorObj.floorNumber}
-              className={`floor-option ${
-                selectedFloor === floorObj.floorNumber ? 'selected' : ''
-              }`}
-              onClick={() => handleFloorSelection(floorObj.floorNumber)}
-            >
-              {floorObj.name}
-              {selectedFloor === floorObj.floorNumber && (
-                <div className="house-popup">
-                  {floorHouses[floorObj.floorNumber]?.map((house) => (
+          <h3>Select an Apartment</h3>
+          <div className="apartment-selection">
+            {Object?.values(organizedData)?.map(({ apartment }) => (
+              <div
+                key={apartment?._id}
+                className={`apartment-option ${
+                  selectedApartment && selectedApartment?._id === apartment._id
+                    ? 'selected'
+                    : ''
+                }`}
+                onClick={() => handleApartmentSelection(apartment)}
+              >
+                {apartment.name}
+              </div>
+            ))}
+          </div>
+          {selectedApartment && (
+            <>
+              <h3>Floor Selection</h3>
+              <div className="floorAndHouse">
+                <div className="floor-selection">
+                  {floors.map((floor) => (
                     <div
-                      key={house._id}
-                      className={`house-option ${
-                        house.isOccupied ? 'occupied' : ''
+                      key={floor?.floorNumber}
+                      className={`floor-option ${
+                        selectedFloor === floor?.floorNumber ? 'selected' : ''
                       }`}
-                      onClick={() =>
-                        !house.isOccupied && handleHouseSelection(house)
-                      }
+                      onClick={() => handleFloorSelection(floor?.floorNumber)}
                     >
-                      {house.isOccupied ? '🚫' : house.houseName.slice(-1)}{' '}
-                      {/* Show the house letter or no entry emoji */}
+                      {floor?.name}
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          ))}
+
+                {selectedFloor !== null && (
+                  <div className="houseSelectionParent">
+                    <h3>House Selection</h3>
+                    <div className="house-selection">
+                      {organizedData[selectedApartment?._id].floors[
+                        selectedFloor
+                      ]?.map((house) => (
+                        <div
+                          key={house?._id}
+                          className={`house-option ${
+                            selectedHouse ===
+                            `${selectedFloor}${house?.houseName.slice(-1)}`
+                              ? 'selected'
+                              : ''
+                          } ${house?.isOccupied ? 'occupied' : ''}`}
+                          onClick={() => handleHouseSelection(house)}
+                        >
+                          {house?.houseName} {house?.isOccupied && '(Occupied)'}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 
-      {tenantData && (
+      {isDepositPopupVisible && (
         <div className="deposit-popup">
           <button
             className="close-popup"
@@ -418,6 +459,7 @@ const RegisterTenant = () => {
         </div>
       )}
 
+      <ToastContainer />
       {loading && (
         <div className="loader-overlay">
           <TailSpin
@@ -429,8 +471,6 @@ const RegisterTenant = () => {
           />
         </div>
       )}
-
-      <ToastContainer />
     </div>
   );
 };

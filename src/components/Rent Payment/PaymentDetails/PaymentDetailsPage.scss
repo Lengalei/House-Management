@@ -1,13 +1,14 @@
 .payment-details-page {
+  height: 100%;
   .cards-container {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    max-width: 80%;
-
+    max-width: 90%;
+    height: 100%;
+    margin: 0 auto;
     .left-card {
-      flex: 2;
-
+      flex: 1;
       height: max-content;
       .minicard {
         background-color: #fff;
@@ -59,15 +60,19 @@
     }
 
     .right-card {
-      flex: 1;
+      flex: 2;
+      width: max-content;
       margin-top: 20px;
-      height: max-content;
+      height: 85%;
+      overflow: scroll;
+      overflow-x: scroll;
       .advanced-card {
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        padding: 15px;
+        padding: 10px;
+        border: 1px solid crimson;
 
         h3 {
           display: flex;

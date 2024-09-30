@@ -51,7 +51,7 @@ export const getUnpaidTenantPayments = async (req, res) => {
         { 'waterBill.paid': false },
         { 'garbageFee.paid': false },
       ],
-    });
+    }).populate('tenant', 'name email houseDetails');
 
     // If no payments found, return a message
     if (unpaidPayments.length === 0) {

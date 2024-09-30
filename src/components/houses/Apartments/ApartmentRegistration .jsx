@@ -1,107 +1,132 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import './ApartmentRegistration.scss';
+import { toast, ToastContainer } from 'react-toastify';
+import apiRequest from '../../../lib/apiRequest';
+import { TailSpin } from 'react-loader-spinner';
 
 const ApartmentRegistration = () => {
   const navigate = useNavigate();
   //   const [apartments, setApartments] = useState([]);
-  const [apartmentName, setApartmentName] = useState('');
-  const [numOfHouses, setNumOfHouses] = useState('');
+  const [name, setApartmentName] = useState('');
+  const [noHouses, setNumOfHouses] = useState('');
   const [location, setLocation] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(3);
 
   const dummyApartments = [
     {
-      id: 1,
+      _id: 1,
       name: 'Maple Heights',
-      houses: 12,
+      noHouses: 12,
       location: 'Downtown, Nairobi',
     },
     {
-      id: 2,
+      _id: 2,
       name: 'Oakwood Apartments',
-      houses: 8,
+      noHouses: 8,
       location: 'Westlands, Nairobi',
     },
     {
-      id: 3,
+      _id: 3,
       name: 'Pinecrest Towers',
-      houses: 20,
+      noHouses: 20,
       location: 'Kilimani, Nairobi',
     },
     {
-      id: 4,
+      _id: 4,
       name: 'Cedar Ridge',
-      houses: 15,
+      noHouses: 15,
       location: 'Lavington, Nairobi',
     },
     {
-      id: 5,
+      _id: 5,
       name: 'Elm Grove',
-      houses: 10,
+      noHouses: 10,
       location: 'Kilimani, Nairobi',
     },
     {
-      id: 6,
+      _id: 6,
       name: 'Birchwood Flats',
-      houses: 18,
+      noHouses: 18,
       location: 'Kileleshwa, Nairobi',
     },
     {
-      id: 7,
+      _id: 7,
       name: 'Spruce Villas',
-      houses: 22,
+      noHouses: 22,
       location: 'Runda, Nairobi',
     },
     {
-      id: 8,
+      _id: 8,
       name: 'Aspen Heights',
-      houses: 14,
+      noHouses: 14,
       location: 'Muthaiga, Nairobi',
     },
     {
-      id: 9,
+      _id: 9,
       name: 'Chestnut Court',
-      houses: 9,
+      noHouses: 9,
       location: 'Kasarani, Nairobi',
     },
     {
-      id: 10,
+      _id: 10,
       name: 'Willow Park',
-      houses: 16,
+      noHouses: 16,
       location: "Lang'ata, Nairobi",
     },
   ];
 
   // In the useState hook, replace the empty array with this dummy data
   const [apartments, setApartments] = useState(dummyApartments);
-
+  const [loading, setLoading] = useState(false);
   // Handle form submission
-  const handleRegisterApartment = (e) => {
+  const handleRegisterApartment = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await apiRequest.post(
+        '/v2/apartments/registerApartment',
+        { name, noHouses, location }
+      );
+      if (response.status) {
+        toast.success('Success apartment registration');
 
-    const newApartment = {
-      id: apartments.length + 1,
-      name: apartmentName,
-      houses: numOfHouses,
-      location: location,
-    };
-
-    setApartments([...apartments, newApartment]);
-    setApartmentName('');
-    setNumOfHouses('');
-    setLocation('');
+        await fetchApartments();
+        setApartmentName('');
+        setNumOfHouses('');
+        setLocation('');
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || 'Error Registering Apartment');
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
+  const fetchApartments = async () => {
+    try {
+      const response = await apiRequest.get('/v2/apartments/getAllApartments');
+      if (response.status) {
+        // toast.success('Apartments fetched Succesfully!');
+        setApartments(response.data);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message || 'Error Fetching apartments');
+    }
+  };
+  useEffect(() => {
+    fetchApartments();
+  }, []);
 
   // Handle pagination
   const indexOfLastApartment = currentPage * itemsPerPage;
   const indexOfFirstApartment = indexOfLastApartment - itemsPerPage;
-  const currentApartments = apartments.slice(
-    indexOfFirstApartment,
-    indexOfLastApartment
-  );
+  const currentApartments =
+    apartments.length > 0 &&
+    apartments?.slice(indexOfFirstApartment, indexOfLastApartment);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -116,7 +141,7 @@ const ApartmentRegistration = () => {
             <label>Apartment Name</label>
             <input
               type="text"
-              value={apartmentName}
+              value={name}
               onChange={(e) => setApartmentName(e.target.value)}
               placeholder="Enter apartment name"
               required
@@ -126,14 +151,14 @@ const ApartmentRegistration = () => {
             <label>Number of Houses</label>
             <input
               type="number"
-              value={numOfHouses}
+              value={noHouses}
               onChange={(e) => setNumOfHouses(e.target.value)}
               placeholder="Enter number of houses"
               required
             />
           </div>
           <div className="form-group">
-            <label>Location</label>
+            <label>location</label>
             <input
               type="text"
               value={location}
@@ -150,30 +175,47 @@ const ApartmentRegistration = () => {
 
       <div className="card card-right">
         <h2>Registered Apartments</h2>
-        {currentApartments.map((apartment) => (
-          <div key={apartment.id} className="apartment-card">
-            <h3>{apartment.name}</h3>
-            <p>Houses: {apartment.houses}</p>
-            <p>Location: {apartment.location}</p>
-            <button
-              className="btn-secondary"
-              onClick={() => navigate(`/addHouse`)}
-            >
-              View Houses
-            </button>
-          </div>
-        ))}
+        {currentApartments.length > 0 &&
+          currentApartments?.map((apartment) => (
+            <div key={apartment?._id} className="apartment-card">
+              <h3>{apartment?.name}</h3>
+              <p>Houses: {apartment?.noHouses}</p>
+              <p>location: {apartment?.location}</p>
+              <button
+                className="btn-secondary"
+                onClick={() =>
+                  navigate(`/apartment/${apartment._id}`, {
+                    state: { apartmentData: apartment },
+                  })
+                }
+              >
+                View Houses
+              </button>
+            </div>
+          ))}
 
         <Pagination
           activePage={currentPage}
           itemsCountPerPage={itemsPerPage}
-          totalItemsCount={apartments.length}
+          totalItemsCount={apartments?.length}
           pageRangeDisplayed={3}
           onChange={handlePageChange}
           itemClass="page-item"
           linkClass="page-link"
         />
       </div>
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
+      <ToastContainer />
     </div>
   );
 };

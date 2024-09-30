@@ -115,6 +115,54 @@
     }
   }
 
+  .post-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .post-card {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 48%; // Two cards in a row
+      margin-bottom: 15px;
+      padding: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .post-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .post-details {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .select-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+
   .deposit-popup {
     margin-bottom: 20px;
     background-image: linear-gradient(
@@ -405,6 +453,218 @@
 
       &:hover.occupied {
         background-color: #f2dede; // Lighter red for hover effect
+      }
+    }
+  }
+}
+.register-tenant {
+  // Base styles for the registration card
+  .registration-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        margin-bottom: 5px;
+      }
+
+      input {
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+
+  // Styles for the house selection popup
+  .floor-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 80%;
+    overflow: scroll;
+    overflow-x: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    // border: 1px solid crimson;
+
+    .closePopup {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      color: #333;
+      top: 10px;
+      right: 10px;
+      transition: all 300ms ease-in-out;
+    }
+    .closePopup:hover {
+      background-color: #6cb619;
+    }
+
+    h3 {
+      margin: 10px 0;
+    }
+
+    .apartment-selection {
+      display: flex;
+      flex-direction: column;
+
+      .apartment-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .floorAndHouse {
+      display: flex;
+      align-items: flex-start;
+      // justify-content: space-between;
+      gap: 2px;
+      width: 100%;
+    }
+    // Floor selection styles
+    .floor-selection {
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+      width: 40%;
+
+      .floor-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .houseSelectionParent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 15px;
+      width: 60%;
+      flex-wrap: wrap;
+      border-radius: 10px;
+      padding: 5px;
+      border: 1px solid wheat;
+    }
+
+    // House selection styles
+    .house-selection {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex-wrap: wrap;
+
+      h3 {
+        margin-top: 5px;
+      }
+
+      .house-option {
+        padding: 2px;
+        width: 25%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &.occupied {
+          color: red;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+  }
+
+  // Responsive design
+  @media (min-width: 768px) {
+    .floor-popup {
+      display: flex;
+      flex-direction: column;
+
+      .house-selection {
+        display: flex;
+        flex-direction: row; // Align house options in a row
+        flex-wrap: wrap; // Allow wrapping for smaller screens
+
+        .house-option {
+          flex: 1 1 calc(50% - 10px); // Two options per row with spacing
+          margin-right: 10px; // Spacing between options
+
+          &:nth-child(2n) {
+            margin-right: 0; // Remove margin on every second child
+          }
+        }
       }
     }
   }
