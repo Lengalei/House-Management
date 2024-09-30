@@ -8,8 +8,17 @@ import {
   FaMapMarkerAlt,
 } from 'react-icons/fa'; // Font Awesome icons from react-icons
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const AdminEditPage = () => {
+const [name, setName] = useState('')
+const [password, setPassword] = useState('')
+const [email, setEmail] = useState('')
+const [phone, setPhone] = useState('')
+
+
+
+
   const location = useLocation();
   const admin = location.state || {};
   console.log('admin: ', admin);
@@ -18,7 +27,6 @@ const AdminEditPage = () => {
     email: 'john@example.com',
     password: '',
     phone: '(123) 456-7890',
-    address: '123 Main St, City, Country',
     isActive: true,
   });
 
@@ -31,8 +39,21 @@ const AdminEditPage = () => {
     setUser((prevUser) => ({ ...prevUser, isActive: !prevUser.isActive }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
+
+    const response = await axios.put(
+      "http://localhost:5500/api/user", {
+        name, password, email,phone
+      }
+    );
+
+    if(response == 200){
+      setName('')
+      setEmail('')
+      setPassword('')
+      setPhone('')
+    }
     console.log('Updated user:', user);
     // Here you would typically send the updated user data to your backend
   };
@@ -48,8 +69,10 @@ const AdminEditPage = () => {
             <FaUser />
             <input
               name="name"
-              value={user.name}
-              onChange={handleInputChange}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
               placeholder="Full Name"
             />
           </div>
@@ -57,8 +80,10 @@ const AdminEditPage = () => {
             <FaEnvelope />
             <input
               name="email"
-              value={user.email}
-              onChange={handleInputChange}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               placeholder="Email"
               type="email"
             />
@@ -67,8 +92,10 @@ const AdminEditPage = () => {
             <FaLock />
             <input
               name="password"
-              value={user.password}
-              onChange={handleInputChange}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
               placeholder="New Password"
               type="password"
             />
@@ -77,20 +104,14 @@ const AdminEditPage = () => {
             <FaPhone />
             <input
               name="phone"
-              value={user.phone}
-              onChange={handleInputChange}
+              value={phone}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
               placeholder="Phone Number"
             />
           </div>
-          <div className="form-group">
-            <FaMapMarkerAlt />
-            <textarea
-              name="address"
-              value={user.address}
-              onChange={handleInputChange}
-              placeholder="Address"
-            />
-          </div>
+
           <div className="switch-container">
             <span>Active Status</span>
             <label className="switch">
@@ -102,7 +123,7 @@ const AdminEditPage = () => {
               <span className="slider round"></span>
             </label>
           </div>
-          <button type="submit">Save Changes</button>
+          <button>Save Changes</button>
         </form>
       </div>
     </div>

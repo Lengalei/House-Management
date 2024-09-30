@@ -43,20 +43,23 @@
     width: 100%;
 
     .profile {
-      width: 100%;
+      max-width: 100%;
       height: 100%;
-      /* padding-top: 5px; */
+     padding-top: 20px; 
       width: 100%;
       padding-top: 10px;
       display: flex;
+      
       gap: 50px;
       flex-direction: column;
+      // flex-wrap: wrap;
       align-items: center;
 
       .personal-details {
         width: 80%;
         display: flex;
         justify-content: flex-start;
+        flex-wrap: wrap;
         align-items: flex-start;
         gap: 20px;
         background: none;
@@ -70,9 +73,9 @@
           align-items: center;
           justify-content: center;
           gap: 20px;
-          width: 44%;
+          max-width: 450px;
 
-          height: 100%;
+          height: auto;
           background-color: white;
           box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
             rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
@@ -95,8 +98,9 @@
           overflow: hidden;
         }
         .user-details {
-          width: 44%;
-          height: 100%;
+          max-width: 450px;
+
+          height: auto;
           background-color: white;
           box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
             rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
@@ -117,10 +121,11 @@
         width: 80%;
         display: flex;
         gap: 20px;
+        padding: 20px;
         // border: 1px solid greenyellow;
       }
       .payment-details {
-        width: 400px;
+        max-width: 400px;
         height: 200px;
         display: flex;
         color: black;
@@ -133,8 +138,9 @@
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
       }
       .pd {
-        width: 400px;
-        height: 240px;
+        max-width: 450px;
+
+        height: auto;
         display: flex;
         padding: 20px;
         background-color: white;

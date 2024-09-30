@@ -90,7 +90,10 @@ function Dashboard() {
               <p>Total earnings: {payments}</p>
             </div>
           </div>
-          <Charts />
+          <div className="charts">
+            <div className="chart1"></div>
+            <div className="chart2"></div>
+          </div>
         </div>
       </div>
     </div>

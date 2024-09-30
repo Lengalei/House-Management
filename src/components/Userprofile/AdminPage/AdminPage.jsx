@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import ReactPaginate from 'react-js-pagination';
-import './AdminPage.scss';
-import apiRequest from '../../../lib/apiRequest';
-import { FaTrashAlt, FaUser } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import { TailSpin } from 'react-loader-spinner';
+import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ReactPaginate from "react-js-pagination";
+import "./AdminPage.scss";
+import apiRequest from "../../../lib/apiRequest";
+import { FaTrashAlt, FaUser } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { TailSpin } from "react-loader-spinner";
 
 const AdminPage = () => {
   const [admins, setAdmins] = useState([
-    { _id: 1, name: 'Randy Septimus', email: 'abcd@email.com', role: 1 },
-    { _id: 2, name: 'Mira Donin', email: 'abcd@email.com', role: 4 },
-    { _id: 3, name: 'Charlie Bator', email: 'abcd@email.com', role: 6 },
+    { _id: 1, name: "Randy Septimus", email: "abcd@email.com", role: 1 },
+    { _id: 2, name: "Mira Donin", email: "abcd@email.com", role: 4 },
+    { _id: 3, name: "Charlie Bator", email: "abcd@email.com", role: 6 },
     // Add more dummy data as necessary
   ]);
   // console.log(admins);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const [showPopup, setShowPopup] = useState(false);
   const [showClearancePopup, setShowClearancePopup] = useState(false); // New state for clearance popup
@@ -46,7 +46,7 @@ const AdminPage = () => {
       }
     } catch (error) {
       toast.error(
-        error.response.data.message || 'Error Fetching tenants to be cleared'
+        error.response.data.message || "Error Fetching tenants to be cleared"
       );
     } finally {
       setLoading(false);
@@ -56,13 +56,13 @@ const AdminPage = () => {
   const fetchAdmins = async () => {
     setLoading(true);
     try {
-      const response = await apiRequest.get('/auth/getAdmins');
+      const response = await apiRequest.get("/auth/getAdmins");
       if (response.status) {
         setAdmins(response.data);
         // toast.success('Success Fetching Admins');
       }
     } catch (error) {
-      toast.error(error.response.data.message || 'Error Fetching Admins');
+      toast.error(error.response.data.message || "Error Fetching Admins");
     } finally {
       setLoading(false);
     }
@@ -122,15 +122,15 @@ const AdminPage = () => {
         );
 
         if (response.status === 200) {
-          toast.success('Tenant Deleted Successfully!');
+          toast.success("Tenant Deleted Successfully!");
           closeConfirmDelete();
           setToBeClearedTenants((prevTenants) =>
             prevTenants.filter((tenant) => tenant._id !== selectedTenant._id)
           );
         }
       } catch (error) {
-        toast.error(error.response.data.message || 'Error Deleting Tenant!');
-        console.error('Error deleting tenant:', error);
+        toast.error(error.response.data.message || "Error Deleting Tenant!");
+        console.error("Error deleting tenant:", error);
       } finally {
         setLoading(false);
       }
@@ -143,17 +143,17 @@ const AdminPage = () => {
   const [editAdminPopup, setEditAdminPopup] = useState(false);
   const closeAdminPopup = () => {
     setEditAdminPopup(false);
-    setName('');
-    setEmail('');
-    setPassword('');
-    setRole('');
-    setError('');
+    setName("");
+    setEmail("");
+    setPassword("");
+    setRole("");
+    setError("");
   };
   const handleEditAdminPost = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await apiRequest.put('/auth/adminUpdate', {
+      const response = await apiRequest.put("/auth/adminUpdate", {
         username: name,
         email,
         role,
@@ -161,16 +161,16 @@ const AdminPage = () => {
       });
       if (response.status) {
         await fetchAdmins();
-        setName('');
-        setEmail('');
-        setRole('');
-        setError('');
+        setName("");
+        setEmail("");
+        setRole("");
+        setError("");
         closeAdminPopup();
-        toast.success('Admin updated!');
+        toast.success("Admin updated!");
       }
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response.data.message || 'Error Editing Admin!');
+      toast.error(error.response.data.message || "Error Editing Admin!");
     } finally {
       setLoading(false);
     }
@@ -185,24 +185,24 @@ const AdminPage = () => {
   };
 
   const handleInvoiceClick = () => {
-    navigate('/invoices');
+    navigate("/invoices");
   };
 
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   // State variables to hold form values
-  const [adminId, setAdminId] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+  const [adminId, setAdminId] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
 
   // Close popup handler
   const closePopup = () => {
     setShowPopup(false);
-    setName('');
-    setEmail('');
-    setRole('');
+    setName("");
+    setEmail("");
+    setRole("");
   };
 
   // Handle form submission
@@ -210,7 +210,7 @@ const AdminPage = () => {
     e.preventDefault();
     setLoading(true);
     if (!name || !email || !password || !role) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
     try {
@@ -222,15 +222,15 @@ const AdminPage = () => {
         role,
       });
       if (response.status) {
-        setName('');
-        setEmail('');
-        setRole('');
+        setName("");
+        setEmail("");
+        setRole("");
         closePopup();
         await fetchAdmins();
       }
     } catch (error) {
-      console.error('Error adding admin:', error);
-      toast.error(error.response.data.message || 'Error adding Admin!');
+      console.error("Error adding admin:", error);
+      toast.error(error.response.data.message || "Error adding Admin!");
     } finally {
       setLoading(false);
     }
@@ -246,13 +246,13 @@ const AdminPage = () => {
       );
       if (response.status) {
         await fetchAdmins();
-        setError('');
-        toast.success('Admin deleted successfully!');
+        setError("");
+        toast.success("Admin deleted successfully!");
         setShowConfirmDeleteAdmin(false);
       }
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response.data.message || 'Error Deleting Admin!');
+      toast.error(error.response.data.message || "Error Deleting Admin!");
     } finally {
       setLoading(false);
     }
@@ -409,7 +409,7 @@ const AdminPage = () => {
           </div>
         </div>
       )}
-      {/* Edit Admin Popupp */}
+      {/* Edit Admin Popup */}
       {editAdminPopup && (
         <div className="popup-overlay">
           <div className="popup">
@@ -477,134 +477,138 @@ const AdminPage = () => {
         </div>
       )}
 
-      {/* Clearance Queue Popup */}
-      {showClearancePopup && (
-        <div className="clearance-popup-overlay">
-          <div className="clearance-popup clearance-popup">
-            <div className="clearance-popup-header">
-              <div className="innerHeader">
-                <h3>Clearance Queue.</h3>
-                <h5>Below Tenants will dissapear in 48hrs</h5>
+        {/* Clearance Queue Popup */}
+        {showClearancePopup && (
+          <div className="clearance-popup-overlay">
+            <div className="clearance-popup clearance-popup">
+              <div className="clearance-popup-header">
+                <div className="innerHeader">
+                  <h3>Clearance Queue.</h3>
+                  <h5>Below Tenants will dissapear in 48hrs</h5>
+                </div>
+                <button
+                  className="clearance-close-btn"
+                  onClick={closeClearancePopup}
+                >
+                  X
+                </button>
               </div>
-              <button
-                className="clearance-close-btn"
-                onClick={closeClearancePopup}
-              >
-                X
-              </button>
-            </div>
-            <table className="clearance-table">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>House No</th>
-                  <th>Refund</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {toBeClearedTenants
-                  ?.slice(
-                    (clearancePage - 1) * itemsPerPageForClearance,
-                    clearancePage * itemsPerPageForClearance
-                  )
-                  ?.map((tenant, index) => (
-                    <tr key={tenant?.id}>
-                      <td>
-                        {(clearancePage - 1) * itemsPerPageForClearance +
-                          index +
-                          1}
-                      </td>
-                      <td>{tenant?.name}</td>
-                      <td>{tenant?.email}</td>
-                      <td>{tenant?.houseDetails?.houseNo}</td>
-                      <td>
-                        {tenant?.deposits?.rentDeposit +
-                          tenant?.deposits?.waterDeposit}
-                      </td>
-                      <td>
-                        <button
-                          className="restore-btn"
-                          onClick={() => handleViewTenant(tenant)}
-                        >
-                          <FaUser /> View Tenant
-                        </button>
+              <table className="clearance-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>House No</th>
+                    <th>Refund</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {toBeClearedTenants
+                    ?.slice(
+                      (clearancePage - 1) * itemsPerPageForClearance,
+                      clearancePage * itemsPerPageForClearance
+                    )
+                    ?.map((tenant, index) => (
+                      <tr key={tenant?.id}>
+                        <td>
+                          {(clearancePage - 1) * itemsPerPageForClearance +
+                            index +
+                            1}
+                        </td>
+                        <td>{tenant?.name}</td>
+                        <td>{tenant?.email}</td>
+                        <td>{tenant?.houseDetails?.houseNo}</td>
+                        <td>
+                          {tenant?.deposits?.rentDeposit +
+                            tenant?.deposits?.waterDeposit}
+                        </td>
+                        <td>
+                          <button
+                            className="restore-btn"
+                            onClick={() => handleViewTenant(tenant)}
+                          >
+                            <FaUser /> View Tenant
+                          </button>
 
-                        <button
-                          className="delete-btn"
-                          onClick={() => confirmDelete(tenant)}
-                        >
-                          <FaTrashAlt /> Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+                          <button
+                            className="delete-btn"
+                            onClick={() => confirmDelete(tenant)}
+                          >
+                            <FaTrashAlt /> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
 
-            {/* Pagination for Clearance Queue */}
-            <div className="pagination">
-              <ReactPaginate
-                activePage={clearancePage}
-                itemsCountPerPage={itemsPerPageForClearance}
-                totalItemsCount={toBeClearedTenants?.length}
-                pageRangeDisplayed={5}
-                onChange={handleClearancePageChange}
-                itemClass="page-item"
-                linkClass="page-link"
-              />
+              {/* Pagination for Clearance Queue */}
+              <div className="pagination">
+                <ReactPaginate
+                  activePage={clearancePage}
+                  itemsCountPerPage={itemsPerPageForClearance}
+                  totalItemsCount={toBeClearedTenants?.length}
+                  pageRangeDisplayed={5}
+                  onChange={handleClearancePageChange}
+                  itemClass="page-item"
+                  linkClass="page-link"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {/* Confirm Delete Popup */}
-      {showConfirmDelete && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to delete this tenant?</h3>
-            <p>{selectedTenant?.name}</p>
-            <div className="confirmation-actions">
-              <button className="submit-btn" onClick={handleDeleteTenant}>
-                Yes, Delete
-              </button>
-              <button className="cancel-btn" onClick={closeConfirmDelete}>
-                Cancel
-              </button>
+        )}
+        {/* Confirm Delete Popup */}
+        {showConfirmDelete && (
+          <div className="confirmation-popup-overlay">
+            <div className="confirmation-popup">
+              <h3>Are you sure you want to delete this tenant?</h3>
+              <p>{selectedTenant?.name}</p>
+              <div className="confirmation-actions">
+                <button className="submit-btn" onClick={handleDeleteTenant}>
+                  Yes, Delete
+                </button>
+                <button className="cancel-btn" onClick={closeConfirmDelete}>
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {loading && (
-        <div className="loader-overlay">
-          <TailSpin
-            height="100"
-            width="100"
-            color="#4fa94d"
-            ariaLabel="loading"
-            visible={true}
-          />
-        </div>
-      )}
-      {showConfirmDeleteAdmin && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to delete this Admin?</h3>
-            <p>{selectedAdmin?.username}</p>
-            {error && <p>{error}</p>}
-            <div className="confirmation-actions">
-              <button className="submit-btn" onClick={handleDeleteAdmin}>
-                Yes, Delete
-              </button>
-              <button className="cancel-btn" onClick={closeConfirmDeleteAdmin}>
-                Cancel
-              </button>
+        )}
+        {loading && (
+          <div className="loader-overlay">
+            <TailSpin
+              height="100"
+              width="100"
+              color="#4fa94d"
+              ariaLabel="loading"
+              visible={true}
+            />
+          </div>
+        )}
+        {showConfirmDeleteAdmin && (
+          <div className="confirmation-popup-overlay">
+            <div className="confirmation-popup">
+              <h3>Are you sure you want to delete this Admin?</h3>
+              <p>{selectedAdmin?.username}</p>
+              {error && <p>{error}</p>}
+              <div className="confirmation-actions">
+                <button className="submit-btn" onClick={handleDeleteAdmin}>
+                  Yes, Delete
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={closeConfirmDeleteAdmin}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      <ToastContainer />
+        )}
+        <ToastContainer />
+      </div>
     </div>
   );
 };

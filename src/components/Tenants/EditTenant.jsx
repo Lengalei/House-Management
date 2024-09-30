@@ -133,7 +133,7 @@ function EditTenant() {
                 onChange={handleChange}
               />
             </div>
-            <div className="forminput">
+            {/* <div className="forminput">
               <label htmlFor="placementDate">
                 Placement Date<span>*</span>
               </label>
@@ -144,8 +144,8 @@ function EditTenant() {
                 value={formData.placementDate}
                 onChange={handleChange}
               />
-            </div>
-            <div className="forminput">
+            </div> */}
+            {/* <div className="forminput">
               <label htmlFor="houseDeposit">
                 House Deposit<span>*</span>
               </label>
@@ -156,8 +156,8 @@ function EditTenant() {
                 value={formData.houseDeposit}
                 onChange={handleChange}
               />
-            </div>
-            <div className="forminput">
+            </div> */}
+            {/* <div className="forminput">
               <label htmlFor="waterDeposit">
                 Water Deposit<span>*</span>
               </label>
@@ -168,7 +168,7 @@ function EditTenant() {
                 value={formData.waterDeposit}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             <div className="forminput">
               <label htmlFor="houseNo">
                 House No<span>*</span>
@@ -181,7 +181,7 @@ function EditTenant() {
                 onChange={handleChange}
               />
             </div>
-            <div className="forminput">
+            {/* <div className="forminput">
               <label htmlFor="rentPayable">
                 Rent Payable<span>*</span>
               </label>
@@ -192,15 +192,15 @@ function EditTenant() {
                 value={formData.rentPayable}
                 onChange={handleChange}
               />
-            </div>
-            <div className="forminput">
+            </div> */}
+            {/* <div className="forminput">
               <label htmlFor="rentPayable">Amount Paid</label>
               <input
                 type="number"
                 name="rentPayable"
                 value={formData.amountpaid}
               />
-            </div>
+            </div> */}
             <div className="forminput">
               <label htmlFor="emergencyContactName">
                 Emergency Contact Name<span>*</span>

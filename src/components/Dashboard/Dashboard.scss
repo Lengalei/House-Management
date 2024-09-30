@@ -32,7 +32,7 @@
     object-fit: contain;
 }
 .dashboardcontent{
-   padding: 30px;
+   padding: 15px;
    width: 100%;
    height: auto;
    background-image: 
@@ -62,7 +62,7 @@
     gap: 10px;
 }
 .box{
-    width: 230px;
+    width: 200px;
     height: 150px;
     background-color: var(--yellow);
      box-shadow: 0 0 10px var(--primary-color);
@@ -80,11 +80,13 @@
 .charts{
     display: flex;
     flex-wrap: wrap;
-    // padding: 5px;
-    height: 50vh;
+   padding-bottom: 15px;
+    height: 25vh;
     gap: 10px;
     align-items: center;
     justify-content: center;
+    margin-bottom: 30px;
+
     // border: solid 1px crimson;
 
     @include md {
@@ -94,31 +96,43 @@
       height: 35vh;
     }
 }
-.linechart{
-    width: 400px;
-    // height: 40%;
-     background-color: white;
-      box-shadow: 0 0 10px var(--primary-color);
-    border-radius: 10px;
-    @include md {
-      height: 45%;
-    }
-    @include sm {
-      height: 45%;
-    }
+.chart1{
+  width: 400px;
+  height: 150px;
+  background-image: url("/chart1dash.gif");
+  background-repeat: no-repeat;
 }
+.chart2{
+  width: 400px;
+  height: 150px;
+  background-image: url("/chart3.png");
+  background-repeat: no-repeat;
+}
+// .linechart{
+//     width: 400px;
+//     // height: 40%;
+//      background-color: white;
+//       box-shadow: 0 0 10px var(--primary-color);
+//     border-radius: 10px;
+//     @include md {
+//       height: 45%;
+//     }
+//     @include sm {
+//       height: 45%;
+//     }
+// }
 
-.doghnut{
-    width: 250px;
-    height: 80%;
-    background-color: white;
-     box-shadow: 0 0 10px var(--primary-color);
-    border-radius: 10px;
-    @include md {
-      height: 45%;
-    }
-    @include sm {
-      height: 45%;
-    }
-}
+// .doghnut{
+//     width: 250px;
+//     height: 80%;
+//     background-color: white;
+//      box-shadow: 0 0 10px var(--primary-color);
+//     border-radius: 10px;
+//     @include md {
+//       height: 45%;
+//     }
+//     @include sm {
+//       height: 45%;
+//     }
+// }
 
