@@ -1,14 +1,15 @@
 @import '../../responsive.scss';
 .clearance {
   // width: 100%;
-  padding: 2rem;
+  padding: 2.5rem;
+  padding-bottom: 2rem;
   background-image: linear-gradient(
       rgba(21, 19, 19, 0.9),
       rgba(10, 10, 10, 0.9)
     ),
     url(/house4.jpg);
   background-size: cover;
-  height: 100%;
+  min-height: 100vh;
 
   @include md {
     height: auto;
@@ -50,6 +51,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 2rem;
     height: 100%;
@@ -99,7 +101,7 @@
 
         label {
           font-size: 1rem;
-          color: #666;
+          color: white;
           margin-bottom: 0.5rem;
           margin-right: 5px;
         }
@@ -148,16 +150,22 @@
     .form2 {
       height: 100%;
       border-radius: 10px;
-      background-color: khaki;
+  
+     background-image: 
+    url('/bghm.jfif');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
     }
 
     .flip-card {
       position: relative;
-      width: 100%;
-      height: 85%;
+      width: 45%;
+      height: 480px;
       background: none;
       perspective: 1000px; // Gives a 3D effect
       border-radius: 10px;
+  
 
       &.flipped {
         .flip-card-inner {
@@ -186,8 +194,15 @@
         // border: 10px solid violet;
       }
       .flip-card-back {
-        background-color: khaki;
-        color: black;
+        background-color: black;
+  color: white;
+  background-image: 
+    url('/bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 20px;
+        
 
         .tenant-data {
           display: flex;
@@ -195,12 +210,15 @@
           align-items: flex-start;
           justify-content: flex-start;
           margin: 2px;
-          padding: 3px;
-          border: 1px solid cornflowerblue;
+          margin-bottom: 20px;
+          
           border-radius: 8px;
 
           h1 {
-            color: #333;
+            font-size: 18px;
+            text-align: left;
+            color: gold;
+            margin-bottom: 20px;
           }
         }
 
@@ -209,18 +227,24 @@
           margin: 2px;
 
           h1 {
+            font-size: 18px;
             text-align: left;
-            color: #333;
+            color: gold;
+            margin-bottom: 20px;
           }
         }
 
         .payment-table {
           width: 100%;
           border-collapse: collapse;
-
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--primary-color);
+          th{
+            color: black;
+          }
           th,
           td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--primary-color);
             padding: 0.5rem;
           }
 
@@ -237,17 +261,19 @@
         position: absolute;
         bottom: 0;
         right: 0;
-        margin-top: 1rem;
-        background-color: #4fa94d;
+        margin: 20px;
+        
+        background-color: black;
+        border: 1px solid var(--primary-color);
         color: white;
-        border: none;
         border-radius: 5px;
         padding: 0.5rem 1rem;
         cursor: pointer;
         transition: background-color 0.3s;
 
         &:hover {
-          background-color: #3d8a3b;
+          background-color: var(--primary-color);
+          border: solid 3px black;
         }
       }
     }

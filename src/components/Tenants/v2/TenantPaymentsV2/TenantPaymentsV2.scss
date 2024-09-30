@@ -4,7 +4,7 @@
   background-image: url('/background354.jpeg');
   background-size: cover;
   height: 100%;
-  color: brown;
+  color: black;
   margin: 0 auto;
   padding-left: 50px;
   padding-right: 50px;
@@ -61,7 +61,7 @@
         }
 
         .update-defaults-btn {
-          background: #28a745;
+          background: var(--primary-color);
           border: none;
           padding: 8px 16px;
           border-radius: 4px;
@@ -130,14 +130,14 @@
         background-color: #ccc;
         padding: 7px;
         border-radius: 7px;
-        color: #dc3545;
+        color: goldenrod;
         position: absolute;
         right: 58%;
         top: 80%;
       }
       .addExtraAmount:hover {
         background-color: antiquewhite;
-        color: #dc3545;
+        color: goldenrod;
         cursor: pointer;
       }
     }
@@ -159,7 +159,7 @@
     }
 
     .updateDefaults {
-      color: chocolate;
+      color: var(--primary-color);
     }
 
     .popup {
@@ -177,7 +177,7 @@
         right: 10px;
         border: none;
         padding: 6px;
-        background-color: chocolate;
+        background-color: var(--primary-color);;
         border-radius: 12px;
         font-size: 15px;
         cursor: pointer;
@@ -222,7 +222,7 @@
     right: 10px;
     border: none;
     padding: 2px 6px;
-    background-color: chocolate;
+    background-color: var(--primary-color);;
     border-radius: 12px;
     font-size: 18px;
     cursor: pointer;
@@ -230,13 +230,13 @@
   .update {
     border: none;
     padding: 6px;
-    background-color: wheat;
+    background-color: var(--primary-color);;
     border-radius: 8px;
     font-size: 15px;
     cursor: pointer;
   }
   .update:hover {
-    background-color: rgb(253, 187, 64);
+    background-color: rgb(4, 49, 132);
   }
 
   .error-message {
@@ -400,12 +400,12 @@
     }
 
     .cancel-btn {
-      background-color: #f44336;
+      background-color: var(--primary-color);;
       color: white;
     }
 
     .confirm-btn {
-      background-color: #4caf50;
+      background-color: var(--primary-color);;
       color: white;
     }
   }
@@ -423,7 +423,7 @@
       // border: 1px solid crimson;
 
       .confirm-btn {
-        background-color: #28a745;
+        background-color: var(--primary-color);;
         color: #fff;
         padding: 10px 20px;
         border: none;
@@ -431,7 +431,7 @@
         cursor: pointer;
 
         &:hover {
-          background-color: #218838;
+          background-color: #0e2e99;
         }
       }
     }
@@ -531,13 +531,13 @@
 
     .section-1,
     .section-2 {
-      background-color: #28a74638;
-      padding: 2px;
-      border: 1px solid rgba(220, 20, 60, 0.151);
+      background-color: rgba(3, 33, 79, 0.4);
+      padding: 10px;
       border-radius: 7px;
+      border: 1px solid var(--primary-color);
     }
     .confirm-btn {
-      background-color: #28a745;
+      background-color: var(--primary-color);
       color: #fff;
       padding: 10px 20px;
       border: none;
@@ -545,7 +545,7 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #218838;
+        background-color: #0e3a9f;
       }
     }
   }

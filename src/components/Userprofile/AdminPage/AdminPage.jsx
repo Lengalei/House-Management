@@ -136,242 +136,252 @@ const AdminPage = () => {
     });
   };
   return (
-    <div className="admin-container">
-      <div className="header">
-        <h2>Manage Admins</h2>
-        <div className="adminButtons">
-          <button className="add-btn" onClick={handleAddAdmin}>
-            Add Admin
-          </button>
-          <button className="add-btn" onClick={handleClearanceQueue}>
-            Clearance Queue
-          </button>
+    <div className="admin-page">
+      <div className="admin-container">
+        <div className="header">
+          <h2>Manage Admins</h2>
+          <div className="adminbuttons">
+            <button className="add-btn" onClick={handleAddAdmin}>
+              Add Admin
+            </button>
+          </div>
+          <div className="adminButtons">
+            <button className="add-btn" onClick={handleClearanceQueue}>
+              Clearance Queue
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="table-container">
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Profile</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {admins
-              .slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage)
-              .map((admin, index) => (
-                <tr key={admin._id}>
-                  <td>{(activePage - 1) * itemsPerPage + index + 1}</td>
-                  <td>{admin.username}</td>
-                  <td>{admin.email}</td>
-                  <td>{admin.role}</td>
-                  <td>
-                    <button
-                      className="edit-btn"
-                      onClick={() => handleEditAdmin(admin)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => confirmDeleteAdmin(admin)}
-                    >
-                      <FaTrashAlt /> Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+        <div className="table-container">
+          <table className="user-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Profile</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {admins
+                .slice(
+                  (activePage - 1) * itemsPerPage,
+                  activePage * itemsPerPage
+                )
+                .map((admin, index) => (
+                  <tr key={admin._id}>
+                    <td>{(activePage - 1) * itemsPerPage + index + 1}</td>
+                    <td>{admin.username}</td>
+                    <td>{admin.email}</td>
+                    <td>{admin.role}</td>
+                    <td>
+                      <button
+                        className="edit-btn"
+                        onClick={() => handleEditAdmin(admin)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => confirmDeleteAdmin(admin)}
+                      >
+                        <FaTrashAlt /> Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Pagination */}
-      <div className="pagination">
-        <ReactPaginate
-          activePage={activePage}
-          itemsCountPerPage={itemsPerPage}
-          totalItemsCount={admins.length}
-          pageRangeDisplayed={5}
-          onChange={handlePageChange}
-          itemClass="page-item"
-          linkClass="page-link"
-        />
-      </div>
+        {/* Pagination */}
+        <div className="pagination">
+          <ReactPaginate
+            activePage={activePage}
+            itemsCountPerPage={itemsPerPage}
+            totalItemsCount={admins.length}
+            pageRangeDisplayed={5}
+            onChange={handlePageChange}
+            itemClass="page-item"
+            linkClass="page-link"
+          />
+        </div>
 
-      {/* Add Admin Popup */}
-      {showPopup && (
-        <div className="popup-overlay">
-          <div className="popup">
-            <div className="popup-header">
-              <h3>Add Admin</h3>
-              <button className="popup-close-btn" onClick={closePopup}>
-                Close
-              </button>
+        {/* Add Admin Popup */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup">
+              <div className="popup-header">
+                <h3>Add Admin</h3>
+                <button className="popup-close-btn" onClick={closePopup}>
+                  Close
+                </button>
+              </div>
+              <form className="admin-form">
+                <div className="form-group">
+                  <label>Name</label>
+                  <input type="text" placeholder="Enter name" />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" placeholder="Enter email" />
+                </div>
+                <div className="form-group">
+                  <label>Role</label>
+                  <input type="number" placeholder="Enter role" />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="submit-btn">
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={closePopup}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
-            <form className="admin-form">
-              <div className="form-group">
-                <label>Name</label>
-                <input type="text" placeholder="Enter name" />
+          </div>
+        )}
+
+        {/* Clearance Queue Popup */}
+        {showClearancePopup && (
+          <div className="clearance-popup-overlay">
+            <div className="clearance-popup clearance-popup">
+              <div className="clearance-popup-header">
+                <div className="innerHeader">
+                  <h3>Clearance Queue.</h3>
+                  <h5>Below Tenants will dissapear in 48hrs</h5>
+                </div>
+                <button
+                  className="clearance-close-btn"
+                  onClick={closeClearancePopup}
+                >
+                  X
+                </button>
               </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input type="email" placeholder="Enter email" />
+              <table className="clearance-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>House No</th>
+                    <th>Refund</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {toBeClearedTenants
+                    ?.slice(
+                      (clearancePage - 1) * itemsPerPageForClearance,
+                      clearancePage * itemsPerPageForClearance
+                    )
+                    ?.map((tenant, index) => (
+                      <tr key={tenant?.id}>
+                        <td>
+                          {(clearancePage - 1) * itemsPerPageForClearance +
+                            index +
+                            1}
+                        </td>
+                        <td>{tenant?.name}</td>
+                        <td>{tenant?.email}</td>
+                        <td>{tenant?.houseDetails?.houseNo}</td>
+                        <td>
+                          {tenant?.deposits?.rentDeposit +
+                            tenant?.deposits?.waterDeposit}
+                        </td>
+                        <td>
+                          <button
+                            className="restore-btn"
+                            onClick={() => handleViewTenant(tenant)}
+                          >
+                            <FaUser /> View Tenant
+                          </button>
+
+                          <button
+                            className="delete-btn"
+                            onClick={() => confirmDelete(tenant)}
+                          >
+                            <FaTrashAlt /> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+
+              {/* Pagination for Clearance Queue */}
+              <div className="pagination">
+                <ReactPaginate
+                  activePage={clearancePage}
+                  itemsCountPerPage={itemsPerPageForClearance}
+                  totalItemsCount={toBeClearedTenants?.length}
+                  pageRangeDisplayed={5}
+                  onChange={handleClearancePageChange}
+                  itemClass="page-item"
+                  linkClass="page-link"
+                />
               </div>
-              <div className="form-group">
-                <label>Role</label>
-                <input type="number" placeholder="Enter role" />
+            </div>
+          </div>
+        )}
+
+        {/* Confirm Delete Popup */}
+        {showConfirmDelete && (
+          <div className="confirmation-popup-overlay">
+            <div className="confirmation-popup">
+              <h3>Are you sure you want to delete this tenant?</h3>
+              <p>{selectedTenant?.name}</p>
+              <div className="confirmation-actions">
+                <button className="submit-btn" onClick={handleDeleteTenant}>
+                  Yes, Delete
+                </button>
+                <button className="cancel-btn" onClick={closeConfirmDelete}>
+                  Cancel
+                </button>
               </div>
-              <div className="form-actions">
-                <button type="submit" className="submit-btn">
-                  Add
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="loader-overlay">
+            <TailSpin
+              height="100"
+              width="100"
+              color="#4fa94d"
+              ariaLabel="loading"
+              visible={true}
+            />
+          </div>
+        )}
+        {showConfirmDeleteAdmin && (
+          <div className="confirmation-popup-overlay">
+            <div className="confirmation-popup">
+              <h3>Are you sure you want to delete this Admin?</h3>
+              <p>{selectedAdmin?.name}</p>
+              <div className="confirmation-actions">
+                <button className="submit-btn" onClick={confirmDeleteAdmin}>
+                  Yes, Delete
                 </button>
                 <button
-                  type="button"
                   className="cancel-btn"
-                  onClick={closePopup}
+                  onClick={closeConfirmDeleteAdmin}
                 >
                   Cancel
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Clearance Queue Popup */}
-      {showClearancePopup && (
-        <div className="clearance-popup-overlay">
-          <div className="clearance-popup clearance-popup">
-            <div className="clearance-popup-header">
-              <div className="innerHeader">
-                <h3>Clearance Queue.</h3>
-                <h5>Below Tenants will dissapear in 48hrs</h5>
-              </div>
-              <button
-                className="clearance-close-btn"
-                onClick={closeClearancePopup}
-              >
-                X
-              </button>
-            </div>
-            <table className="clearance-table">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>House No</th>
-                  <th>Refund</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {toBeClearedTenants
-                  ?.slice(
-                    (clearancePage - 1) * itemsPerPageForClearance,
-                    clearancePage * itemsPerPageForClearance
-                  )
-                  ?.map((tenant, index) => (
-                    <tr key={tenant?.id}>
-                      <td>
-                        {(clearancePage - 1) * itemsPerPageForClearance +
-                          index +
-                          1}
-                      </td>
-                      <td>{tenant?.name}</td>
-                      <td>{tenant?.email}</td>
-                      <td>{tenant?.houseDetails?.houseNo}</td>
-                      <td>
-                        {tenant?.deposits?.rentDeposit +
-                          tenant?.deposits?.waterDeposit}
-                      </td>
-                      <td>
-                        <button
-                          className="restore-btn"
-                          onClick={() => handleViewTenant(tenant)}
-                        >
-                          <FaUser /> View Tenant
-                        </button>
-
-                        <button
-                          className="delete-btn"
-                          onClick={() => confirmDelete(tenant)}
-                        >
-                          <FaTrashAlt /> Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-
-            {/* Pagination for Clearance Queue */}
-            <div className="pagination">
-              <ReactPaginate
-                activePage={clearancePage}
-                itemsCountPerPage={itemsPerPageForClearance}
-                totalItemsCount={toBeClearedTenants?.length}
-                pageRangeDisplayed={5}
-                onChange={handleClearancePageChange}
-                itemClass="page-item"
-                linkClass="page-link"
-              />
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Confirm Delete Popup */}
-      {showConfirmDelete && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to delete this tenant?</h3>
-            <p>{selectedTenant?.name}</p>
-            <div className="confirmation-actions">
-              <button className="submit-btn" onClick={handleDeleteTenant}>
-                Yes, Delete
-              </button>
-              <button className="cancel-btn" onClick={closeConfirmDelete}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {loading && (
-        <div className="loader-overlay">
-          <TailSpin
-            height="100"
-            width="100"
-            color="#4fa94d"
-            ariaLabel="loading"
-            visible={true}
-          />
-        </div>
-      )}
-      {showConfirmDeleteAdmin && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
-            <h3>Are you sure you want to delete this Admin?</h3>
-            <p>{selectedAdmin?.name}</p>
-            <div className="confirmation-actions">
-              <button className="submit-btn" onClick={confirmDeleteAdmin}>
-                Yes, Delete
-              </button>
-              <button className="cancel-btn" onClick={closeConfirmDeleteAdmin}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ToastContainer />
+        <ToastContainer />
+      </div>
     </div>
   );
 };

@@ -120,7 +120,7 @@ function TenantProfile() {
                   />
                 ) : (
                   <img
-                    src={tenant?.profile ? tenant.profile : '/profile1.jfif'}
+                    src={tenant?.profile ? tenant.profile : '/tenantprofile.png'}
                     alt="profile"
                   />
                 )}
