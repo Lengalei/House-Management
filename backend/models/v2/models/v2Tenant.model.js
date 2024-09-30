@@ -99,6 +99,8 @@ const tenantSchema = new mongoose.Schema(
     emergencyContactNumber: { type: Number, required: true },
     emergencyContactName: { type: String, required: true },
     toBeCleared: { type: Boolean, default: false },
+    whiteListTenant: { type: Boolean, default: false },
+    blackListTenant: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

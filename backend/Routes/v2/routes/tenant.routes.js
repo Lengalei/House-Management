@@ -18,6 +18,8 @@ import {
   deleteTenant,
   updateWithIndividualDepoAmount,
   clearTenant,
+  blackListTenant,
+  whiteListTenant,
 } from '../../../controllers/v2/controllers/tenant.controller.js';
 import { authorizeRoles } from '../../../middleware/authorizeRoles.js';
 
@@ -66,6 +68,8 @@ router.put(
 );
 // Route to delete a tenant by ID
 router.delete('/deleteTenant/:id', authorizeRoles('super_admin'), deleteTenant);
+router.patch('/blackListTenant/:id', blackListTenant);
+router.patch('/whiteListTenant/:id', whiteListTenant);
 
 router.get('/checkTenantPaymentRecord/:tenantId', checkTenantPaymentRecord);
 
