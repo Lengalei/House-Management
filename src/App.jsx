@@ -37,6 +37,7 @@ import ApartmentRegistration from './components/houses/Apartments/ApartmentRegis
 import ApartmentListPage from './components/houses/Apartments/ApartmentListPage.jsx';
 import AdminPage from './components/Userprofile/AdminPage/AdminPage.jsx';
 import AdminEditPage from './components/Userprofile/AdminPage/EditAdmin/AdminEditPage.jsx';
+import InvoiceTable from './components/Userprofile/AdminPage/Invoices/InvoiceTable.jsx';
 
 function App() {
   return (
@@ -66,6 +67,8 @@ function App() {
           <Route path="/addHouse" element={<RegisterHouse />} />
           <Route path="/addAppartment" element={<ApartmentRegistration />} />
           <Route path="/apartments" element={<ApartmentListPage />} />
+          <Route path="/apartment/:apartmentId" element={<RegisterHouse />} />
+          <Route path="/invoices" element={<InvoiceTable />} />
           {/* Tenant Payment */}
           <Route path="/rentpayment" element={<Rent />} />
           <Route

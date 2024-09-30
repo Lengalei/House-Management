@@ -1,6 +1,6 @@
 import './Register.scss';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import apiRequest from '../../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
@@ -99,7 +99,7 @@ function Register() {
 
           <span>
             <h6>
-              Already Have an Account? <a href="/login">Login</a>
+              Already Have an Account? <Link to={'/login'}>Login</Link>
             </h6>
           </span>
           {error && <span className="registerError">{error}</span>}

@@ -13,9 +13,12 @@ import landLordRoutes from './Routes/landLord.routes.js';
 import paymentsRoutes from './Routes/payment.routes.js';
 import housesRoutes from './Routes/house.routes.js';
 import kraRoutes from './Routes/kra.routes.js';
+import apartmentRoutes from './Routes/v2/routes/Apartment.routes.js';
+
 //v2 tenants
 import v2TenantRoutes from './Routes/v2/routes/tenant.routes.js';
 import v2PaymentRoutes from './Routes/v2/routes/payment.routes.js';
+import InvoiceRoutes from './Routes/v2/routes/invoice.routes.js';
 import { restoreScheduledJobs } from './controllers/v2/controllers/tenant.controller.js';
 
 const app = express();
@@ -59,3 +62,5 @@ app.use('/api/kra', kraRoutes);
 //v2 routes
 app.use('/api/v2/tenants', v2TenantRoutes);
 app.use('/api/v2/payments', v2PaymentRoutes);
+app.use('/api/v2/apartments', apartmentRoutes);
+app.use('/api/v2/invoices', InvoiceRoutes);

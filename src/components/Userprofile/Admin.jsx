@@ -97,7 +97,7 @@ function Admin() {
               )}
             </div>
             <div className="btn2 ">
-              <UploadWidget 
+              <UploadWidget
                 uwConfig={{
                   cloudName: 'victorkib',
                   uploadPreset: 'estate',
@@ -113,7 +113,8 @@ function Admin() {
             <div className="adminDetails">
               <p>Name: {admin ? admin.username : 'John Hariet'}</p>
               <p>Email: {admin ? admin.email : 'johnhariet@gmail.com'}</p>
-              <p>Role: {admin?.isAdmin ? admin.isAdmin : 'Admin'}</p>
+              <p>Role: {admin?.role ? admin.role : 'Admin'}</p>
+              <button>Request Role Change</button>
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ export const registerAdmin = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Validate role - Optional step
+    // Validate role
     const validRoles = ['super_admin', 'admin', 'moderator'];
     if (role && !validRoles.includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
@@ -221,6 +221,34 @@ export const adminUpdateProfile = async (req, res) => {
   }
 };
 
+//edit admin
+export const adminUpdate = async (req, res) => {
+  const { username, email, role, adminId } = req.body;
+  try {
+    // Validate role - Optional step
+    const validRoles = ['super_admin', 'admin', 'moderator'];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({ message: 'Invalid role' });
+    }
+
+    const admin = await User.findByIdAndUpdate(
+      { _id: adminId },
+      { username, email, role },
+      { new: true }
+    );
+    if (!admin) {
+      return res.status(400).json({ message: 'No admin Found to update!' });
+    }
+
+    return res.status(200).json(admin);
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(500)
+      .json({ message: error.message || 'Error updating Tenant' });
+  }
+};
+
 //get admins
 export const checkIfthereIsAnyAdmin = async (req, res) => {
   try {
@@ -232,5 +260,21 @@ export const checkIfthereIsAnyAdmin = async (req, res) => {
   } catch (error) {
     console.log('error Occured fetching Admins: ', error);
     res.status(500).json({ message: 'Server Error!', errro });
+  }
+};
+
+//delete admin by Id
+export const deleteAdmin = async (req, res) => {
+  const { adminId } = req.params;
+  try {
+    const admin = await User.findByIdAndDelete({ _id: adminId });
+    if (!admin) {
+      return res.status(404).json({ message: 'No Such admin Found!' });
+    }
+    return res.status(200).json(admin);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: error.message || 'Error deleting Admin!' });
   }
 };

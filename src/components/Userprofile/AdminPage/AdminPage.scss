@@ -1,7 +1,7 @@
 .admin-container {
   padding: 20px;
   font-family: 'Arial', sans-serif;
-  width: 80%;
+  width: 85%;
   margin: 0 auto;
 
   .header {
@@ -16,6 +16,7 @@
 
     .add-btn {
       padding: 10px 20px;
+      margin: 5px;
       background-color: #3d8bff;
       color: #fff;
       border: none;
@@ -238,6 +239,34 @@
       .admin-form {
         .form-group {
           margin-bottom: 15px;
+          span {
+            color: crimson;
+          }
+
+          .password-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            input {
+              flex: 1;
+              padding-right: 40px; // Leave space for the eye icon
+            }
+
+            .toggle-password-btn {
+              position: absolute;
+              right: 10px;
+              background: none;
+              border: none;
+              cursor: pointer;
+              font-size: 18px;
+              color: #555;
+
+              &:hover {
+                color: #000;
+              }
+            }
+          }
 
           label {
             display: block;

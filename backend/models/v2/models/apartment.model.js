@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const apartmentSchema = new mongoose.Schema(
   {
-    Name: {
+    name: {
       type: String,
       required: true,
     },
-    Houses: {
+    noHouses: {
       type: Number,
     },
-    Location: {
+    location: {
       type: String,
     },
   },
   { timestamps: true }
 );
 
-const Apartment = mongoose.model("apartments", apartmentSchema);
+const Apartment = mongoose.model('apartments', apartmentSchema);
 
 export default Apartment;

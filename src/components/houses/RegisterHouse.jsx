@@ -4,7 +4,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiRequest from '../../lib/apiRequest';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const floorOptions = [
   { label: 'Ground Floor', value: 0 },
@@ -19,6 +19,11 @@ const floorOptions = [
 const houseLetterOptions = ['A', 'B', 'C', 'D'];
 
 const RegisterHouse = () => {
+  const { apartmentId } = useParams();
+  const location = useLocation();
+  const apartment = location?.state?.apartmentData || {};
+  console.log(apartment);
+  // console.log(apartmentId);
   // eslint-disable-next-line no-unused-vars
   const [floor, setFloor] = useState('');
   const [houseName, setHouseName] = useState('');
@@ -30,8 +35,6 @@ const RegisterHouse = () => {
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [registeredHouseNames, setRegisteredHouseNames] = useState([]);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     fetchHouses();
   }, []);
@@ -39,15 +42,18 @@ const RegisterHouse = () => {
   const fetchHouses = async () => {
     setLoading(true);
     try {
-      const response = await apiRequest.get('/houses/getAllHouses');
+      const response = await apiRequest.get(
+        `/houses/getAllHouses/${apartmentId}`
+      );
       const houseData = response.data;
+      // console.log(houseData);
       setHouses(houseData);
 
       // Extract registered house names
       const registeredNames = houseData.map((house) => house.houseName);
       setRegisteredHouseNames(registeredNames);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.message || 'Error getting Houses');
     } finally {
       setLoading(false);
     }
@@ -58,18 +64,19 @@ const RegisterHouse = () => {
     setLoading(true);
 
     try {
-      const response = await apiRequest.post('/houses/postHouse', {
-        houseName,
-        floor: selectedFloor.value,
-      });
+      const response = await apiRequest.post(
+        `/houses/postHouse/${apartmentId}`,
+        {
+          houseName,
+          floor: selectedFloor.value,
+        }
+      );
       if (response.status === 200) {
         toast.success('House registered successfully!');
         setHouseName('');
         setFloor('');
-        fetchHouses();
-        navigate('/');
-      } else {
-        toast.error('Failed to register house.');
+        setSelectedFloor(null);
+        await fetchHouses();
       }
     } catch (error) {
       toast.error(error.response.data.message);
@@ -106,22 +113,8 @@ const RegisterHouse = () => {
 
   return (
     <div className="register-house-container">
-      <ToastContainer />
-      {loading && (
-        <div className="loader">
-          <ThreeDots
-            className="threeDots"
-            height="100"
-            width="100"
-            radius="9"
-            color="#4fa94d"
-            ariaLabel="three-dots-loading"
-            visible={true}
-          />
-        </div>
-      )}
       <div className="register-house">
-        <h2>Register House</h2>
+        <h2>{apartment?.name + `'s`} House Registration</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="floor">Floor</label>
@@ -215,6 +208,20 @@ const RegisterHouse = () => {
           )}
         </div>
       </div>
+      <ToastContainer />
+      {loading && (
+        <div className="loader">
+          <ThreeDots
+            className="threeDots"
+            height="100"
+            width="100"
+            radius="9"
+            color="#4fa94d"
+            ariaLabel="three-dots-loading"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 };

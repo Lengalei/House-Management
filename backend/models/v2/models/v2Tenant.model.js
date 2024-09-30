@@ -46,6 +46,11 @@ const tenantSchema = new mongoose.Schema(
     nationalId: { type: Number, required: true, unique: true },
     phoneNo: { type: Number, required: true },
     placementDate: { type: Date, required: true },
+    apartmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'apartments',
+      required: true,
+    },
     houseDetails: {
       type: houseDetailsSchema,
       required: true,

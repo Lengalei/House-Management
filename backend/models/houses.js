@@ -4,7 +4,6 @@ const houseSchema = new mongoose.Schema(
   {
     houseName: {
       type: String,
-      unique: true,
     },
     floor: {
       type: Number,
@@ -13,9 +12,15 @@ const houseSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    apartment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'apartments',
+      required: true,
+    },
   },
   { timestamps: true }
 );
+houseSchema.index({ houseName: 1, apartment: 1 }, { unique: true });
 
 const House = mongoose.model('house', houseSchema);
 export default House;

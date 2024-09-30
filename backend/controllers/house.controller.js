@@ -1,9 +1,10 @@
+import mongoose from 'mongoose';
 import House from '../models/houses.js';
 
 //register house
 export const registerHouse = async (req, res) => {
   const { houseName, floor } = req.body;
-  // console.log('HouseDtSent', req.body);
+  const { apartmentId } = req.params;
   try {
     // Convert floor to number
     const floorNum = Number(floor) || 0;
@@ -11,6 +12,7 @@ export const registerHouse = async (req, res) => {
     // Check if house is already registered
     const isAlreadyRegistered = await House.findOne({
       houseName,
+      apartment: apartmentId,
     });
     if (isAlreadyRegistered) {
       return res.status(400).json({ message: 'House already Registered' });
@@ -20,6 +22,7 @@ export const registerHouse = async (req, res) => {
     const house = await House.create({
       houseName,
       floor: floorNum,
+      apartment: apartmentId,
     });
     if (!house) {
       return res.status(400).json({ message: 'Error Creating House' });
@@ -35,7 +38,7 @@ export const registerHouse = async (req, res) => {
 //fetch All Houses
 export const fetchALlHouses = async (req, res) => {
   try {
-    const houses = await House.find();
+    const houses = await House.find().populate('apartment');
     if (!houses) {
       return res.status(400).json({ message: 'No houses Registered' });
     }
@@ -44,6 +47,26 @@ export const fetchALlHouses = async (req, res) => {
   } catch (err) {
     console.error('Error Fetching Houses:', err);
     res.status(500).json({ message: 'Failed to Fetch Houses' });
+  }
+};
+//fetch All Houses
+export const fetchAllHousesInApartment = async (req, res) => {
+  try {
+    const { apartmentId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(apartmentId)) {
+      return res.status(400).json({ message: 'Invalid apartmentId!' });
+    }
+    const houses = await House.find({ apartment: apartmentId });
+    if (!houses) {
+      return res
+        .status(400)
+        .json({ message: 'No houses Registered for that apartement' });
+    }
+    // console.log('RegistedHouses: ', houses);
+    res.status(200).json(houses);
+  } catch (err) {
+    console.error('Error Fetching Houses: ', err);
+    res.status(500).json({ message: err.message || 'Failed To get houses!' });
   }
 };
 

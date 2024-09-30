@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import ReactPaginate from 'react-js-pagination';
 import './AdminPage.scss';
 import apiRequest from '../../../lib/apiRequest';
@@ -17,6 +18,7 @@ const AdminPage = () => {
   // console.log(admins);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [showPopup, setShowPopup] = useState(false);
   const [showClearancePopup, setShowClearancePopup] = useState(false); // New state for clearance popup
@@ -30,30 +32,41 @@ const AdminPage = () => {
   const [toBeClearedTenants, setToBeClearedTenants] = useState([]);
 
   useEffect(() => {
-    const fetchTBeClearedTenantTrue = async () => {
+    fetchAdmins();
+    fetchTBeClearedTenantTrue();
+  }, []);
+  const fetchTBeClearedTenantTrue = async () => {
+    setLoading(true);
+    try {
       const response = await apiRequest.get(
         `/v2/tenants/getToBeClearedTenantsTrue`
       );
       if (response.status) {
         setToBeClearedTenants(response.data);
       }
-    };
+    } catch (error) {
+      toast.error(
+        error.response.data.message || 'Error Fetching tenants to be cleared'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchAdmins = async () => {
-      try {
-        const response = await apiRequest.get('/auth/getAdmins');
-        if (response.status) {
-          setAdmins(response.data);
-          // toast.success('Success Fetching Admins');
-        }
-      } catch (error) {
-        toast.error(error.response.data.message || 'Error Fetching Admins');
+  const fetchAdmins = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get('/auth/getAdmins');
+      if (response.status) {
+        setAdmins(response.data);
+        // toast.success('Success Fetching Admins');
       }
-    };
-    fetchAdmins();
-    fetchTBeClearedTenantTrue();
-  }, []);
-
+    } catch (error) {
+      toast.error(error.response.data.message || 'Error Fetching Admins');
+    } finally {
+      setLoading(false);
+    }
+  };
   const handlePageChange = (pageNumber) => {
     setActivePage(pageNumber);
   };
@@ -64,10 +77,6 @@ const AdminPage = () => {
 
   const handleAddAdmin = () => {
     setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
   };
 
   const handleClearanceQueue = () => {
@@ -87,16 +96,17 @@ const AdminPage = () => {
     setSelectedTenant(tenant);
     setShowConfirmDelete(true);
   };
-  const confirmDeleteAdmin = (tenant) => {
-    setSelectedAdmin(tenant);
+  //function to toggle admin delete confirmation popup and set selected admin
+  const confirmDeleteAdmin = (admin) => {
+    setSelectedAdmin(admin);
     setShowConfirmDeleteAdmin(true);
   };
 
   const closeConfirmDelete = () => {
     setShowConfirmDelete(false);
     setSelectedTenant(null);
-    // handleDeleteTenant()
   };
+
   const closeConfirmDeleteAdmin = () => {
     setShowConfirmDeleteAdmin(false);
     setSelectedAdmin(null);
@@ -130,10 +140,122 @@ const AdminPage = () => {
   const handleViewTenant = (tenant) => {
     navigate(`/tenantProfile/${tenant._id}`);
   };
+  const [editAdminPopup, setEditAdminPopup] = useState(false);
+  const closeAdminPopup = () => {
+    setEditAdminPopup(false);
+    setName('');
+    setEmail('');
+    setPassword('');
+    setRole('');
+    setError('');
+  };
+  const handleEditAdminPost = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await apiRequest.put('/auth/adminUpdate', {
+        username: name,
+        email,
+        role,
+        adminId,
+      });
+      if (response.status) {
+        await fetchAdmins();
+        setName('');
+        setEmail('');
+        setRole('');
+        setError('');
+        closeAdminPopup();
+        toast.success('Admin updated!');
+      }
+    } catch (error) {
+      setError(error.response.data.message);
+      toast.error(error.response.data.message || 'Error Editing Admin!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditAdmin = (admin) => {
-    navigate(`/editAdmin/${admin._id}`, {
-      state: admin,
-    });
+    setEditAdminPopup(true);
+    setName(admin.username);
+    setEmail(admin.email);
+    setRole(admin.role);
+    setAdminId(admin._id);
+  };
+
+  const handleInvoiceClick = () => {
+    navigate('/invoices');
+  };
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  // State variables to hold form values
+  const [adminId, setAdminId] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
+
+  // Close popup handler
+  const closePopup = () => {
+    setShowPopup(false);
+    setName('');
+    setEmail('');
+    setRole('');
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    if (!name || !email || !password || !role) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    try {
+      // Send the POST request to the server
+      const response = await apiRequest.post(`/auth/register`, {
+        email,
+        username: name,
+        password,
+        role,
+      });
+      if (response.status) {
+        setName('');
+        setEmail('');
+        setRole('');
+        closePopup();
+        await fetchAdmins();
+      }
+    } catch (error) {
+      console.error('Error adding admin:', error);
+      toast.error(error.response.data.message || 'Error adding Admin!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //function to handle admin deletion
+  const handleDeleteAdmin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await apiRequest.delete(
+        `/auth/deleteAdmin/${selectedAdmin._id}`
+      );
+      if (response.status) {
+        await fetchAdmins();
+        setError('');
+        toast.success('Admin deleted successfully!');
+        setShowConfirmDeleteAdmin(false);
+      }
+    } catch (error) {
+      setError(error.response.data.message);
+      toast.error(error.response.data.message || 'Error Deleting Admin!');
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="admin-container">
@@ -143,12 +265,14 @@ const AdminPage = () => {
           <button className="add-btn" onClick={handleAddAdmin}>
             Add Admin
           </button>
+          <button className="add-btn" onClick={handleInvoiceClick}>
+            Invoices
+          </button>
           <button className="add-btn" onClick={handleClearanceQueue}>
             Clearance Queue
           </button>
         </div>
       </div>
-
       <div className="table-container">
         <table className="user-table">
           <thead>
@@ -188,7 +312,6 @@ const AdminPage = () => {
           </tbody>
         </table>
       </div>
-
       {/* Pagination */}
       <div className="pagination">
         <ReactPaginate
@@ -201,7 +324,6 @@ const AdminPage = () => {
           linkClass="page-link"
         />
       </div>
-
       {/* Add Admin Popup */}
       {showPopup && (
         <div className="popup-overlay">
@@ -212,18 +334,64 @@ const AdminPage = () => {
                 Close
               </button>
             </div>
-            <form className="admin-form">
+            <form className="admin-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Name</label>
-                <input type="text" placeholder="Enter name" />
+                <label>
+                  Name<span>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </div>
               <div className="form-group">
-                <label>Email</label>
-                <input type="email" placeholder="Enter email" />
+                <label>
+                  Email<span>*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </div>
               <div className="form-group">
-                <label>Role</label>
-                <input type="number" placeholder="Enter role" />
+                <label>
+                  Password<span>*</span>
+                </label>
+                <input
+                  type={passwordVisible ? 'text' : 'password'}
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />{' '}
+                <button
+                  type="button"
+                  className="toggle-password-btn"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                >
+                  {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              <div className="form-group">
+                <label>
+                  Role<span>*</span>
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="">Select Role</option>
+                  <option value="super_admin">Super Admin</option>
+                  <option value="admin">Admin</option>
+                  <option value="moderator">Moderator</option>
+                </select>
               </div>
               <div className="form-actions">
                 <button type="submit" className="submit-btn">
@@ -237,6 +405,73 @@ const AdminPage = () => {
                   Cancel
                 </button>
               </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Admin Popup */}
+      {editAdminPopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <div className="popup-header">
+              <h3>Edit Admin</h3>
+              <button className="popup-close-btn" onClick={closeAdminPopup}>
+                Close
+              </button>
+            </div>
+            <form className="admin-form" onSubmit={handleEditAdminPost}>
+              <div className="form-group">
+                <label>
+                  Name<span>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  Email<span>*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  Role<span>*</span>
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="">Select Role</option>
+                  <option value="super_admin">Super Admin</option>
+                  <option value="admin">Admin</option>
+                  <option value="moderator">Moderator</option>
+                </select>
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="submit-btn">
+                  Add
+                </button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={closeAdminPopup}
+                >
+                  Cancel
+                </button>
+              </div>
+              {error && <div className="form-group">{error}</div>}
             </form>
           </div>
         </div>
@@ -324,7 +559,6 @@ const AdminPage = () => {
           </div>
         </div>
       )}
-
       {/* Confirm Delete Popup */}
       {showConfirmDelete && (
         <div className="confirmation-popup-overlay">
@@ -342,7 +576,6 @@ const AdminPage = () => {
           </div>
         </div>
       )}
-
       {loading && (
         <div className="loader-overlay">
           <TailSpin
@@ -358,9 +591,10 @@ const AdminPage = () => {
         <div className="confirmation-popup-overlay">
           <div className="confirmation-popup">
             <h3>Are you sure you want to delete this Admin?</h3>
-            <p>{selectedAdmin?.name}</p>
+            <p>{selectedAdmin?.username}</p>
+            {error && <p>{error}</p>}
             <div className="confirmation-actions">
-              <button className="submit-btn" onClick={confirmDeleteAdmin}>
+              <button className="submit-btn" onClick={handleDeleteAdmin}>
                 Yes, Delete
               </button>
               <button className="cancel-btn" onClick={closeConfirmDeleteAdmin}>
@@ -370,7 +604,6 @@ const AdminPage = () => {
           </div>
         </div>
       )}
-
       <ToastContainer />
     </div>
   );

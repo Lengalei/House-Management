@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ThreeDots } from 'react-loader-spinner';
 import { toast, ToastContainer } from 'react-toastify';
+import Invoice from '../../../Rent Payment/Payment/Invoice/Invoice';
 
 const TenantPayments = () => {
   const location = useLocation();
@@ -315,7 +316,7 @@ const TenantPayments = () => {
 
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
-        getMostRecentPaymentByTenantId(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
 
         setError('');
         toast.success(`Success`);
@@ -334,6 +335,7 @@ const TenantPayments = () => {
   const handleUpdateDefaults = async (e) => {
     e.preventDefault();
     // Handle default update here
+    setLoading(true);
     try {
       const response = await apiRequest.put(
         `/v2/tenants/updateTenantHouseDetails/${tenantId}`,
@@ -357,7 +359,11 @@ const TenantPayments = () => {
       toast.success(`Success Updating Defaults`);
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+      toast.error(
+        error.response?.data?.message || 'Failed to update tenant Defaults'
+      );
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -410,7 +416,9 @@ const TenantPayments = () => {
       if (response.status === 200) {
         console.log(`responseFromBackend: `, response.data);
         navigate(`/rentpayment`);
-
+        // fetchUnpaidPayments(tenantId);
+        // fetchFullyPaidPayments(tenantId);
+        // await getMostRecentPaymentByTenantId(tenantId);
         setError('');
       }
       setShowPaymentPopup(false);
@@ -418,6 +426,7 @@ const TenantPayments = () => {
       fetchUnpaidPayments(tenantId);
     } catch (error) {
       setError(error.response.data.message);
+      toast.error(error.response.data.message || 'Failed to update payment');
     } finally {
       setLoading(false);
     }
@@ -456,7 +465,7 @@ const TenantPayments = () => {
         console.log('All good');
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
-        getMostRecentPaymentByTenantId(tenantId);
+        await getMostRecentPaymentByTenantId(tenantId);
         setAddInternalAmountPopup(false);
       }
     } catch (error) {
@@ -561,6 +570,61 @@ const TenantPayments = () => {
       setError(error.response.data.message);
       toast.error(error.response?.data?.message || 'Failed to clear tenant');
     }
+  };
+
+  const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState('');
+  console.log(invoiceSelectedPayment);
+  const [isInvoiceVisible, setIsInvoiceVisible] = useState(false);
+
+  const handleInvoiceGenerate = (payment) => {
+    setInvoiceSelectedPayment(payment);
+    setIsInvoiceVisible(true);
+  };
+
+  const closeInvoice = () => {
+    setIsInvoiceVisible(false);
+  };
+
+  const invoiceData = {
+    clientName: invoiceSelectedPayment?.tenant?.name,
+    HouseNo: invoiceSelectedPayment?.tenant?.houseDetails?.houseNo,
+    items: [
+      invoiceSelectedPayment.rent?.deficit > 0 && {
+        name: 'Monthly Rent Transaction',
+        description: 'Rent Deficit',
+        price: invoiceSelectedPayment.rent.deficit,
+      },
+      invoiceSelectedPayment.waterBill?.deficit > 0 && {
+        name: 'Monthly Water Transaction',
+        description: 'Water Deficit',
+        price: invoiceSelectedPayment.waterBill.deficit,
+      },
+      invoiceSelectedPayment.garbageFee?.deficit > 0 && {
+        name: 'Monthly Garbage Transaction',
+        description: 'Garbage Deficit',
+        price: invoiceSelectedPayment.garbageFee.deficit,
+      },
+      invoiceSelectedPayment.extraCharges?.deficit > 0 && {
+        name: 'Monthly Extra Charges Transaction',
+        description: 'ExtraCharges Deficit',
+        price: invoiceSelectedPayment.extraCharges.deficit,
+      },
+    ].filter(Boolean),
+    totalAmount: [
+      invoiceSelectedPayment.rent?.deficit > 0
+        ? invoiceSelectedPayment.rent.deficit
+        : 0,
+      invoiceSelectedPayment.waterBill?.deficit > 0
+        ? invoiceSelectedPayment.waterBill.deficit
+        : 0,
+      invoiceSelectedPayment.garbageFee?.deficit > 0
+        ? invoiceSelectedPayment.garbageFee.deficit
+        : 0,
+      invoiceSelectedPayment.extraCharges?.deficit > 0
+        ? invoiceSelectedPayment.extraCharges.deficit
+        : 0,
+    ].reduce((total, value) => total + value, 0),
+    invoiceNumber: `INV-${Math.floor(Math.random() * 1000) + 1}`,
   };
 
   return (
@@ -760,12 +824,21 @@ const TenantPayments = () => {
                             {displayUpdatebtn ? '⬆' : '⬇'}
                             <br />
                             {displayUpdatebtn && (
-                              <button
-                                className="confirm-btn"
-                                onClick={() => displayUpdatePopup(payment)}
-                              >
-                                Deficit Errors?
-                              </button>
+                              <>
+                                {' '}
+                                <button
+                                  className="confirm-btn"
+                                  onClick={() => displayUpdatePopup(payment)}
+                                >
+                                  Deficit Errors?
+                                </button>
+                                <button
+                                  className="confirm-btn"
+                                  onClick={() => handleInvoiceGenerate(payment)}
+                                >
+                                  Generate Invoice
+                                </button>
+                              </>
                             )}
                           </p>
                         </div>
@@ -1056,7 +1129,7 @@ const TenantPayments = () => {
                                     {/* <input
                                 type="number"
                                 placeholder="Enter garbage deficit"
-                                value={garbageDeficit}
+                                value={garbageFee}
                                 onChange={(e) =>
                                   setGarbageDeficit(e.target.value)
                                 }
@@ -1177,6 +1250,16 @@ const TenantPayments = () => {
                 </div>
               </div>
             </div>
+            {isInvoiceVisible && (
+              <div className="invoice-modal">
+                <Invoice
+                  invoiceData={invoiceData}
+                  onClose={closeInvoice}
+                  tenantId={invoiceSelectedPayment?.tenant?._id}
+                  paymentId={invoiceSelectedPayment?._id}
+                />
+              </div>
+            )}
             {/* Update Defaults Popup */}
             {showPopup && (
               <div className="popup-overlay">

@@ -15,6 +15,7 @@ export const createTenant = async (req, res) => {
     phoneNo,
     placementDate,
     houseNo,
+    apartmentId,
     emergencyContactNumber,
     emergencyContactName,
   } = req.body;
@@ -27,6 +28,7 @@ export const createTenant = async (req, res) => {
     !phoneNo ||
     !placementDate ||
     !houseNo ||
+    !apartmentId ||
     !emergencyContactNumber ||
     !emergencyContactName
   ) {
@@ -37,6 +39,7 @@ export const createTenant = async (req, res) => {
     // Check if the houseNo already exists
     const existingTenant = await Tenant.findOne({
       'houseDetails.houseNo': houseNo,
+      apartmentId: apartmentId,
     });
     if (existingTenant) {
       return res.status(400).json({
@@ -66,11 +69,6 @@ export const createTenant = async (req, res) => {
       garbageFee = 150;
     }
 
-    const existingTenantInHouse = await Tenant.findOne({ houseNo });
-    if (existingTenantInHouse) {
-      return res.status(400).json({ message: 'House Already Occupied!' });
-    }
-
     const existingNationalId = await Tenant.findOne({ nationalId });
     if (existingNationalId) {
       return res
@@ -78,16 +76,25 @@ export const createTenant = async (req, res) => {
         .json({ message: 'Tenant National ID already exists!' });
     }
 
-    let houseName = 'House' + ' ' + houseNo;
-    const floorNumber = houseNo.match(/\d+/)[0]; // Extract the numeric part
+    let houseName = 'House ' + houseNo; // Assuming houseNo is defined and valid
+    const match = houseNo.match(/\d+/);
+    const floorNumber = match ? match[0] : null; // Extract the numeric part
+
+    const existingTenantInHouse = await House.findOne({
+      houseName: houseName,
+      floor: floorNumber,
+      apartment: apartmentId,
+      isOccupied: true,
+    });
+    if (existingTenantInHouse) {
+      return res.status(400).json({ message: 'House Already Occupied!' });
+    }
+
     const house = await House.findOneAndUpdate(
-      { floor: floorNumber, houseName },
+      { floor: floorNumber, houseName, apartment: apartmentId },
       { isOccupied: true },
       { new: true }
     );
-
-    console.log('house:', house);
-    console.log('houseNo:', houseNo);
     if (!house) {
       return res.status(404).json({ message: 'House not found!' });
     }
@@ -99,6 +106,7 @@ export const createTenant = async (req, res) => {
       nationalId,
       phoneNo,
       placementDate,
+      apartmentId,
       houseDetails: {
         houseNo,
         rent,
@@ -1262,9 +1270,13 @@ export const deleteTenant = async (req, res) => {
 
     // 3. Find the tenant's house by houseName and houseNo from tenant's houseDetails
     const houseNo = tenant.houseDetails.houseNo;
+    const apartmentId = tenant.apartmentId;
     console.log('hoiseNo: ', houseNo);
     let houseName = 'House ' + houseNo;
-    const house = await House.findOne({ houseName: houseName });
+    const house = await House.findOne({
+      houseName: houseName,
+      apartment: apartmentId,
+    });
     if (!house) {
       return res.status(404).json({ message: 'House not found!' });
     }
@@ -1788,9 +1800,13 @@ const deleteTenantById = async (tenantId) => {
 
     // 2. Find the tenant's house by houseName and houseNo from tenant's houseDetails
     const houseNo = tenant.houseDetails.houseNo;
+    const apartmentId = tenant.apartmentId;
     console.log('houseNo: ', houseNo);
     let houseName = 'House ' + houseNo;
-    const house = await House.findOne({ houseName: houseName });
+    const house = await House.findOne({
+      houseName: houseName,
+      apartment: apartmentId,
+    });
     if (!house) {
       console.error(`House ${houseName} not found for tenant ${tenantId}.`);
       return { success: false, message: 'House not found!' };

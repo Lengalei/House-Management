@@ -90,4 +90,39 @@
       }
     }
   }
+
+  .nothing {
+    background-color: #61b116;
+    position: absolute;
+    top: 5%;
+    left: 30%;
+    transform: translate(-50% -50%);
+    border-radius: 8px;
+    padding: 10px;
+    height: 22vh;
+    width: 300px;
+    // border: 1px solid crimson;
+
+    .nothingLinks {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+
+      a {
+        color: olive;
+        background-color: #222;
+        border: 1px solid wheat;
+        border-radius: 4px;
+        padding: 4px;
+        margin-bottom: 5px;
+        text-decoration: none;
+        transition: all 300ms ease-in-out;
+      }
+      a:hover {
+        cursor: pointer;
+        background-color: #555;
+      }
+    }
+  }
 }

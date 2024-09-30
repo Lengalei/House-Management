@@ -8,6 +8,8 @@ import {
   resetPassword,
   adminChangePassword,
   adminUpdateProfile,
+  adminUpdate,
+  deleteAdmin,
 } from '../controllers/auth.controller.js';
 
 const router = express.Router();
@@ -20,5 +22,7 @@ router.post('/forgotPassword', forgotPassword); // Add forgot password route
 router.post('/resetPassword', resetPassword); // Add reset password route
 router.put('/adminChangePassword', adminChangePassword); // Add reset password route
 router.put('/adminUpdateProfile/:id', adminUpdateProfile); // Add reset password route
+router.put('/adminUpdate', adminUpdate);
+router.delete('/deleteAdmin/:adminId', deleteAdmin);
 
 export default router;
