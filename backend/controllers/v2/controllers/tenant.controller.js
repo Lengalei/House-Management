@@ -5,6 +5,7 @@ import { createPaymentRecord } from '../../../utils/v2/utils/paymentHelper.js';
 import House from '../../../models/houses.js';
 import Payment from '../../../models/v2/models/v2Payment.model.js';
 import ScheduledJob from '../../../models/v2/models/ScheduledJob.js';
+import Invoice from '../../../models/v2/models/Invoice.js';
 
 // Register Tenant Details
 export const createTenant = async (req, res) => {
@@ -1281,6 +1282,11 @@ export const deleteTenant = async (req, res) => {
       return res.status(404).json({ message: 'House not found!' });
     }
 
+    //check if there is an invoice related to the tenant:
+    const deletedInvoice = await Invoice.deleteMany({ tenant: tenant._id });
+    const invoicesDeleted = deletedInvoice.deletedCount;
+    console.log(`Deelted Invoices: `, invoicesDeleted);
+
     // 4. Set the isOccupied flag of the house to false
     house.isOccupied = false;
     await house.save();
@@ -1294,6 +1300,55 @@ export const deleteTenant = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Blacklist Tenant By ID
+export const blackListTenant = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+  try {
+    const tenant = await Tenant.findByIdAndUpdate(
+      id,
+      { blackListTenant: true },
+      { new: true }
+    );
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+    res
+      .status(200)
+      .json({ message: 'Tenant blacklisted successfully', tenant });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// Whitelist Tenant By ID
+export const whiteListTenant = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+  try {
+    const tenant = await Tenant.findByIdAndUpdate(
+      id,
+      { whiteListTenant: true, blackListTenant: false },
+      { new: true }
+    );
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+    console.log(tenant);
+    res
+      .status(200)
+      .json({ message: 'Tenant whitelisted successfully', tenant });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
@@ -1811,6 +1866,11 @@ const deleteTenantById = async (tenantId) => {
       console.error(`House ${houseName} not found for tenant ${tenantId}.`);
       return { success: false, message: 'House not found!' };
     }
+
+    //check if there is an invoice related to the tenant:
+    const deletedInvoice = await Invoice.deleteMany({ tenant: tenant._id });
+    const invoicesDeleted = deletedInvoice.deletedCount;
+    console.log(`Deelted Invoices: `, invoicesDeleted);
 
     // 3. Set the isOccupied flag of the house to false
     house.isOccupied = false;

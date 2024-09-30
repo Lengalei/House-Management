@@ -1,0 +1,164 @@
+should add an option that the user can use to update or delete a payment.
+also add the are you sure propmt prior to proceeding with the payment
+add the others options
+remove the status in in the allPayments
+
+
+//************************************************************/
+we create 
+
+
+
+
+///***********************************************************************
+now if I have this payment model that I am using to create payment for each tenant monthly: import mongoose from 'mongoose';
+
+// Existing schemas for transactions and history
+const transactionSchema = new mongoose.Schema({
+  amount: { type: Number, required: true }, // Transaction amount
+  date: { type: Date, default: Date.now }, // Transaction date
+  referenceNumber: { type: String, required: true }, // Reference number for the transaction
+});
+
+const globalTransactionHistorySchema = new mongoose.Schema({
+  year: { type: Number, required: true },
+  month: { type: String, required: true },
+  totalRentAmount: { type: Number, required: true }, // Total rent amount for the payment
+  totalWaterAmount: { type: Number, required: true }, // Total water amount for the payment
+  totalGarbageFee: { type: Number, required: true }, // Total garbage amount for the payment
+  totalAmount: { type: Number, required: true }, // Total amount paid for the month
+  referenceNumber: { type: String, required: true }, // Reference number for the payment record
+  globalDeficit: { type: Number, default: 0 }, // Total global deficit for the month
+});
+
+const deficitHistorySchema = new mongoose.Schema({
+  amount: { type: Number, required: true }, // Amount of deficit
+  date: { type: Date, default: Date.now }, // Date of the deficit record
+  description: { type: String, required: true }, // Description of the deficit record
+});
+
+const globalDeficitHistorySchema = new mongoose.Schema({
+  year: { type: Number, required: true },
+  month: { type: String, required: true },
+  totalDeficitAmount: { type: Number, required: true }, // Total global deficit amount
+  description: { type: String, required: true }, // Description of the global deficit record
+});
+
+// Schema for excess history
+const excessHistorySchema = new mongoose.Schema({
+  initialOverpay: { type: Number, required: true }, // Initial overpayment before this excess
+  excessAmount: { type: Number, required: true }, // The amount added as excess
+  description: { type: String, required: true }, // Descriptive string for the excess record
+  date: { type: Date, default: Date.now }, // Date of the excess record
+});
+
+const paymentSchema = new mongoose.Schema(
+  {
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'v2Tenant',
+      required: true,
+    },
+    year: { type: Number, required: true }, // e.g., 2024
+    month: { type: String, required: true }, // e.g., "September"
+    referenceNumber: { type: String, required: true }, // Reference number for the overall payment record
+    overpay: { type: Number, default: 0 }, // Overpayment amount, if any
+    rent: {
+      amount: { type: Number, default: 0 }, // Rent amount for the month
+      paid: { type: Boolean, default: false }, // Whether rent is fully paid
+      deficit: { type: Number, default: 0 }, // Amount needed to fully pay rent
+      transactions: [transactionSchema], // Array of rent-related transactions
+      deficitHistory: [deficitHistorySchema], // Deficit history for rent
+    },
+    waterBill: {
+      amount: { type: Number, default: 0 }, // Water bill for the month
+      accumulatedAmount: { type: Number, default: 0 }, // Water bill for the month
+      paid: { type: Boolean, default: false }, // Whether water bill is fully paid
+      deficit: { type: Number, default: 0 }, // Amount needed to fully pay water bill
+      transactions: [transactionSchema], // Array of water-related transactions
+      deficitHistory: [deficitHistorySchema], // Deficit history for water bill
+    },
+    garbageFee: {
+      amount: { type: Number, default: 0 }, // Garbage fee for the month
+      paid: { type: Boolean, default: false }, // Whether garbage fee is fully paid
+      deficit: { type: Number, default: 0 }, // Amount needed to fully pay garbage fee
+      transactions: [transactionSchema], // Array of garbage-related transactions
+      deficitHistory: [deficitHistorySchema], // Deficit history for garbage fee
+    },
+    extraCharges: {
+      description: { type: String },
+      expected: { type: Number, default: 0 },
+      amount: { type: Number, default: 0 },
+      paid: { type: Boolean, default: false },
+      deficit: { type: Number, default: 0 },
+      transactions: [transactionSchema],
+      deficitHistory: [deficitHistorySchema],
+    },
+
+    totalAmountPaid: { type: Number, default: 0 }, // Total amount paid for the month
+    globalTransactionHistory: [globalTransactionHistorySchema], // Global transaction history for this payment
+    excessHistory: [excessHistorySchema], // History of excess payments
+    globalDeficit: { type: Number, default: 0 }, // Total global deficit for the payment
+    globalDeficitHistory: [globalDeficitHistorySchema], // Global deficit history
+    createdAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+const Payment = mongoose.model('v2Payment', paymentSchema);
+
+export default Payment;
+, I am thinking of how I can use it to create a cron job that will be running at the start of each month. now I want us at the 
+
+
+
+
+
+
+
+
+
+it is possible to have two cron job that will help us to use the current date so as to check if the current real time month has elapsed? now I believe we will require a starting point. now I was thinking once we have registered a tenant and then based on the placement date we start a clock run down(essentially we activate a cron function that will run at the end of the month from the placement date. so if a tenant has his/her placement date as September 5th, 2024, then the cron job will wait for the days of september to elapse and then it will fire up the function that we will define.) that will await for the month to end from the starting date which is now the tenant's placement date. once the time is done as dictated by the number of days left from the payment date we activate a function that will take the now finished month and year details to be used . we then check for any deficits(deficit in rent, garbage fee, water bill and extra charges) in the last payment and for all the deficits we get we take then and we create a new payment and the corresponding values of this new   
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************
+
+    //first lets cover any deficits from the previous payment
+    const mostRecentPayment = await Payment.find({ tenant: tenantId })
+      .sort({ createdAt: -1 })
+      .populate('tenant');
+
+    if (!mostRecentPayment) {
+      return res.status(404).json({
+        message: 'No payment record found for this tenant.',
+      });
+    }
+    
+    let previousMonthRentDeficit = parseFloat(mostRecentPayment.rent.deficit);
+    let previousMonthWaterBillDeficit = parseFloat( mostRecentPayment.waterBill.deficit);
+    let previousMonthGarbageFeeDeficit = parseFloat(mostRecentPayment.garbageFee.deficit);
+    let previousExtraChargesDeficit = parseFloat(
+      mostRecentPayment.extraCharges.deficit
+    );
+
+    //first cover any rent deficit from previous payment
+    if(previousMonthRentDeficit > 0 && amount >0){}
+
+    //second handle any water deficit from previous payment
+    if (previousMonthWaterBillDeficit > 0 && amount > 0) {}
+
+    //thirdly handle any garnage deficit from previous payment
+    if(previousMonthGarbageFeeDeficit > 0 && amount > 0){} 
+
+    //fourth handle any extra charges deficit from previous payment
+    if(previousExtraChargesDeficit > 0 && amount > 0)

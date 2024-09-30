@@ -1,9 +1,11 @@
 .invoice-table {
-  padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
   max-width: max-content;
+  height: 85%;
+  overflow: scroll;
+  overflow-x: hidden;
   margin: 0 auto;
 
   .invoice-card {
@@ -222,4 +224,242 @@
       }
     }
   }
+}
+.invoice-table {
+  width: 100%;
+  margin: 2rem auto;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+
+    th,
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f7f7f7;
+      font-weight: bold;
+    }
+
+    tbody tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    tbody td button {
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      svg {
+        font-size: 1.25rem;
+        color: #666;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+
+    .editable-items-table {
+      width: 100%;
+      margin-top: 1rem;
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #fafafa;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        background-color: #f44336;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+        font-size: 0.9rem;
+
+        &:hover {
+          background-color: #d73832;
+        }
+      }
+    }
+  }
+
+  .invoice-card {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      font-size: 2rem;
+      color: #444;
+    }
+  }
+
+  .edit-invoice-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .edit-invoice-popup {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    width: max-content;
+    max-width: 90%;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .edit-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease;
+
+        &:first-child {
+          background-color: #4fa94d;
+          color: #fff;
+
+          &:hover {
+            background-color: #3c8a3a;
+          }
+        }
+
+        &:last-child {
+          background-color: #f44336;
+          color: #fff;
+
+          &:hover {
+            background-color: #d73832;
+          }
+        }
+      }
+    }
+
+    input[type='text'],
+    input[type='number'] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      color: #222;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+
+      &:hover {
+        background-color: #d73832;
+      }
+    }
+    .editable-items-table {
+      width: 100%;
+      margin-top: 1rem;
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f7f7f7;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        background-color: #f44336;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+
+        &:hover {
+          background-color: #d73832;
+        }
+      }
+    }
+  }
+}
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }

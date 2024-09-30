@@ -92,6 +92,7 @@ const Listall = () => {
             dispatch(setTenants(fallbackTenants));
           } else {
             dispatch(setTenants(res.data));
+            setError('');
             toast.success('Tenants fetched ');
           }
         } else {

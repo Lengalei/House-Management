@@ -21,36 +21,49 @@ function TenantProfile() {
   useEffect(() => {
     const fetchTenant = async () => {
       setLoading(true);
-      const res = await apiRequest(`/v2/tenants/getSingleTenant/${_id}`);
-      if (!res.status) {
-        setError(res.data.error);
-        toast.error(res.data.error);
-      } else {
-        // console.log(res.data);
-        setTenant(res.data);
-        // console.log(res.data);
-        // toast.success('Tenant data fetched successfully');
+      try {
+        const res = await apiRequest(`/v2/tenants/getSingleTenant/${_id}`);
+        if (res.status) {
+          // console.log(res.data);
+          setTenant(res.data);
+          // console.log(res.data);
+          // toast.success('Tenant data fetched successfully');
+        }
+      } catch (error) {
+        setError(error.response.data.message || 'Error getting Tenant');
+        toast.error(error.response.data.message || 'Error getting Tenant');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchTenant();
   }, [_id]);
 
+  const [deleteConfirmationPopup, setDeleteConfirmationPopup] = useState(false);
+  const handleDeleteBtnClick = () => {
+    setDeleteConfirmationPopup(true);
+  };
+  const handleCloseDeletePopup = () => {
+    setDeleteConfirmationPopup(false);
+  };
+
   const handleDeleteTenant = async () => {
     setLoading(true);
-    const res = await apiRequest.delete(`/tenants/deleteTenant/${_id}`);
-    if (!res.status) {
-      setError(res.data.error);
-      toast.error(res.data.error);
-    } else {
-      // console.log('tenant deleted!');
-
-      toast.success('Tenant deleted successfully');
-      setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
-      }, 1000);
+    try {
+      const res = await apiRequest.delete(`/v2/tenants/deleteTenant/${_id}`);
+      if (res.status) {
+        handleCloseDeletePopup();
+        toast.success('Tenant deleted successfully');
+        setTimeout(() => {
+          navigate(`/listAllTenants`);
+        }, 1000);
+      }
+    } catch (error) {
+      setError(error.response.data.message || 'Error deleting Tenant');
+      toast.error(error.response.data.message || 'Error deleting Tenant');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleEditTenant = async () => {
@@ -60,33 +73,41 @@ function TenantProfile() {
 
   const handleBlackListTenant = async () => {
     setLoading(true);
-    const res = await apiRequest.patch(`/tenants/blackListTenant/${_id}`);
-    if (!res.status) {
-      setError(res.data.error);
-      toast.error(res.data.error);
-    } else {
-      // console.log('tenant blacklisted!');
-      toast.success('Tenant blacklisted successfully');
-      setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
-      }, 1000);
+    try {
+      const res = await apiRequest.patch(`/v2/tenants/blackListTenant/${_id}`);
+      if (res.status) {
+        toast.success('Tenant blacklisted successfully');
+        setTimeout(() => {
+          navigate(`/tenantProfile/${_id}`);
+        }, 1000);
+      }
+    } catch (error) {
+      setError(error.response.data.message || 'Error blacklisting Tenant');
+      toast.error(error.response.data.message || 'Error blacklisting Tenant');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleWhiteListTenant = async () => {
     setLoading(true);
-    const res = await apiRequest.patch(`/tenants/whiteListTenant/${_id}`);
-    if (!res.status) {
-      setError(res.data.error);
-      toast.error(res.data.error);
-    } else {
-      // console.log('tenant whitelisted!');
-      toast.success('Tenant whitelisted successfully');
-      setTimeout(() => {
-        navigate(`/tenantProfile/${_id}`);
-      }, 1000);
+    try {
+      const res = await apiRequest.patch(`/v2/tenants/whiteListTenant/${_id}`);
+      if (!res.status) {
+        setError(res.data.error);
+        toast.error(res.data.error);
+      } else {
+        // console.log('tenant whitelisted!');
+        toast.success('Tenant whitelisted successfully');
+        setTimeout(() => {
+          navigate(`/tenantProfile/${_id}`);
+        }, 1000);
+      }
+    } catch (error) {
+      setError(error.response.data.message || 'Error whitelisting Tenant');
+      toast.error(error.response.data.message || 'Error whitelisting Tenant');
     }
+
     setLoading(false);
   };
 
@@ -221,7 +242,7 @@ function TenantProfile() {
 
               <div className="details-container">
                 <p>Delete Tenant</p>{' '}
-                <button onClick={handleDeleteTenant}>
+                <button onClick={handleDeleteBtnClick}>
                   <MdDelete size={20} color="red" />
                 </button>
               </div>
@@ -247,6 +268,24 @@ function TenantProfile() {
           </div>
         </div>
       </div>
+
+      {deleteConfirmationPopup && (
+        <div className="confirmation-popup-overlay">
+          <div className="confirmation-popup">
+            <h3>Are you sure you want to delete this Tenant?</h3>
+            <p>{tenant?.name}</p>
+            {error && <p>{error}</p>}
+            <div className="confirmation-actions">
+              <button className="submit-btn" onClick={handleDeleteTenant}>
+                Yes, Delete
+              </button>
+              <button className="cancel-btn" onClick={handleCloseDeletePopup}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

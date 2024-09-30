@@ -71,9 +71,11 @@ export const getInvoiceById = async (req, res) => {
 // Update an invoice
 export const updateInvoice = async (req, res) => {
   const { id } = req.params;
-  const { clientName, HouseNo, items, totalAmount, tenantId } = req.body;
+  const { clientName, HouseNo, items, totalAmount, tenant, payment } = req.body;
 
   try {
+    const paymentId = payment._id;
+    const tenantId = tenant._id;
     const updatedInvoice = await Invoice.findByIdAndUpdate(
       id,
       {
@@ -81,7 +83,8 @@ export const updateInvoice = async (req, res) => {
         HouseNo,
         items,
         totalAmount,
-        tenant: tenantId, // Update the tenant ID here
+        tenant: tenantId,
+        payment: paymentId,
       },
       { new: true }
     );
@@ -108,11 +111,37 @@ export const deleteInvoice = async (req, res) => {
       .status(200)
       .json({ message: 'Invoice deleted successfully', deletedInvoice });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        message: error.message || 'Error deleting invoice',
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: error.message || 'Error deleting invoice',
+      error: error.message,
+    });
+  }
+};
+
+//delete many invoices
+export const deleteManyInvoices = async (req, res) => {
+  const { ids } = req.body;
+
+  try {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'No invoice IDs provided' });
+    }
+
+    const result = await Invoice.deleteMany({ _id: { $in: ids } });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: 'No invoices found for the provided IDs' });
+    }
+
+    return res.status(200).json({
+      message: `${result.deletedCount} invoice(s) deleted successfully`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || 'Error deleting invoices',
+      error: error.message,
+    });
   }
 };

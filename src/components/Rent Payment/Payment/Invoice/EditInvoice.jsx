@@ -3,11 +3,10 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import './Invoice.scss';
 import { useState, useEffect } from 'react';
-import apiRequest from '../../../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
 import { TailSpin } from 'react-loader-spinner';
 
-const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
+const EditInvoice = ({ invoiceData, onClose }) => {
   // Added tenantId as a prop
   const { clientName, HouseNo, items, invoiceNumber } = invoiceData;
 
@@ -63,37 +62,11 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
     setTotalAmount(calculateTotalAmount(editableItems));
   }, [editableItems]);
 
-  // New function to send POST request
-  const sendInvoiceToServer = async (invoiceData) => {
-    try {
-      const response = await apiRequest.post(
-        '/v2/invoices/postInvoice',
-        invoiceData
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error saving invoice:', error);
-      throw new Error('Failed to save invoice');
-    }
-  };
-
   const handleDownload = async () => {
     // Prepare the invoice data to send
-    const invoiceToSend = {
-      invoiceNumber: generatedInvoiceNumber,
-      clientName,
-      HouseNo,
-      items: editableItems,
-      totalAmount,
-      tenantId,
-      paymentId,
-    };
 
     setLoading(true); // Show loader while posting
     try {
-      // Send invoice data to the server
-      await sendInvoiceToServer(invoiceToSend);
-
       // Proceed to generate the PDF after successful save
       const doc = new jsPDF();
       doc.setFontSize(20);
@@ -138,10 +111,12 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
       doc.save(`invoice_${generatedInvoiceNumber}.pdf`);
 
       // Show success toast
-      toast.success('Invoice posted and downloaded successfully!');
+      toast.success('Invoice downloaded successfully!');
     } catch (error) {
       // Show error toast if there was an error
-      toast.error('There was an issue posting the invoice: ' + error.message);
+      toast.error(
+        'There was an issue downloading the invoice: ' + error.message
+      );
     } finally {
       setLoading(false); // Hide loader after processing
     }
@@ -260,4 +235,4 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
   );
 };
 
-export default Invoice;
+export default EditInvoice;
