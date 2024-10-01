@@ -634,9 +634,11 @@ const TenantPayments = () => {
     <div className="tenant-payments-container">
       <ToastContainer />
       <>
-        <h1>
-          <span>{tenantDetails?.name + `'s`} Payment Track</span>
-        </h1>
+        <div className="h1">
+          <h1>
+            <span>{tenantDetails?.name + `'s`} </span> Payment Track
+          </h1>
+        </div>
         <div className="payments-cards">
           {/* Left Card */}
           <div className={`card left-card `}>
@@ -644,9 +646,9 @@ const TenantPayments = () => {
               <div className="outstandingWithGlobalDeficit">
                 <button
                   className={`tab-button ${
-                    selectedTab === 'complete' ? 'active' : ''
+                    selectedTab === "complete" ? "active" : ""
                   }`}
-                  onClick={() => toggleTab('complete')}
+                  onClick={() => toggleTab("complete")}
                 >
                   Complete Payments
                 </button>
@@ -657,9 +659,9 @@ const TenantPayments = () => {
                 <div className="outstandingWithGlobalDeficit">
                   <button
                     className={`tab-button ${
-                      selectedTab === 'outstanding' ? 'active' : ''
+                      selectedTab === "outstanding" ? "active" : ""
                     }`}
-                    onClick={() => toggleTab('outstanding')}
+                    onClick={() => toggleTab("outstanding")}
                   >
                     Pending Payments
                   </button>
@@ -670,11 +672,11 @@ const TenantPayments = () => {
                   )}
                 </div>
               ) : (
-                ''
+                ""
               )}
             </div>
             <div className="card-body">
-              {selectedTab === 'complete' ? (
+              {selectedTab === "complete" ? (
                 <>
                   <div className="year-selector">
                     <label>Select Year: </label>
@@ -699,11 +701,11 @@ const TenantPayments = () => {
                       return (
                         <div key={index} className="mini-card">
                           <p>
-                            <strong>Month:</strong>{' '}
+                            <strong>Month:</strong>{" "}
                             {payment?.month || currentMonth}, {payment?.year}
                           </p>
                           <p>
-                            <strong>Total Paid Amount:</strong>{' '}
+                            <strong>Total Paid Amount:</strong>{" "}
                             {payment?.totalAmountPaid}
                           </p>
                           <p
@@ -713,7 +715,7 @@ const TenantPayments = () => {
                           >
                             <strong>ReferenceNoHistory:</strong>
                             <span className="dropdown-toggle">
-                              {displayRefNoHistory ? '⬆️' : '⬇️'}
+                              {displayRefNoHistory ? "⬆️" : "⬇️"}
                             </span>
                             {displayRefNoHistory && (
                               <>
@@ -734,8 +736,8 @@ const TenantPayments = () => {
                           {payment?.overpay > 0 ? payment?.overpay : 'None'}
                         </p> */}
                           <p>
-                            <strong>Cleared Status:</strong>{' '}
-                            {cleared ? 'True' : 'False'}
+                            <strong>Cleared Status:</strong>{" "}
+                            {cleared ? "True" : "False"}
                           </p>
                         </div>
                       );
@@ -748,7 +750,7 @@ const TenantPayments = () => {
                     <div key={index} className="mini-card outstanding">
                       <div onClick={() => handlePaymentClick(payment)}>
                         <p>
-                          <strong>Month:</strong>{' '}
+                          <strong>Month:</strong>{" "}
                           <span className="monthOuts">{payment?.month}</span>
                         </p>
                         {payment?.rent?.deficit ? (
@@ -756,46 +758,46 @@ const TenantPayments = () => {
                             <strong>Rent Deficit:</strong>
                             {payment?.rent?.deficit > 0
                               ? payment?.rent?.deficit
-                              : 'None'}
+                              : "None"}
                           </p>
                         ) : (
-                          ''
+                          ""
                         )}
 
                         <p>
-                          <strong>Water Bill:</strong>{' '}
+                          <strong>Water Bill:</strong>{" "}
                           {payment?.waterBill?.deficit > 0
                             ? payment?.waterBill?.deficit
-                            : 'Water Bill...'}
+                            : "Water Bill..."}
                         </p>
                         {payment?.garbageFee?.deficit ? (
                           <p>
-                            <strong>Garbage Fee Deficit:</strong>{' '}
+                            <strong>Garbage Fee Deficit:</strong>{" "}
                             {payment?.garbageFee?.deficit > 0
                               ? payment?.garbageFee?.deficit
-                              : 'None'}
+                              : "None"}
                           </p>
                         ) : (
-                          ''
+                          ""
                         )}
                         {payment?.globalDeficit ? (
                           <p>
-                            <strong>{payment?.month} Total Deficit:</strong>{' '}
+                            <strong>{payment?.month} Total Deficit:</strong>{" "}
                             {payment?.globalDeficit > 0
                               ? payment?.globalDeficit
-                              : '...'}
+                              : "..."}
                           </p>
                         ) : (
-                          ''
+                          ""
                         )}
 
                         {payment?.overpay ? (
                           <p>
-                            <strong>Current Excess To use:</strong>{' '}
-                            {payment?.overpay > 0 ? payment?.overpay : 'None'}
+                            <strong>Current Excess To use:</strong>{" "}
+                            {payment?.overpay > 0 ? payment?.overpay : "None"}
                           </p>
                         ) : (
-                          ''
+                          ""
                         )}
                       </div>
                       <p
@@ -803,11 +805,11 @@ const TenantPayments = () => {
                           handleUpdateArrowClick();
                         }}
                       >
-                        {displayUpdatebtn ? '⬆' : '⬇'}
+                        {displayUpdatebtn ? "⬆" : "⬇"}
                         <br />
                         {displayUpdatebtn && (
                           <>
-                            {' '}
+                            {" "}
                             <button
                               className="confirm-btn"
                               onClick={() => displayUpdatePopup(payment)}
@@ -828,8 +830,8 @@ const TenantPayments = () => {
                 </div>
               )}
             </div>
-            {selectedTab === 'complete' ? (
-              ''
+            {selectedTab === "complete" ? (
+              ""
             ) : (
               <>
                 {hasOutstandingPayments ? (
@@ -842,7 +844,7 @@ const TenantPayments = () => {
                     Given Extra Amount within {previousMonth}
                   </button>
                 ) : (
-                  ''
+                  ""
                 )}
               </>
             )}
@@ -864,7 +866,7 @@ const TenantPayments = () => {
               <form onSubmit={handleAddPayment}>
                 {/* Section 1: Monthly Payment Info */}
                 <div className="section section-1">
-                  <h3>{nextMonth + ', ' + currentYear} Payment Info</h3>
+                  <h3>{nextMonth + ", " + currentYear} Payment Info</h3>
                   <div>
                     {mostRecentPayment?.overpay !== undefined && (
                       <div className="overpay-section">
@@ -875,8 +877,8 @@ const TenantPayments = () => {
                               className="overpay-toggle"
                               onClick={handleOverpayTransfer}
                               style={{
-                                cursor: 'pointer',
-                                marginLeft: '10px',
+                                cursor: "pointer",
+                                marginLeft: "10px",
                               }}
                             >
                               ⬆
@@ -884,16 +886,16 @@ const TenantPayments = () => {
                           </p>
                         ) : (
                           <p>
-                            <strong>Current Overpay:</strong>{' '}
+                            <strong>Current Overpay:</strong>{" "}
                             {mostRecentPayment?.overpay > 0
                               ? mostRecentPayment?.overpay
-                              : 'None'}
+                              : "None"}
                             <span
                               className="overpay-toggle"
                               onClick={handleOverpayTransfer}
                               style={{
-                                cursor: 'pointer',
-                                marginLeft: '10px',
+                                cursor: "pointer",
+                                marginLeft: "10px",
                               }}
                             >
                               ⬇
@@ -940,10 +942,10 @@ const TenantPayments = () => {
                     >
                       <span>
                         {selectedExtraCharge.description ||
-                          'Select Extra Charge'}
+                          "Select Extra Charge"}
                       </span>
                       <span className="dropdown-toggle">
-                        {extraChargesDropdownOpen ? '⬆️' : '⬇️'}
+                        {extraChargesDropdownOpen ? "⬆️" : "⬇️"}
                       </span>
                     </label>
                     {extraChargesDropdownOpen && (
@@ -978,7 +980,7 @@ const TenantPayments = () => {
                           <label>Description:</label>
                           <input
                             type="text"
-                            value={selectedExtraCharge.description ?? 'None'}
+                            value={selectedExtraCharge.description ?? "None"}
                             onChange={(e) =>
                               setSelectedExtraCharge((prevState) => ({
                                 ...prevState,
@@ -1008,12 +1010,12 @@ const TenantPayments = () => {
                         <div key={payment._id}>
                           <>
                             <label>
-                              {payment?.month + ',' + payment?.year}
+                              {payment?.month + "," + payment?.year}
                             </label>
                             {payment?.rent?.deficit > 0 ? (
                               <div className="form-group">
                                 <label>
-                                  Rent Deficit:{payment?.rent?.deficit}{' '}
+                                  Rent Deficit:{payment?.rent?.deficit}{" "}
                                 </label>
                                 {/* <input
                                 type="number"
@@ -1023,7 +1025,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ''
+                              ""
                             )}
                             {payment?.waterBill?.deficit > 0 ? (
                               <div className="form-group">
@@ -1041,20 +1043,20 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ''
+                              ""
                             )}
                             {payment?.waterBill?.deficit > 0 ? (
-                              ''
+                              ""
                             ) : (
                               <div className="form-group water-bill-section">
                                 <label
                                   onClick={toggleWaterBillDropdown}
                                   className="water-bill-label"
                                 >
-                                  <span className="water-bill-icon">💧</span>{' '}
-                                  Water Bill{' '}
+                                  <span className="water-bill-icon">💧</span>{" "}
+                                  Water Bill{" "}
                                   <span className="dropdown-toggle">
-                                    {waterBillDropdownOpen ? '⬆' : '⬇'}
+                                    {waterBillDropdownOpen ? "⬆" : "⬇"}
                                   </span>
                                 </label>
                                 {waterBillDropdownOpen && (
@@ -1101,7 +1103,7 @@ const TenantPayments = () => {
                             {payment?.garbageFee?.deficit > 0 ? (
                               <div className="form-group">
                                 <label>
-                                  Garbage Deficit:{' '}
+                                  Garbage Deficit:{" "}
                                   {payment?.garbageFee?.deficit}
                                 </label>
                                 {/* <input
@@ -1114,7 +1116,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ''
+                              ""
                             )}
                             {payment?.extraCharges?.deficit > 0 ? (
                               <div className="form-group">
@@ -1132,7 +1134,7 @@ const TenantPayments = () => {
                               /> */}
                               </div>
                             ) : (
-                              ''
+                              ""
                             )}
                             <hr />
                           </>
@@ -1148,10 +1150,10 @@ const TenantPayments = () => {
                     >
                       <span>
                         {previousMonthSelectedExtraCharge.description ||
-                          'PreviousMonth  Extra Charge'}
+                          "PreviousMonth  Extra Charge"}
                       </span>
                       <span className="dropdown-toggle">
-                        {previousMonthExtraChargesDropdownOpen ? '⬆️' : '⬇️'}
+                        {previousMonthExtraChargesDropdownOpen ? "⬆️" : "⬇️"}
                       </span>
                     </label>
                     {previousMonthExtraChargesDropdownOpen && (
@@ -1195,7 +1197,7 @@ const TenantPayments = () => {
                             type="text"
                             value={
                               previousMonthSelectedExtraCharge.description ??
-                              'None'
+                              "None"
                             }
                             onChange={(e) =>
                               setPreviousMonthSelectedExtraCharge(
@@ -1348,7 +1350,7 @@ const TenantPayments = () => {
           <div className="popup-overlay">
             <div className="popup-content">
               <h2>
-                Complete {selectedPayment.month + `,` + selectedPayment.year}{' '}
+                Complete {selectedPayment.month + `,` + selectedPayment.year}{" "}
                 Pending Payment
               </h2>
               <form onSubmit={handlePaymentUpdate}>
@@ -1356,7 +1358,7 @@ const TenantPayments = () => {
                 {selectedPayment?.rent?.deficit ? (
                   <div className="form-group">
                     <label>
-                      Rent Deficit: {selectedPayment?.rent?.deficit || ''}
+                      Rent Deficit: {selectedPayment?.rent?.deficit || ""}
                     </label>
                     <input type="number" name="rentDeficit" />
                   </div>
@@ -1367,28 +1369,28 @@ const TenantPayments = () => {
                   <>
                     <div className="form-group">
                       <label>
-                        Water Bill {selectedPayment?.waterBill?.deficit || ''}
+                        Water Bill {selectedPayment?.waterBill?.deficit || ""}
                       </label>
                       <input type="number" name="waterDeficit" />
                     </div>
                   </>
                 ) : (
-                  ''
+                  ""
                 )}
 
                 {selectedPayment?.waterBill?.deficit ? (
-                  ''
+                  ""
                 ) : (
                   <>
-                    {' '}
+                    {" "}
                     <div className="form-group water-bill-section">
                       <label
                         onClick={toggleWaterBillDropdown}
                         className="water-bill-label"
                       >
-                        <span className="water-bill-icon">💧</span> Water Bill{' '}
+                        <span className="water-bill-icon">💧</span> Water Bill{" "}
                         <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? '⬆' : '⬇'}
+                          {waterBillDropdownOpen ? "⬆" : "⬇"}
                         </span>
                       </label>
                       {waterBillDropdownOpen && (
@@ -1433,8 +1435,8 @@ const TenantPayments = () => {
                 {selectedPayment?.garbageFee?.deficit ? (
                   <div className="form-group">
                     <label>
-                      Garbage Deficit:{' '}
-                      {selectedPayment?.garbageFee?.deficit || ''}
+                      Garbage Deficit:{" "}
+                      {selectedPayment?.garbageFee?.deficit || ""}
                     </label>
                     <input type="number" name="garbageDeficit" required />
                   </div>
@@ -1471,7 +1473,7 @@ const TenantPayments = () => {
           <div className="confirmation-modal">
             <div className="popup-content">
               <h2>
-                Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
+                Update {selectedPayment.month + `,` + selectedPayment.year}{" "}
                 Deficits
               </h2>
               <form onSubmit={handleDeficitsUpdate}>
@@ -1479,8 +1481,8 @@ const TenantPayments = () => {
                 {selectedPayment?.rent?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Rent Deficit:{' '}
-                      {selectedPayment?.rent?.deficit || ''}
+                      Current Rent Deficit:{" "}
+                      {selectedPayment?.rent?.deficit || ""}
                     </label>
                     <input
                       type="number"
@@ -1496,8 +1498,8 @@ const TenantPayments = () => {
                   <>
                     <div className="form-group">
                       <label>
-                        Current Water Bill{' '}
-                        {selectedPayment?.waterBill?.deficit || ''}
+                        Current Water Bill{" "}
+                        {selectedPayment?.waterBill?.deficit || ""}
                       </label>
                       <input
                         type="number"
@@ -1508,22 +1510,22 @@ const TenantPayments = () => {
                     </div>
                   </>
                 ) : (
-                  ''
+                  ""
                 )}
 
                 {selectedPayment?.waterBill?.deficit > 0 ? (
-                  ''
+                  ""
                 ) : (
                   <>
-                    {' '}
+                    {" "}
                     <div className="form-group water-bill-section">
                       <label
                         onClick={toggleWaterBillDropdown}
                         className="water-bill-label"
                       >
-                        <span className="water-bill-icon">💧</span> Water Bill{' '}
+                        <span className="water-bill-icon">💧</span> Water Bill{" "}
                         <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? '⬆' : '⬇'}
+                          {waterBillDropdownOpen ? "⬆" : "⬇"}
                         </span>
                       </label>
                       {waterBillDropdownOpen && (
@@ -1557,8 +1559,8 @@ const TenantPayments = () => {
                 {selectedPayment?.garbageFee?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Garbage Deficit:{' '}
-                      {selectedPayment?.garbageFee?.deficit || ''}
+                      Current Garbage Deficit:{" "}
+                      {selectedPayment?.garbageFee?.deficit || ""}
                     </label>
                     <input
                       type="number"
@@ -1573,8 +1575,8 @@ const TenantPayments = () => {
                 {selectedPayment?.extraCharges?.deficit > 0 ? (
                   <div className="form-group">
                     <label>
-                      Current Extra Charges Deficit:{' '}
-                      {selectedPayment?.extraCharges?.deficit || ''}
+                      Current Extra Charges Deficit:{" "}
+                      {selectedPayment?.extraCharges?.deficit || ""}
                     </label>
                     <input
                       type="number"
@@ -1602,7 +1604,7 @@ const TenantPayments = () => {
 
                 {/* Submit and Cancel Buttons */}
                 <div className="closeAndUpdateBtns">
-                  {' '}
+                  {" "}
                   <button type="submit" className="confirm-btn">
                     Update Deficits
                   </button>

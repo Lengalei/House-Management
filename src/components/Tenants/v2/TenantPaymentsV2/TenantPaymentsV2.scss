@@ -1,22 +1,4 @@
-@mixin sm {
-  @media (max-width: 648px) {
-    @content;
-  }
-}
-
-@mixin md {
-  @media (max-width: 800px) {
-    @content;
-  }
-}
-
-@mixin lg {
-  @media (max-width: 1366px) {
-    @content;
-  }
-}
-
-
+@import "../../../../responsive.scss";
 
 .tenant-payments-container {
   width: 100%;
