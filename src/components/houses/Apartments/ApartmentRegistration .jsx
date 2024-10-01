@@ -137,75 +137,77 @@ const ApartmentRegistration = () => {
 
   return (
     <div className="apartment-registration-container">
-      <div className="card card-left">
-        <h2>Register Apartment</h2>
-        <form onSubmit={handleRegisterApartment}>
-          <div className="form-group">
-            <label>Apartment Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setApartmentName(e.target.value)}
-              placeholder="Enter apartment name"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Number of Houses</label>
-            <input
-              type="number"
-              value={noHouses}
-              onChange={(e) => setNumOfHouses(e.target.value)}
-              placeholder="Enter number of houses"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>location</label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter location"
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary">
-            Register Apartment
-          </button>
-        </form>
-      </div>
-
-      <div className="card card-right">
-        <h2>Registered Apartments</h2>
-        {currentApartments.length > 0 &&
-          currentApartments?.map((apartment) => (
-            <div key={apartment?._id} className="apartment-card">
-              <h3>{apartment?.name}</h3>
-              <p>Houses: {apartment?.noHouses}</p>
-              <p>location: {apartment?.location}</p>
-              <button
-                className="btn-secondary"
-                onClick={() =>
-                  navigate(`/apartment/${apartment._id}`, {
-                    state: { apartmentData: apartment },
-                  })
-                }
-              >
-                View Houses
-              </button>
+      <div className="cards2">
+        <div className="card card-left">
+          <h2>Register Apartment</h2>
+          <form onSubmit={handleRegisterApartment}>
+            <div className="form-group">
+              <label>Apartment Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setApartmentName(e.target.value)}
+                placeholder="Enter apartment name"
+                required
+              />
             </div>
-          ))}
+            <div className="form-group">
+              <label>Number of Houses</label>
+              <input
+                type="number"
+                value={noHouses}
+                onChange={(e) => setNumOfHouses(e.target.value)}
+                placeholder="Enter number of houses"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>location</label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter location"
+                required
+              />
+            </div>
+            <button type="submit" className="btn-primary">
+              Register Apartment
+            </button>
+          </form>
+        </div>
 
-        <Pagination
-          activePage={currentPage}
-          itemsCountPerPage={itemsPerPage}
-          totalItemsCount={apartments?.length}
-          pageRangeDisplayed={3}
-          onChange={handlePageChange}
-          itemClass="page-item"
-          linkClass="page-link"
-        />
+        <div className="card card-right">
+          <h2>Registered Apartments</h2>
+          {currentApartments.length > 0 &&
+            currentApartments?.map((apartment) => (
+              <div key={apartment?._id} className="apartment-card">
+                <h3>{apartment?.name}</h3>
+                <p>Houses: {apartment?.noHouses}</p>
+                <p>location: {apartment?.location}</p>
+                <button
+                  className="btn-secondary"
+                  onClick={() =>
+                    navigate(`/apartment/${apartment._id}`, {
+                      state: { apartmentData: apartment },
+                    })
+                  }
+                >
+                  View Houses
+                </button>
+              </div>
+            ))}
+
+          <Pagination
+            activePage={currentPage}
+            itemsCountPerPage={itemsPerPage}
+            totalItemsCount={apartments?.length}
+            pageRangeDisplayed={3}
+            onChange={handlePageChange}
+            itemClass="page-item"
+            linkClass="page-link"
+          />
+        </div>
       </div>
       {loading && (
         <div className="loader-overlay">

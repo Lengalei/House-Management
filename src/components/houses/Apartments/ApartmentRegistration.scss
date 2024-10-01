@@ -3,17 +3,24 @@
   justify-content: space-between;
   padding: 20px;
   gap: 20px;
-  max-width: 80%;
+  width: 100%;
   margin: 0 auto;
   height: 100%;
-  //   background-color: #ccc;
+  background-image: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('/bgblue.jpeg');
+
+  .cards2{
+    width: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+  }
 
   .card {
     flex: 1;
     background-color: aliceblue;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(236, 7, 7, 0.884);
     height: 90%;
     overflow: scroll;
     overflow-x: hidden;

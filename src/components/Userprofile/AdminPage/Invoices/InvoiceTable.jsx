@@ -183,7 +183,9 @@ const InvoiceTable = () => {
       {currentInvoices?.length > 0 ? (
         <>
           <div className="invoice-card">
-            <h2>All Invoices</h2>
+            <h2>
+              All I<span>nvo</span>ice
+            </h2>
           </div>
           <div className="invoice-actions">
             <button
@@ -231,15 +233,23 @@ const InvoiceTable = () => {
                       {expandedInvoice === invoice?._id
                         ? invoice?.items?.map((item, index) => (
                             <div key={index} className="item-detail">
-                              <strong>{item?.name}</strong>: KSH
-                              {item?.price.toFixed(2)}
-                              <br />
-                              {item?.description}
+                              <strong>{item?.name}</strong>
+                              <span>
+                                <div className="price">
+                                  KSH
+                                  {item?.price.toFixed(2)}
+                                </div>
+                                {item?.description}
+                              </span>
                             </div>
                           ))
                         : invoice?.items?.length}
                     </td>
-                    <td>{invoice?.isPaid ? 'Paid' : 'Unpaid'}</td>
+                    <td>
+                      <p className="payment-status">
+                        {invoice?.isPaid ? "Paid" : "Unpaid"}
+                      </p>
+                    </td>
                     <td>
                       <MdAutorenew
                         onClick={() => handleInvoiceRegenerate(invoice)}
@@ -326,7 +336,9 @@ const InvoiceTable = () => {
       {isEditing && (
         <div className="edit-invoice-popup-overlay">
           <div className="edit-invoice-popup">
-            <h3>Edit Invoice</h3>
+            <h3>
+              Edit I<span>nvo</span>ice
+            </h3>
             {/* Editable table for items */}
             <table className="editable-items-table">
               <thead>
@@ -402,11 +414,11 @@ const InvoiceTable = () => {
               <label htmlFor="paidStatus">Paid Status:</label>
               <select
                 id="paidStatus"
-                value={editInvoice.isPaid ? 'Paid' : 'Unpaid'}
+                value={editInvoice.isPaid ? "Paid" : "Unpaid"}
                 onChange={(e) =>
                   setEditInvoice({
                     ...editInvoice,
-                    isPaid: e.target.value === 'Paid',
+                    isPaid: e.target.value === "Paid",
                   })
                 }
               >

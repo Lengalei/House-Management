@@ -1,21 +1,31 @@
+// .invoice{
+//   width: 100%;
+//   height: auto;
+// }
 .invoice-table {
+ 
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: #f7f4f4;
   max-width: max-content;
   height: 85%;
   overflow: scroll;
   overflow-x: hidden;
   margin: 0 auto;
+  // padding-right: 10px;
+  // padding-left: 10px;
 
   .invoice-card {
     padding: 15px;
     background-color: #fff;
     border-radius: 5px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    // box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
-
+h2 span{
+  color: var(--primary-color);
+}
   .invoice-actions {
     margin-bottom: 10px;
 
@@ -23,9 +33,10 @@
       background-color: #ff4d4d;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 6px 10px;
       border-radius: 5px;
       cursor: pointer;
+      margin-left: 20px;
 
       &:hover {
         background-color: #ff1a1a;
@@ -95,6 +106,7 @@
 
   .back-arrow {
     margin-top: 20px;
+    margin-left: 20px;
 
     button {
       background-color: transparent;
@@ -105,7 +117,8 @@
       cursor: pointer;
 
       &:hover {
-        text-decoration: underline;
+       background-color: var(--primary-color);
+       color: white;
       }
     }
   }
@@ -199,6 +212,20 @@
       }
     }
   }
+
+  .item-detail span{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+  }
+  .item-detail .price{
+    color: #007bff;
+  }
+  .payment-status{
+    color: brown;
+    font-weight: 700;
+  }
   .nothing {
     background-color: #61b116;
     position: absolute;
@@ -246,8 +273,9 @@
 
   table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 2rem;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  overflow-x: auto;
 
     th,
     td {

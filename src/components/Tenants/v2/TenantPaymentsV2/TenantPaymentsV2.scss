@@ -1,3 +1,23 @@
+@mixin sm {
+  @media (max-width: 648px) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: 800px) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (max-width: 1366px) {
+    @content;
+  }
+}
+
+
+
 .tenant-payments-container {
   width: 100%;
   text-transform: capitalize;
@@ -9,14 +29,47 @@
   padding-left: 50px;
   padding-right: 50px;
   position: relative;
+  padding-top: 30px;
 
-  h1 {
+  .h1{
+    width: 40%;
+    height: 40px;
+    background-color: white;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    border-radius: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    color: black;
+
+    @include md {
+      padding: 10px;
+    }
+    @include sm {
+      padding: 10px;
+    }
+  }
+
+  .h1 h1 {
+    font-size: 20px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 30px;
+     color: black;
+     span{
+      color: var(--primary-color);
+      font-weight: 700;
+      margin-right: 5px;
+     }
+     @include md {
+      font-size: 13px;
+    }
+    @include sm {
+      font-size: 13px;
+    }
   }
+  
   span {
     color: darkgoldenrod;
   }
@@ -95,9 +148,10 @@
           height: 100%;
           overflow: scroll;
           overflow-x: hidden;
+          
 
           .mini-card {
-            border: 1px solid #ddd;
+            border: 1px solid var(--yellow);
             border-radius: 8px;
             padding: 16px;
             cursor: pointer;
@@ -121,20 +175,30 @@
             }
 
             &.outstanding {
-              border-left: 5px solid #dc3545;
+              border-left: 5px solid var(--yellow);
             }
           }
         }
       }
       .addExtraAmount {
-        background-color: #ccc;
+        background-color: #fff;
         padding: 7px;
         border-radius: 7px;
         color: goldenrod;
+        font-weight: 900;
         position: absolute;
         right: 58%;
         top: 80%;
+        border: 1px solid var(--primary-color);
+          @include md {
+      width: 30%;
+    }
+    @include sm {
+      width: 30%;
+    }
+
       }
+
       .addExtraAmount:hover {
         background-color: antiquewhite;
         color: goldenrod;

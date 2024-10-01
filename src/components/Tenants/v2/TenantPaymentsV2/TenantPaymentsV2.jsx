@@ -465,6 +465,9 @@ const TenantPayments = () => {
         console.log('All good');
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
+        setExtraAmount("")
+        setExtraAmountReferenceNo("")
+        setExtraAmountGivenDate("")
         await getMostRecentPaymentByTenantId(tenantId);
         setAddInternalAmountPopup(false);
       }
@@ -631,220 +634,240 @@ const TenantPayments = () => {
     <div className="tenant-payments-container">
       <ToastContainer />
       <>
-        {' '}
-        <h1>
-          <span>{tenantDetails?.name + `'s`} Payment Track</span>
-        </h1>
-        <div className="payments-cards">
-          {/* Left Card */}
-          <div className={`card left-card `}>
-            <div className="card-header">
-              <div className="outstandingWithGlobalDeficit">
-                <button
-                  className={`tab-button ${
-                    selectedTab === 'complete' ? 'active' : ''
-                  }`}
-                  onClick={() => toggleTab('complete')}
-                >
-                  Complete Payments
-                </button>
-                <span>_______</span>
-              </div>
-
-              {hasOutstandingPayments ? (
-                <div className="outstandingWithGlobalDeficit">
-                  <button
-                    className={`tab-button ${
-                      selectedTab === 'outstanding' ? 'active' : ''
-                    }`}
-                    onClick={() => toggleTab('outstanding')}
-                  >
-                    Pending Payments
-                  </button>
-                  {totalGlobalDeficit ? (
-                    <span>Global deficit: {totalGlobalDeficit}</span>
-                  ) : (
+        {loading ? (
+          <div className="loader-container">
+            <ThreeDots
+              height="100"
+              width="100"
+              radius="9"
+              color="#4fa94d"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClass="loader"
+              visible={true}
+            />
+          </div>
+        ) : (
+          <>
+            {' '}
+            <h1>
+              <span>{tenantDetails?.name + `'s`} Payment Track</span>
+            </h1>
+            <div className="payments-cards">
+              {/* Left Card */}
+              <div className={`card left-card `}>
+                <div className="card-header">
+                  <div className="outstandingWithGlobalDeficit">
+                    <button
+                      className={`tab-button ${
+                        selectedTab === 'complete' ? 'active' : ''
+                      }`}
+                      onClick={() => toggleTab('complete')}
+                    >
+                      Complete Payments
+                    </button>
                     <span>_______</span>
+                  </div>
+
+                  {hasOutstandingPayments ? (
+                    <div className="outstandingWithGlobalDeficit">
+                      <button
+                        className={`tab-button ${
+                          selectedTab === 'outstanding' ? 'active' : ''
+                        }`}
+                        onClick={() => toggleTab('outstanding')}
+                      >
+                        Pending Payments
+                      </button>
+                      {totalGlobalDeficit ? (
+                        <span>Global deficit: {totalGlobalDeficit}</span>
+                      ) : (
+                        <span>_______</span>
+                      )}
+                    </div>
+                  ) : (
+                    ''
                   )}
                 </div>
-              ) : (
-                ''
-              )}
-            </div>
-            <div className="card-body">
-              {selectedTab === 'complete' ? (
-                <>
-                  <div className="year-selector">
-                    <label>Select Year: </label>
-                    <select
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                    >
-                      {years.map((year, index) => (
-                        <option key={index} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="mini-cards">
-                    {filteredPayments.map((payment, index) => {
-                      const cleared =
-                        payment.rent.paid &&
-                        payment.waterBill.paid &&
-                        payment.garbageFee.paid;
+                <div className="card-body">
+                  {selectedTab === 'complete' ? (
+                    <>
+                      <div className="year-selector">
+                        <label>Select Year: </label>
+                        <select
+                          value={selectedYear}
+                          onChange={(e) => setSelectedYear(e.target.value)}
+                        >
+                          {years.map((year, index) => (
+                            <option key={index} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="mini-cards">
+                        {filteredPayments.map((payment, index) => {
+                          const cleared =
+                            payment.rent.paid &&
+                            payment.waterBill.paid &&
+                            payment.garbageFee.paid;
 
-                      return (
-                        <div key={index} className="mini-card">
-                          <p>
-                            <strong>Month:</strong>{' '}
-                            {payment?.month || currentMonth}, {payment?.year}
-                          </p>
-                          <p>
-                            <strong>Total Paid Amount:</strong>{' '}
-                            {payment?.totalAmountPaid}
-                          </p>
-                          <p
-                            onClick={() => {
-                              HandleRefNoHistroy();
-                            }}
-                          >
-                            <strong>ReferenceNoHistory:</strong>
-                            <span className="dropdown-toggle">
-                              {displayRefNoHistory ? '⬆️' : '⬇️'}
-                            </span>
-                            {displayRefNoHistory && (
-                              <>
-                                {payment?.referenceNoHistory?.map((ref) => (
-                                  <p
-                                    className="ReferenceNoHistory"
-                                    key={ref._id}
-                                  >
-                                    <p>Amount:{ref.amount}</p>
-                                    <p>RefNo Used:{ref.referenceNoUsed}</p>
-                                  </p>
-                                ))}
-                              </>
-                            )}
-                          </p>
-                          {/* <p>
+                          return (
+                            <div key={index} className="mini-card">
+                              <p>
+                                <strong>Month:</strong>{' '}
+                                {payment?.month || currentMonth},{' '}
+                                {payment?.year}
+                              </p>
+                              <p>
+                                <strong>Total Paid Amount:</strong>{' '}
+                                {payment?.totalAmountPaid}
+                              </p>
+                              <p
+                                onClick={() => {
+                                  HandleRefNoHistroy();
+                                }}
+                              >
+                                <strong>ReferenceNoHistory:</strong>
+                                <span className="dropdown-toggle">
+                                  {displayRefNoHistory ? '⬆️' : '⬇️'}
+                                </span>
+                                {displayRefNoHistory && (
+                                  <>
+                                    {payment?.referenceNoHistory?.map((ref) => (
+                                      <p
+                                        className="ReferenceNoHistory"
+                                        key={ref._id}
+                                      >
+                                        <p>Amount:{ref.amount}</p>
+                                        <p>RefNo Used:{ref.referenceNoUsed}</p>
+                                      </p>
+                                    ))}
+                                  </>
+                                )}
+                              </p>
+                              {/* <p>
                           <strong>Excess Payment:</strong>{' '}
                           {payment?.overpay > 0 ? payment?.overpay : 'None'}
                         </p> */}
-                          <p>
-                            <strong>Cleared Status:</strong>{' '}
-                            {cleared ? 'True' : 'False'}
+                              <p>
+                                <strong>Cleared Status:</strong>{' '}
+                                {cleared ? 'True' : 'False'}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="mini-cards">
+                      {outstandingPayments?.map((payment, index) => (
+                        <div key={index} className="mini-card outstanding">
+                          <div onClick={() => handlePaymentClick(payment)}>
+                            <p>
+                              <strong>Month:</strong>{' '}
+                              <span className="monthOuts">
+                                {payment?.month}
+                              </span>
+                            </p>
+                            {payment?.rent?.deficit ? (
+                              <p>
+                                <strong>Rent Deficit:</strong>
+                                {payment?.rent?.deficit > 0
+                                  ? payment?.rent?.deficit
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+
+                            <p>
+                              <strong>Water Bill:</strong>{' '}
+                              {payment?.waterBill?.deficit > 0
+                                ? payment?.waterBill?.deficit
+                                : 'Water Bill...'}
+                            </p>
+                            {payment?.garbageFee?.deficit ? (
+                              <p>
+                                <strong>Garbage Fee Deficit:</strong>{' '}
+                                {payment?.garbageFee?.deficit > 0
+                                  ? payment?.garbageFee?.deficit
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+                            {payment?.globalDeficit ? (
+                              <p>
+                                <strong>{payment?.month} Total Deficit:</strong>{' '}
+                                {payment?.globalDeficit > 0
+                                  ? payment?.globalDeficit
+                                  : '...'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+
+                            {payment?.overpay ? (
+                              <p>
+                                <strong>Current Excess To use:</strong>{' '}
+                                {payment?.overpay > 0
+                                  ? payment?.overpay
+                                  : 'None'}
+                              </p>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+                          <p
+                            onClick={() => {
+                              handleUpdateArrowClick();
+                            }}
+                          >
+                            {displayUpdatebtn ? '⬆' : '⬇'}
+                            <br />
+                            {displayUpdatebtn && (
+                              <>
+                                {' '}
+                                <button
+                                  className="confirm-btn"
+                                  onClick={() => displayUpdatePopup(payment)}
+                                >
+                                  Deficit Errors?
+                                </button>
+                                <button
+                                  className="confirm-btn"
+                                  onClick={() => handleInvoiceGenerate(payment)}
+                                >
+                                  Generate Invoice
+                                </button>
+                              </>
+                            )}
                           </p>
                         </div>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                <div className="mini-cards">
-                  {outstandingPayments?.map((payment, index) => (
-                    <div key={index} className="mini-card outstanding">
-                      <div onClick={() => handlePaymentClick(payment)}>
-                        <p>
-                          <strong>Month:</strong>{' '}
-                          <span className="monthOuts">{payment?.month}</span>
-                        </p>
-                        {payment?.rent?.deficit ? (
-                          <p>
-                            <strong>Rent Deficit:</strong>
-                            {payment?.rent?.deficit > 0
-                              ? payment?.rent?.deficit
-                              : 'None'}
-                          </p>
-                        ) : (
-                          ''
-                        )}
-
-                        <p>
-                          <strong>Water Bill:</strong>{' '}
-                          {payment?.waterBill?.deficit > 0
-                            ? payment?.waterBill?.deficit
-                            : 'Water Bill...'}
-                        </p>
-                        {payment?.garbageFee?.deficit ? (
-                          <p>
-                            <strong>Garbage Fee Deficit:</strong>{' '}
-                            {payment?.garbageFee?.deficit > 0
-                              ? payment?.garbageFee?.deficit
-                              : 'None'}
-                          </p>
-                        ) : (
-                          ''
-                        )}
-                        {payment?.globalDeficit ? (
-                          <p>
-                            <strong>{payment?.month} Total Deficit:</strong>{' '}
-                            {payment?.globalDeficit > 0
-                              ? payment?.globalDeficit
-                              : '...'}
-                          </p>
-                        ) : (
-                          ''
-                        )}
-
-                        {payment?.overpay ? (
-                          <p>
-                            <strong>Current Excess To use:</strong>{' '}
-                            {payment?.overpay > 0 ? payment?.overpay : 'None'}
-                          </p>
-                        ) : (
-                          ''
-                        )}
-                      </div>
-                      <p
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {selectedTab === 'complete' ? (
+                  ''
+                ) : (
+                  <>
+                    {hasOutstandingPayments ? (
+                      <button
+                        className="addExtraAmount"
                         onClick={() => {
-                          handleUpdateArrowClick();
+                          handleAddInternalAmount();
                         }}
                       >
-                        {displayUpdatebtn ? '⬆' : '⬇'}
-                        <br />
-                        {displayUpdatebtn && (
-                          <>
-                            {' '}
-                            <button
-                              className="confirm-btn"
-                              onClick={() => displayUpdatePopup(payment)}
-                            >
-                              Deficit Errors?
-                            </button>
-                            <button
-                              className="confirm-btn"
-                              onClick={() => handleInvoiceGenerate(payment)}
-                            >
-                              Generate Invoice
-                            </button>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            {selectedTab === 'complete' ? (
-              ''
-            ) : (
-              <>
-                {hasOutstandingPayments ? (
-                  <button
-                    className="addExtraAmount"
-                    onClick={() => {
-                      handleAddInternalAmount();
-                    }}
-                  >
-                    Given Extra Amount within {previousMonth}
-                  </button>
-                ) : (
-                  ''
+                        Given Extra Amount within {previousMonth}
+                      </button>
+                    ) : (
+                      ''
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </div>
+              </div>
 
           {/* Right Card */}
 
@@ -858,108 +881,108 @@ const TenantPayments = () => {
               </button>
             </div>
 
-            <div className="card-body">
-              <form onSubmit={handleAddPayment}>
-                {/* Section 1: Monthly Payment Info */}
-                <div className="section section-1">
-                  <h3>{nextMonth + ', ' + currentYear} Payment Info</h3>
-                  <div>
-                    {mostRecentPayment?.overpay !== undefined && (
-                      <div className="overpay-section">
-                        {isOverpayTransferred ? (
-                          <p>
-                            <strong>Current Overpay:</strong> None
-                            <span
-                              className="overpay-toggle"
-                              onClick={handleOverpayTransfer}
-                              style={{
-                                cursor: 'pointer',
-                                marginLeft: '10px',
-                              }}
-                            >
-                              ⬆
-                            </span>
-                          </p>
-                        ) : (
-                          <p>
-                            <strong>Current Overpay:</strong>{' '}
-                            {mostRecentPayment?.overpay > 0
-                              ? mostRecentPayment?.overpay
-                              : 'None'}
-                            <span
-                              className="overpay-toggle"
-                              onClick={handleOverpayTransfer}
-                              style={{
-                                cursor: 'pointer',
-                                marginLeft: '10px',
-                              }}
-                            >
-                              ⬇
-                            </span>
-                          </p>
+                <div className="card-body">
+                  <form onSubmit={handleAddPayment}>
+                    {/* Section 1: Monthly Payment Info */}
+                    <div className="section section-1">
+                      <h3>{nextMonth + ', ' + currentYear} Payment Info</h3>
+                      <div>
+                        {mostRecentPayment?.overpay !== undefined && (
+                          <div className="overpay-section">
+                            {isOverpayTransferred ? (
+                              <p>
+                                <strong>Current Overpay:</strong> None
+                                <span
+                                  className="overpay-toggle"
+                                  onClick={handleOverpayTransfer}
+                                  style={{
+                                    cursor: 'pointer',
+                                    marginLeft: '10px',
+                                  }}
+                                >
+                                  ⬆
+                                </span>
+                              </p>
+                            ) : (
+                              <p>
+                                <strong>Current Overpay:</strong>{' '}
+                                {mostRecentPayment?.overpay > 0
+                                  ? mostRecentPayment?.overpay
+                                  : 'None'}
+                                <span
+                                  className="overpay-toggle"
+                                  onClick={handleOverpayTransfer}
+                                  style={{
+                                    cursor: 'pointer',
+                                    marginLeft: '10px',
+                                  }}
+                                >
+                                  ⬇
+                                </span>
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  <div className="form-group">
-                    <label>Monthly Amount:</label>
-                    <input
-                      type="number"
-                      placeholder="Enter amount provided"
-                      value={newMonthlyAmount}
-                      onChange={(e) => setNewMonthlyAmount(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Reference Number:</label>
-                    <input
-                      type="text"
-                      placeholder="Reference No used"
-                      value={referenceNumber}
-                      onChange={(e) => setReferenceNumber(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>New Payment Date:</label>
-                    <input
-                      type="date"
-                      placeholder="Select date"
-                      value={newPaymentDate}
-                      onChange={(e) => setNewPaymentDate(e.target.value)}
-                    />
-                  </div>
-                  {/* Section 1.2: Extra Charges */}
-                  <h3>New Month Extra Charges</h3>
-                  <div className="extra-charges-dropdown">
-                    <label
-                      onClick={toggleExtraChargesDropdown}
-                      className="dropdown-label"
-                    >
-                      <span>
-                        {selectedExtraCharge.description ||
-                          'Select Extra Charge'}
-                      </span>
-                      <span className="dropdown-toggle">
-                        {extraChargesDropdownOpen ? '⬆️' : '⬇️'}
-                      </span>
-                    </label>
-                    {extraChargesDropdownOpen && (
-                      <div className="extra-charges-dropdown-content">
-                        <div className="form-group">
-                          <label>Expected Amount:</label>
-                          <input
-                            type="number"
-                            value={selectedExtraCharge.expectedAmount ?? 0}
-                            onChange={(e) =>
-                              setSelectedExtraCharge((prevState) => ({
-                                ...prevState,
-                                expectedAmount: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        {/* <div className="form-group">
+                      <div className="form-group">
+                        <label>Monthly Amount:</label>
+                        <input
+                          type="number"
+                          placeholder="Enter amount provided"
+                          value={newMonthlyAmount}
+                          onChange={(e) => setNewMonthlyAmount(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Reference Number:</label>
+                        <input
+                          type="text"
+                          placeholder="Reference No used"
+                          value={referenceNumber}
+                          onChange={(e) => setReferenceNumber(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>New Payment Date:</label>
+                        <input
+                          type="date"
+                          placeholder="Select date"
+                          value={newPaymentDate}
+                          onChange={(e) => setNewPaymentDate(e.target.value)}
+                        />
+                      </div>
+                      {/* Section 1.2: Extra Charges */}
+                      <h3>New Month Extra Charges</h3>
+                      <div className="extra-charges-dropdown">
+                        <label
+                          onClick={toggleExtraChargesDropdown}
+                          className="dropdown-label"
+                        >
+                          <span>
+                            {selectedExtraCharge.description ||
+                              'Select Extra Charge'}
+                          </span>
+                          <span className="dropdown-toggle">
+                            {extraChargesDropdownOpen ? '⬆️' : '⬇️'}
+                          </span>
+                        </label>
+                        {extraChargesDropdownOpen && (
+                          <div className="extra-charges-dropdown-content">
+                            <div className="form-group">
+                              <label>Expected Amount:</label>
+                              <input
+                                type="number"
+                                value={selectedExtraCharge.expectedAmount ?? 0}
+                                onChange={(e) =>
+                                  setSelectedExtraCharge((prevState) => ({
+                                    ...prevState,
+                                    expectedAmount: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            {/* <div className="form-group">
                         <label>Paid Amount:</label>
                         <input
                           type="number"
@@ -972,64 +995,66 @@ const TenantPayments = () => {
                           }
                         />
                       </div> */}
-                        <div className="form-group">
-                          <label>Description:</label>
-                          <input
-                            type="text"
-                            value={selectedExtraCharge.description ?? 'None'}
-                            onChange={(e) =>
-                              setSelectedExtraCharge((prevState) => ({
-                                ...prevState,
-                                description: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          className="close-dropdown-btn"
-                          onClick={toggleExtraChargesDropdown}
-                        >
-                          ⬆
-                        </button>
+                            <div className="form-group">
+                              <label>Description:</label>
+                              <input
+                                type="text"
+                                value={
+                                  selectedExtraCharge.description ?? 'None'
+                                }
+                                onChange={(e) =>
+                                  setSelectedExtraCharge((prevState) => ({
+                                    ...prevState,
+                                    description: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              className="close-dropdown-btn"
+                              onClick={toggleExtraChargesDropdown}
+                            >
+                              ⬆
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Section 2: Previous Monthly Deficits */}
-                <div className="section section-2">
-                  <h3>Previous Month Transactions</h3>
-                  {outstandingPayments && (
-                    <>
-                      {outstandingPayments.map((payment) => (
-                        <div key={payment._id}>
-                          <>
-                            <label>
-                              {payment?.month + ',' + payment?.year}
-                            </label>
-                            {payment?.rent?.deficit > 0 ? (
-                              <div className="form-group">
+                    {/* Section 2: Previous Monthly Deficits */}
+                    <div className="section section-2">
+                      <h3>Previous Month Transactions</h3>
+                      {outstandingPayments && (
+                        <>
+                          {outstandingPayments.map((payment) => (
+                            <div key={payment._id}>
+                              <>
                                 <label>
-                                  Rent Deficit:{payment?.rent?.deficit}{' '}
+                                  {payment?.month + ',' + payment?.year}
                                 </label>
-                                {/* <input
+                                {payment?.rent?.deficit > 0 ? (
+                                  <div className="form-group">
+                                    <label>
+                                      Rent Deficit:{payment?.rent?.deficit}{' '}
+                                    </label>
+                                    {/* <input
                                 type="number"
                                 placeholder="Enter rent deficit"
                                 value={rentDeficit}
                                 onChange={(e) => setRentDeficit(e.target.value)}
                               /> */}
-                              </div>
-                            ) : (
-                              ''
-                            )}
-                            {payment?.waterBill?.deficit > 0 ? (
-                              <div className="form-group">
-                                <label>
-                                  Water Deficit:
-                                  {payment?.waterBill?.deficit}
-                                </label>
-                                {/* <input
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                                {payment?.waterBill?.deficit > 0 ? (
+                                  <div className="form-group">
+                                    <label>
+                                      Water Deficit:
+                                      {payment?.waterBill?.deficit}
+                                    </label>
+                                    {/* <input
                                 type="number"
                                 placeholder="Enter water deficit"
                                 value={waterDeficit}
@@ -1037,41 +1062,43 @@ const TenantPayments = () => {
                                   setWaterDeficit(e.target.value)
                                 }
                               /> */}
-                              </div>
-                            ) : (
-                              ''
-                            )}
-                            {payment?.waterBill?.deficit > 0 ? (
-                              ''
-                            ) : (
-                              <div className="form-group water-bill-section">
-                                <label
-                                  onClick={toggleWaterBillDropdown}
-                                  className="water-bill-label"
-                                >
-                                  <span className="water-bill-icon">💧</span>{' '}
-                                  Water Bill{' '}
-                                  <span className="dropdown-toggle">
-                                    {waterBillDropdownOpen ? '⬆' : '⬇'}
-                                  </span>
-                                </label>
-                                {waterBillDropdownOpen && (
-                                  <div className="water-bill-dropdown">
-                                    <div className="form-group">
-                                      <label>Accumulated Water Bill:</label>
-                                      <input
-                                        type="number"
-                                        value={previousAccumulatedWaterBill}
-                                        onChange={(e) =>
-                                          setPreviousAccumulatedWaterBill(
-                                            e.target.value
-                                          )
-                                        }
-                                        name="accumulatedWaterBill"
-                                        required
-                                      />
-                                    </div>
-                                    {/* <div className="form-group">
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                                {payment?.waterBill?.deficit > 0 ? (
+                                  ''
+                                ) : (
+                                  <div className="form-group water-bill-section">
+                                    <label
+                                      onClick={toggleWaterBillDropdown}
+                                      className="water-bill-label"
+                                    >
+                                      <span className="water-bill-icon">
+                                        💧
+                                      </span>{' '}
+                                      Water Bill{' '}
+                                      <span className="dropdown-toggle">
+                                        {waterBillDropdownOpen ? '⬆' : '⬇'}
+                                      </span>
+                                    </label>
+                                    {waterBillDropdownOpen && (
+                                      <div className="water-bill-dropdown">
+                                        <div className="form-group">
+                                          <label>Accumulated Water Bill:</label>
+                                          <input
+                                            type="number"
+                                            value={previousAccumulatedWaterBill}
+                                            onChange={(e) =>
+                                              setPreviousAccumulatedWaterBill(
+                                                e.target.value
+                                              )
+                                            }
+                                            name="accumulatedWaterBill"
+                                            required
+                                          />
+                                        </div>
+                                        {/* <div className="form-group">
                                       <label>Paid Water Bill:</label>
                                       <input
                                         type="number"
@@ -1085,24 +1112,24 @@ const TenantPayments = () => {
                                         required
                                       />
                                     </div> */}
-                                    <button
-                                      type="button"
-                                      className="close-dropdown-btn"
-                                      onClick={toggleWaterBillDropdown}
-                                    >
-                                      ⬆
-                                    </button>
+                                        <button
+                                          type="button"
+                                          className="close-dropdown-btn"
+                                          onClick={toggleWaterBillDropdown}
+                                        >
+                                          ⬆
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
-                              </div>
-                            )}
-                            {payment?.garbageFee?.deficit > 0 ? (
-                              <div className="form-group">
-                                <label>
-                                  Garbage Deficit:{' '}
-                                  {payment?.garbageFee?.deficit}
-                                </label>
-                                {/* <input
+                                {payment?.garbageFee?.deficit > 0 ? (
+                                  <div className="form-group">
+                                    <label>
+                                      Garbage Deficit:{' '}
+                                      {payment?.garbageFee?.deficit}
+                                    </label>
+                                    {/* <input
                                 type="number"
                                 placeholder="Enter garbage deficit"
                                 value={garbageFee}
@@ -1110,17 +1137,17 @@ const TenantPayments = () => {
                                   setGarbageDeficit(e.target.value)
                                 }
                               /> */}
-                              </div>
-                            ) : (
-                              ''
-                            )}
-                            {payment?.extraCharges?.deficit > 0 ? (
-                              <div className="form-group">
-                                <label>
-                                  Previous Extra Charges Deficit:
-                                  {payment?.extraCharges?.deficit}
-                                </label>
-                                {/* <input
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                                {payment?.extraCharges?.deficit > 0 ? (
+                                  <div className="form-group">
+                                    <label>
+                                      Previous Extra Charges Deficit:
+                                      {payment?.extraCharges?.deficit}
+                                    </label>
+                                    {/* <input
                                 type="number"
                                 placeholder="Enter extra charges"
                                 value={previousOtherChargesDeficit}
@@ -1128,51 +1155,53 @@ const TenantPayments = () => {
                                   setPreviousOtherChargesDeficit(e.target.value)
                                 }
                               /> */}
-                              </div>
-                            ) : (
-                              ''
-                            )}
-                            <hr />
-                          </>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                  <h3>Previous Month Extra Charges</h3>
-                  <div className="extra-charges-dropdown">
-                    <label
-                      onClick={togglePreviousMonthExtraChargesDropdown}
-                      className="dropdown-label"
-                    >
-                      <span>
-                        {previousMonthSelectedExtraCharge.description ||
-                          'PreviousMonth  Extra Charge'}
-                      </span>
-                      <span className="dropdown-toggle">
-                        {previousMonthExtraChargesDropdownOpen ? '⬆️' : '⬇️'}
-                      </span>
-                    </label>
-                    {previousMonthExtraChargesDropdownOpen && (
-                      <div className="extra-charges-dropdown-content">
-                        <div className="form-group">
-                          <label>Expected Amount:</label>
-                          <input
-                            type="number"
-                            value={
-                              previousMonthSelectedExtraCharge.expectedAmount ??
-                              0
-                            }
-                            onChange={(e) =>
-                              setPreviousMonthSelectedExtraCharge(
-                                (prevState) => ({
-                                  ...prevState,
-                                  expectedAmount: e.target.value,
-                                })
-                              )
-                            }
-                          />
-                        </div>
-                        {/* <div className="form-group">
+                                  </div>
+                                ) : (
+                                  ''
+                                )}
+                                <hr />
+                              </>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      <h3>Previous Month Extra Charges</h3>
+                      <div className="extra-charges-dropdown">
+                        <label
+                          onClick={togglePreviousMonthExtraChargesDropdown}
+                          className="dropdown-label"
+                        >
+                          <span>
+                            {previousMonthSelectedExtraCharge.description ||
+                              'PreviousMonth  Extra Charge'}
+                          </span>
+                          <span className="dropdown-toggle">
+                            {previousMonthExtraChargesDropdownOpen
+                              ? '⬆️'
+                              : '⬇️'}
+                          </span>
+                        </label>
+                        {previousMonthExtraChargesDropdownOpen && (
+                          <div className="extra-charges-dropdown-content">
+                            <div className="form-group">
+                              <label>Expected Amount:</label>
+                              <input
+                                type="number"
+                                value={
+                                  previousMonthSelectedExtraCharge.expectedAmount ??
+                                  0
+                                }
+                                onChange={(e) =>
+                                  setPreviousMonthSelectedExtraCharge(
+                                    (prevState) => ({
+                                      ...prevState,
+                                      expectedAmount: e.target.value,
+                                    })
+                                  )
+                                }
+                              />
+                            </div>
+                            {/* <div className="form-group">
                         <label>Paid Amount:</label>
                         <input
                           type="number"
@@ -1187,256 +1216,261 @@ const TenantPayments = () => {
                           }
                         />
                       </div> */}
-                        <div className="form-group">
-                          <label>Description:</label>
-                          <input
-                            type="text"
-                            value={
-                              previousMonthSelectedExtraCharge.description ??
-                              'None'
-                            }
-                            onChange={(e) =>
-                              setPreviousMonthSelectedExtraCharge(
-                                (prevState) => ({
-                                  ...prevState,
-                                  description: e.target.value,
-                                })
-                              )
-                            }
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          className="close-dropdown-btn"
-                          onClick={togglePreviousMonthExtraChargesDropdown}
-                        >
-                          ⬆
-                        </button>
+                            <div className="form-group">
+                              <label>Description:</label>
+                              <input
+                                type="text"
+                                value={
+                                  previousMonthSelectedExtraCharge.description ??
+                                  'None'
+                                }
+                                onChange={(e) =>
+                                  setPreviousMonthSelectedExtraCharge(
+                                    (prevState) => ({
+                                      ...prevState,
+                                      description: e.target.value,
+                                    })
+                                  )
+                                }
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              className="close-dropdown-btn"
+                              onClick={togglePreviousMonthExtraChargesDropdown}
+                            >
+                              ⬆
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </div>
 
-                <button type="submit" className="confirm-btn">
-                  Add Payment
-                </button>
-              </form>
+                    <button type="submit" className="confirm-btn">
+                      Add Payment
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        {isInvoiceVisible && (
-          <div className="invoice-modal">
-            <Invoice
-              invoiceData={invoiceData}
-              onClose={closeInvoice}
-              tenantId={invoiceSelectedPayment?.tenant?._id}
-              paymentId={invoiceSelectedPayment?._id}
-            />
-          </div>
-        )}
-        {/* Update Defaults Popup */}
-        {showPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content">
-              <h2>
-                Update {tenantDetails?.name}
-                {`'s`} Default Values
-              </h2>
-              <form onSubmit={handleUpdateDefaults}>
-                <div className="form-group">
-                  <label>Rent Default:</label>
-                  <h5>
-                    Original Payable Rent:
-                    <span className="updateDefaults">
-                      {fetchedTenantDetails?.houseDetails?.rent}
-                    </span>
-                  </h5>
-                  <input
-                    type="number"
-                    placeholder="Enter rent default"
-                    value={rentDefault}
-                    onChange={(e) => {
-                      setRentDefault(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Garbage Default:</label>
-                  <h5>
-                    Original GarbageFee:
-                    <span className="updateDefaults">
-                      {fetchedTenantDetails?.houseDetails?.garbageFee}
-                    </span>
-                  </h5>
-                  <input
-                    type="number"
-                    placeholder="Enter garbage default"
-                    value={garbageDefault}
-                    onChange={(e) => {
-                      setGarbageDefault(e.target.value);
-                    }}
-                  />
-                </div>
-                <button type="submit">Update</button>
-                <button
-                  type="button"
-                  className="close-btnClose"
-                  onClick={() => setShowPopup(false)}
-                >
-                  Close
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-        {/*Given Extra Amount Internal AmountPopup */}
-        {AddInternalAmountPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content">
-              <h2>
-                Extra {extraAmount || 0} given By {tenantDetails?.name}
-              </h2>
-              <form onSubmit={handleInternalMonthExtraGivenAmount}>
-                <div className="form-group">
-                  <label>Amount Added</label>
-                  <input
-                    type="number"
-                    placeholder="Enter amount"
-                    value={extraAmount}
-                    onChange={(e) => {
-                      setExtraAmount(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Reference number</label>
-                  <input
-                    type="text"
-                    placeholder="Reference number"
-                    value={extraAmountReferenceNo}
-                    onChange={(e) => {
-                      setExtraAmountReferenceNo(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Date</label>
-                  <input
-                    type="date"
-                    value={extraAmountGivenDate}
-                    onChange={(e) => {
-                      setExtraAmountGivenDate(e.target.value);
-                    }}
-                  />
-                </div>
-                <button type="submit">Add amount</button>
-                <button
-                  type="button"
-                  className="close-btnClose"
-                  onClick={() => setAddInternalAmountPopup(false)}
-                >
-                  Close
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-        {/* Pending Payments Popup */}
-        {showPaymentPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content">
-              <h2>
-                Complete {selectedPayment.month + `,` + selectedPayment.year}{' '}
-                Pending Payment
-              </h2>
-              <form onSubmit={handlePaymentUpdate}>
-                {/* Rent Deficit */}
-                {selectedPayment?.rent?.deficit ? (
-                  <div className="form-group">
-                    <label>
-                      Rent Deficit: {selectedPayment?.rent?.deficit || ''}
-                    </label>
-                    <input type="number" name="rentDeficit" />
-                  </div>
-                ) : null}
-
-                {/* Water Deficit */}
-                {selectedPayment?.waterBill?.deficit ? (
-                  <>
+            {isInvoiceVisible && (
+              <div className="invoice-modal">
+                <Invoice
+                  invoiceData={invoiceData}
+                  onClose={closeInvoice}
+                  tenantId={invoiceSelectedPayment?.tenant?._id}
+                  paymentId={invoiceSelectedPayment?._id}
+                />
+              </div>
+            )}
+            {/* Update Defaults Popup */}
+            {showPopup && (
+              <div className="popup-overlay">
+                <div className="popup-content">
+                  <h2>
+                    Update {tenantDetails?.name}
+                    {`'s`} Default Values
+                  </h2>
+                  <form onSubmit={handleUpdateDefaults}>
                     <div className="form-group">
-                      <label>
-                        Water Bill {selectedPayment?.waterBill?.deficit || ''}
-                      </label>
-                      <input type="number" name="waterDeficit" />
-                    </div>
-                  </>
-                ) : (
-                  ''
-                )}
-
-                {selectedPayment?.waterBill?.deficit ? (
-                  ''
-                ) : (
-                  <>
-                    {' '}
-                    <div className="form-group water-bill-section">
-                      <label
-                        onClick={toggleWaterBillDropdown}
-                        className="water-bill-label"
-                      >
-                        <span className="water-bill-icon">💧</span> Water Bill{' '}
-                        <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? '⬆' : '⬇'}
+                      <label>Rent Default:</label>
+                      <h5>
+                        Original Payable Rent:
+                        <span className="updateDefaults">
+                          {fetchedTenantDetails?.houseDetails?.rent}
                         </span>
-                      </label>
-                      {waterBillDropdownOpen && (
-                        <div className="water-bill-dropdown">
-                          <div className="form-group">
-                            <label>Accumulated Water Bill:</label>
-                            <input
-                              type="number"
-                              value={accumulatedWaterBill}
-                              onChange={(e) =>
-                                setAccumulatedWaterBill(e.target.value)
-                              }
-                              name="accumulatedWaterBill"
-                              required
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label>Paid Water Bill:</label>
-                            <input
-                              type="number"
-                              value={paidWaterBill}
-                              onChange={(e) => setPaidWaterBill(e.target.value)}
-                              name="paidWaterBill"
-                              required
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="close-dropdown-btn"
-                            onClick={toggleWaterBillDropdown}
-                          >
-                            ⬆
-                          </button>
-                        </div>
-                      )}
+                      </h5>
+                      <input
+                        type="number"
+                        placeholder="Enter rent default"
+                        value={rentDefault}
+                        onChange={(e) => {
+                          setRentDefault(e.target.value);
+                        }}
+                      />
                     </div>
-                  </>
-                )}
-                {/* New Water Bill Dropdown Section */}
+                    <div className="form-group">
+                      <label>Garbage Default:</label>
+                      <h5>
+                        Original GarbageFee:
+                        <span className="updateDefaults">
+                          {fetchedTenantDetails?.houseDetails?.garbageFee}
+                        </span>
+                      </h5>
+                      <input
+                        type="number"
+                        placeholder="Enter garbage default"
+                        value={garbageDefault}
+                        onChange={(e) => {
+                          setGarbageDefault(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <button type="submit">Update</button>
+                    <button
+                      type="button"
+                      className="close-btnClose"
+                      onClick={() => setShowPopup(false)}
+                    >
+                      Close
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+            {/*Given Extra Amount Internal AmountPopup */}
+            {AddInternalAmountPopup && (
+              <div className="popup-overlay">
+                <div className="popup-content">
+                  <h2>
+                    Extra {extraAmount || 0} given By {tenantDetails?.name}
+                  </h2>
+                  <form onSubmit={handleInternalMonthExtraGivenAmount}>
+                    <div className="form-group">
+                      <label>Amount Added</label>
+                      <input
+                        type="number"
+                        placeholder="Enter amount"
+                        value={extraAmount}
+                        onChange={(e) => {
+                          setExtraAmount(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Reference number</label>
+                      <input
+                        type="text"
+                        placeholder="Reference number"
+                        value={extraAmountReferenceNo}
+                        onChange={(e) => {
+                          setExtraAmountReferenceNo(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Date</label>
+                      <input
+                        type="date"
+                        value={extraAmountGivenDate}
+                        onChange={(e) => {
+                          setExtraAmountGivenDate(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <button type="submit">Add amount</button>
+                    <button
+                      type="button"
+                      className="close-btnClose"
+                      onClick={() => setAddInternalAmountPopup(false)}
+                    >
+                      Close
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+            {/* Pending Payments Popup */}
+            {showPaymentPopup && (
+              <div className="popup-overlay">
+                <div className="popup-content">
+                  <h2>
+                    Complete{' '}
+                    {selectedPayment.month + `,` + selectedPayment.year} Pending
+                    Payment
+                  </h2>
+                  <form onSubmit={handlePaymentUpdate}>
+                    {/* Rent Deficit */}
+                    {selectedPayment?.rent?.deficit ? (
+                      <div className="form-group">
+                        <label>
+                          Rent Deficit: {selectedPayment?.rent?.deficit || ''}
+                        </label>
+                        <input type="number" name="rentDeficit" />
+                      </div>
+                    ) : null}
 
-                {/* Garbage Deficit */}
-                {selectedPayment?.garbageFee?.deficit ? (
-                  <div className="form-group">
-                    <label>
-                      Garbage Deficit:{' '}
-                      {selectedPayment?.garbageFee?.deficit || ''}
-                    </label>
-                    <input type="number" name="garbageDeficit" required />
-                  </div>
-                ) : null}
+                    {/* Water Deficit */}
+                    {selectedPayment?.waterBill?.deficit ? (
+                      <>
+                        <div className="form-group">
+                          <label>
+                            Water Bill{' '}
+                            {selectedPayment?.waterBill?.deficit || ''}
+                          </label>
+                          <input type="number" name="waterDeficit" />
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
+
+                    {selectedPayment?.waterBill?.deficit ? (
+                      ''
+                    ) : (
+                      <>
+                        {' '}
+                        <div className="form-group water-bill-section">
+                          <label
+                            onClick={toggleWaterBillDropdown}
+                            className="water-bill-label"
+                          >
+                            <span className="water-bill-icon">💧</span> Water
+                            Bill{' '}
+                            <span className="dropdown-toggle">
+                              {waterBillDropdownOpen ? '⬆' : '⬇'}
+                            </span>
+                          </label>
+                          {waterBillDropdownOpen && (
+                            <div className="water-bill-dropdown">
+                              <div className="form-group">
+                                <label>Accumulated Water Bill:</label>
+                                <input
+                                  type="number"
+                                  value={accumulatedWaterBill}
+                                  onChange={(e) =>
+                                    setAccumulatedWaterBill(e.target.value)
+                                  }
+                                  name="accumulatedWaterBill"
+                                  required
+                                />
+                              </div>
+                              <div className="form-group">
+                                <label>Paid Water Bill:</label>
+                                <input
+                                  type="number"
+                                  value={paidWaterBill}
+                                  onChange={(e) =>
+                                    setPaidWaterBill(e.target.value)
+                                  }
+                                  name="paidWaterBill"
+                                  required
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="close-dropdown-btn"
+                                onClick={toggleWaterBillDropdown}
+                              >
+                                ⬆
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {/* New Water Bill Dropdown Section */}
+
+                    {/* Garbage Deficit */}
+                    {selectedPayment?.garbageFee?.deficit ? (
+                      <div className="form-group">
+                        <label>
+                          Garbage Deficit:{' '}
+                          {selectedPayment?.garbageFee?.deficit || ''}
+                        </label>
+                        <input type="number" name="garbageDeficit" required />
+                      </div>
+                    ) : null}
 
                 {/* Reference Number */}
                 <div className="form-group">
@@ -1450,138 +1484,149 @@ const TenantPayments = () => {
                   <input type="date" name="date" required />
                 </div>
 
-                {/* Submit and Cancel Buttons */}
-                <button type="submit" className="confirm-btn">
-                  Update Payment
-                </button>
-                <button
-                  type="button"
-                  className="close-btnClose"
-                  onClick={() => setShowPaymentPopup(false)}
-                >
-                  Cancel
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-        {showUpdatePaymentModal && (
-          <div className="confirmation-modal">
-            <div className="popup-content">
-              <h2>
-                Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
-                Deficits
-              </h2>
-              <form onSubmit={handleDeficitsUpdate}>
-                {/* Rent Deficit */}
-                {selectedPayment?.rent?.deficit > 0 ? (
-                  <div className="form-group">
-                    <label>
-                      Current Rent Deficit:{' '}
-                      {selectedPayment?.rent?.deficit || ''}
-                    </label>
-                    <input
-                      type="number"
-                      value={updatedRentDeficit}
-                      onChange={(e) => setUpdatedRentDeficit(e.target.value)}
-                      placeholder="New deficit value"
-                    />
-                  </div>
-                ) : null}
+                    {/* Submit and Cancel Buttons */}
+                    <button type="submit" className="confirm-btn">
+                      Update Payment
+                    </button>
+                    <button
+                      type="button"
+                      className="close-btnClose"
+                      onClick={() => setShowPaymentPopup(false)}
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+            {showUpdatePaymentModal && (
+              <div className="confirmation-modal">
+                <div className="popup-content">
+                  <h2>
+                    Update {selectedPayment.month + `,` + selectedPayment.year}{' '}
+                    Deficits
+                  </h2>
+                  <form onSubmit={handleDeficitsUpdate}>
+                    {/* Rent Deficit */}
+                    {selectedPayment?.rent?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Rent Deficit:{' '}
+                          {selectedPayment?.rent?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedRentDeficit}
+                          onChange={(e) =>
+                            setUpdatedRentDeficit(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
 
-                {/* Water Deficit */}
-                {selectedPayment?.waterBill?.deficit > 0 ? (
-                  <>
-                    <div className="form-group">
-                      <label>
-                        Current Water Bill{' '}
-                        {selectedPayment?.waterBill?.deficit || ''}
-                      </label>
-                      <input
-                        type="number"
-                        value={updatedWaterDeficit}
-                        onChange={(e) => setUpdatedWaterDeficit(e.target.value)}
-                        placeholder="New deficit value"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  ''
-                )}
-
-                {selectedPayment?.waterBill?.deficit > 0 ? (
-                  ''
-                ) : (
-                  <>
-                    {' '}
-                    <div className="form-group water-bill-section">
-                      <label
-                        onClick={toggleWaterBillDropdown}
-                        className="water-bill-label"
-                      >
-                        <span className="water-bill-icon">💧</span> Water Bill{' '}
-                        <span className="dropdown-toggle">
-                          {waterBillDropdownOpen ? '⬆' : '⬇'}
-                        </span>
-                      </label>
-                      {waterBillDropdownOpen && (
-                        <div className="water-bill-dropdown">
-                          <div className="form-group">
-                            <label>Accumulated Water Bill:</label>
-                            <input
-                              type="number"
-                              value={updatedAccumulatedWaterBill}
-                              onChange={(e) =>
-                                setUpdatedAccumulatedWaterBill(e.target.value)
-                              }
-                              name="accumulatedWaterBill"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="close-dropdown-btn"
-                            onClick={toggleWaterBillDropdown}
-                          >
-                            ⬆
-                          </button>
+                    {/* Water Deficit */}
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      <>
+                        <div className="form-group">
+                          <label>
+                            Current Water Bill{' '}
+                            {selectedPayment?.waterBill?.deficit || ''}
+                          </label>
+                          <input
+                            type="number"
+                            value={updatedWaterDeficit}
+                            onChange={(e) =>
+                              setUpdatedWaterDeficit(e.target.value)
+                            }
+                            placeholder="New deficit value"
+                          />
                         </div>
-                      )}
-                    </div>
-                  </>
-                )}
-                {/* New Water Bill Dropdown Section */}
+                      </>
+                    ) : (
+                      ''
+                    )}
 
-                {/* Garbage Deficit */}
-                {selectedPayment?.garbageFee?.deficit > 0 ? (
-                  <div className="form-group">
-                    <label>
-                      Current Garbage Deficit:{' '}
-                      {selectedPayment?.garbageFee?.deficit || ''}
-                    </label>
-                    <input
-                      type="number"
-                      value={updatedGarbageDeficit}
-                      onChange={(e) => setUpdatedGarbageDeficit(e.target.value)}
-                      placeholder="New deficit value"
-                    />
-                  </div>
-                ) : null}
+                    {selectedPayment?.waterBill?.deficit > 0 ? (
+                      ''
+                    ) : (
+                      <>
+                        {' '}
+                        <div className="form-group water-bill-section">
+                          <label
+                            onClick={toggleWaterBillDropdown}
+                            className="water-bill-label"
+                          >
+                            <span className="water-bill-icon">💧</span> Water
+                            Bill{' '}
+                            <span className="dropdown-toggle">
+                              {waterBillDropdownOpen ? '⬆' : '⬇'}
+                            </span>
+                          </label>
+                          {waterBillDropdownOpen && (
+                            <div className="water-bill-dropdown">
+                              <div className="form-group">
+                                <label>Accumulated Water Bill:</label>
+                                <input
+                                  type="number"
+                                  value={updatedAccumulatedWaterBill}
+                                  onChange={(e) =>
+                                    setUpdatedAccumulatedWaterBill(
+                                      e.target.value
+                                    )
+                                  }
+                                  name="accumulatedWaterBill"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="close-dropdown-btn"
+                                onClick={toggleWaterBillDropdown}
+                              >
+                                ⬆
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {/* New Water Bill Dropdown Section */}
 
-                {/*Extra Charges*/}
-                {selectedPayment?.extraCharges?.deficit > 0 ? (
-                  <div className="form-group">
-                    <label>
-                      Current Extra Charges Deficit:{' '}
-                      {selectedPayment?.extraCharges?.deficit || ''}
-                    </label>
-                    <input
-                      type="number"
-                      value={updatedExtraCharges}
-                      onChange={(e) => setUpdatedExtraCharges(e.target.value)}
-                      placeholder="New deficit value"
-                    />
-                  </div>
-                ) : null}
+                    {/* Garbage Deficit */}
+                    {selectedPayment?.garbageFee?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Garbage Deficit:{' '}
+                          {selectedPayment?.garbageFee?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedGarbageDeficit}
+                          onChange={(e) =>
+                            setUpdatedGarbageDeficit(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
+
+                    {/*Extra Charges*/}
+                    {selectedPayment?.extraCharges?.deficit > 0 ? (
+                      <div className="form-group">
+                        <label>
+                          Current Extra Charges Deficit:{' '}
+                          {selectedPayment?.extraCharges?.deficit || ''}
+                        </label>
+                        <input
+                          type="number"
+                          value={updatedExtraCharges}
+                          onChange={(e) =>
+                            setUpdatedExtraCharges(e.target.value)
+                          }
+                          placeholder="New deficit value"
+                        />
+                      </div>
+                    ) : null}
 
                 {/* Reference Number */}
                 <div className="form-group">
@@ -1598,58 +1643,49 @@ const TenantPayments = () => {
                   />
                 </div>
 
-                {/* Submit and Cancel Buttons */}
-                <div className="closeAndUpdateBtns">
-                  {' '}
-                  <button type="submit" className="confirm-btn">
-                    Update Deficits
-                  </button>
-                  <button
-                    type="button"
-                    className="confirm-btn"
-                    onClick={() => {
-                      closeUpdatePopup();
-                    }}
-                  >
-                    Cancel
-                  </button>
+                    {/* Submit and Cancel Buttons */}
+                    <div className="closeAndUpdateBtns">
+                      {' '}
+                      <button type="submit" className="confirm-btn">
+                        Update Deficits
+                      </button>
+                      <button
+                        type="button"
+                        className="confirm-btn"
+                        onClick={() => {
+                          closeUpdatePopup();
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {/* Confirmation Modal */}
-        {showConfirmationModal && (
-          <div className="confirmation-modal">
-            <div className="modal-content">
-              <p>Are you sure you want to proceed with this payment?</p>
-              <div className="modal-actions">
-                <button className="cancel-btn" onClick={handleCloseModal}>
-                  Cancel
-                </button>
-                <button
-                  className="confirm-btn"
-                  onClick={handleConfirmAddPayment}
-                >
-                  Yes, Proceed
-                </button>
               </div>
-            </div>
-          </div>
+            )}
+            {/* Confirmation Modal */}
+            {showConfirmationModal && (
+              <div className="confirmation-modal">
+                <div className="modal-content">
+                  <p>Are you sure you want to proceed with this payment?</p>
+                  <div className="modal-actions">
+                    <button className="cancel-btn" onClick={handleCloseModal}>
+                      Cancel
+                    </button>
+                    <button
+                      className="confirm-btn"
+                      onClick={handleConfirmAddPayment}
+                    >
+                      Yes, Proceed
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {error && <span>{error}</span>}
+          </>
         )}
-        {error && <span>{error}</span>}
       </>
-      {loading && (
-        <div className="loader-overlay">
-          <TailSpin
-            height="100"
-            width="100"
-            color="#4fa94d"
-            ariaLabel="loading"
-            visible={true}
-          />
-        </div>
-      )}
     </div>
   );
 };

@@ -10,21 +10,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
+
 .login-container {
   width: 350px;
   height: 400px;
-  background-color: wheat;
-  backdrop-filter: blur(4px);
-  border: 1.5px solid rgb(49, 93, 125);
+  background-image: url("bghm.jfif");
+  box-shadow: 0 0 10px var(--primary-color);
+  border: 1.5px solid #315d7d;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  opacity: 0.8;
+  // opacity: 0.8;
   gap: 20px;
   border-radius: 15px;
+  color: white;
 }
 input {
   width: 200px;
@@ -58,8 +59,9 @@ input {
   border-radius: 10px;
   background-color: rgba(10, 10, 10, 0.5);
   border: 1px solid rgb(49, 93, 125);
-  font-size: 17px;
-  color: brown;
+  font-size: 20px;
+  color: var(--primary-color);
+  font-weight: 1000;
   transition: all 300ms ease-in-out;
 }
 .LoginBtn:hover {
@@ -73,4 +75,5 @@ input {
   text-align: center;
   height: 5vh;
   border-radius: 15px;
+}
 }
