@@ -42,6 +42,7 @@
     width: 90%;
     margin: 0 auto;
     border-collapse: collapse;
+    border: 1px solid var(--primary-color);
 
     input {
       width: 20px;
@@ -56,7 +57,7 @@
     th,
     td {
       padding: 5px;
-      border: 1px solid rgba(128, 255, 0, 0.322);
+      border: 1px solid rgba(57, 104, 192, 0.322);
     }
 
     th {
@@ -108,7 +109,7 @@
       }
     }
   }
-
+  
   .edit-icon,
   .delete-icon {
     cursor: pointer;
@@ -117,6 +118,13 @@
 
     &:hover {
       color: #0056b3;
+    }
+  }
+  .delete-icon{
+    color: red;
+
+    &:hover {
+      color: #bd3618;
     }
   }
   .confirmation-popup-overlay {
