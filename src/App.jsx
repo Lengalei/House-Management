@@ -85,7 +85,7 @@ function App() {
           <Route path="/greyList" element={<GreyList />} />
           <Route path="/taxPayment" element={<TaxPayment />} />
           <Route path="/taxPaymentHistory" element={<TaxPaymentHistory />} />
-          {/* ************************************************************************** */}
+          {/* ****************************************** */}
           {/* v2 */}
           <Route path="/v2/registerTenant" element={<RegisterTenant />} />{' '}
           <Route
