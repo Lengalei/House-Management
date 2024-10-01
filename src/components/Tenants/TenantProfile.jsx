@@ -333,8 +333,8 @@ function TenantProfile() {
         </div>
       )}
       {receiptRegenPopup && (
-        <div className="confirmation-popup-overlay">
-          <div className="confirmation-popup">
+        <div className="receiptRegenPopup">
+          <div className="receiptRegenPopup-popup">
             <DepoReceipt receiptData={receiptData} onClose={closePopup} />
           </div>
         </div>
