@@ -259,7 +259,7 @@ export const checkIfthereIsAnyAdmin = async (req, res) => {
     res.status(200).json(admins);
   } catch (error) {
     console.log('error Occured fetching Admins: ', error);
-    res.status(500).json({ message: 'Server Error!', errro });
+    res.status(500).json({ message: 'Server Error!', error });
   }
 };
 

@@ -20,6 +20,8 @@ import {
   clearTenant,
   blackListTenant,
   whiteListTenant,
+  updateSingleTenantData,
+  sendTenantAndOwnerEmails,
 } from '../../../controllers/v2/controllers/tenant.controller.js';
 import { authorizeRoles } from '../../../middleware/authorizeRoles.js';
 
@@ -70,6 +72,7 @@ router.put(
 router.delete('/deleteTenant/:id', authorizeRoles('super_admin'), deleteTenant);
 router.patch('/blackListTenant/:id', blackListTenant);
 router.patch('/whiteListTenant/:id', whiteListTenant);
+router.put('/updateSingleTenantData/:id', updateSingleTenantData);
 
 router.get('/checkTenantPaymentRecord/:tenantId', checkTenantPaymentRecord);
 
@@ -79,7 +82,11 @@ router.put(
   authorizeRoles('super_admin'),
   clearTenant
 );
-
+router.post(
+  '/sendEmails/:id',
+  authorizeRoles('super_admin'),
+  sendTenantAndOwnerEmails
+);
 //not sure if we are going to use the below any more
 router.get(
   '/getMostRecentPaymentByTenantId/:tenantId',

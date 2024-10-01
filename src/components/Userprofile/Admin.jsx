@@ -1,10 +1,10 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './Admin.scss';
 import apiRequest from '../../lib/apiRequest';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadWidget from '../../components/uploadWidget/UploadWidget';
-import { ThreeDots } from 'react-loader-spinner'; // Import loader
+import { TailSpin } from 'react-loader-spinner'; // Import loader
 import { setAdmin } from '../../features/Admin/adminSlice';
 
 function Admin() {
@@ -87,14 +87,10 @@ function Admin() {
           <h2 className="h2">Personal Information</h2>
           <div className="profile2">
             <div className="admin-image">
-              {loading ? (
-                <ThreeDots color="#333" height={80} width={80} /> // Display loader while uploading
-              ) : (
-                <img
-                  src={admin?.profile || avatar || '/profile3.jfif'} // Display the uploaded image or default image
-                  alt="Profile"
-                />
-              )}
+              <img
+                src={admin?.profile || avatar || '/profile3.jfif'} // Display the uploaded image or default image
+                alt="Profile"
+              />
             </div>
             <div className="btn2 ">
               <UploadWidget
@@ -114,7 +110,6 @@ function Admin() {
               <p>Name: {admin ? admin.username : 'John Hariet'}</p>
               <p>Email: {admin ? admin.email : 'johnhariet@gmail.com'}</p>
               <p>Role: {admin?.role ? admin.role : 'Admin'}</p>
-              <button>Request Role Change</button>
             </div>
           </div>
         </div>
@@ -165,6 +160,17 @@ function Admin() {
           </form>
         </div>
       </div>
+      {loading && (
+        <div className="loader-overlay">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
     </div>
   );
 }

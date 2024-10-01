@@ -286,17 +286,17 @@ const PaymentDetailsPage = () => {
               </div>
             </div>
             <div className="right-card">
+              <div className="button-container">
+                <div className="back-arrow">
+                  <button onClick={() => window?.history?.back()}>
+                    &larr; Back
+                  </button>
+                </div>
+              </div>
+
               <h3>Advanced</h3>
 
               <Receipt receiptData={receiptData} />
-              <div className="button-container">
-                {/* <button className="generate-invoice" onClick={generateInvoice}>
-                  <FaFileInvoice /> Generate Invoice
-                </button> */}
-                {/* <button className="generate-receipt" onClick={generateReceipt}>
-                  <FaReceipt /> Generate Receipt
-                </button> */}
-              </div>
             </div>
           </div>
         </>

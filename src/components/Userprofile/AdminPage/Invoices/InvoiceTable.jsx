@@ -29,7 +29,7 @@ const InvoiceTable = () => {
     setLoading(true);
     try {
       const response = await apiRequest.get('/v2/invoices/allInvoices');
-      if (response.data.length > 0) {
+      if (response?.data?.length > 0) {
         setInvoices(response.data);
       }
     } catch (error) {
@@ -46,8 +46,8 @@ const InvoiceTable = () => {
 
   const handleSelectInvoice = (invoiceId) => {
     setSelectedInvoices((prev) =>
-      prev.includes(invoiceId)
-        ? prev.filter((id) => id !== invoiceId)
+      prev?.includes(invoiceId)
+        ? prev?.filter((id) => id !== invoiceId)
         : [...prev, invoiceId]
     );
   };
@@ -121,7 +121,7 @@ const InvoiceTable = () => {
   // Function to remove a row in the editable table
   const handleRemoveRow = (index) => {
     const updatedItems = [...editInvoice.items];
-    updatedItems.splice(index, 1);
+    updatedItems?.splice(index, 1);
     setEditInvoice({ ...editInvoice, items: updatedItems });
   };
 
@@ -220,7 +220,7 @@ const InvoiceTable = () => {
                       />
                     </td>
                     <td>{invoice?.invoiceNumber}</td>
-                    <td>{invoice?.tenant.name}</td>
+                    <td>{invoice?.tenant?.name}</td>
                     <td>{invoice?.HouseNo}</td>
                     <td>
                       <button onClick={() => toggleExpandInvoice(invoice?._id)}>
@@ -230,8 +230,8 @@ const InvoiceTable = () => {
                           <FaChevronDown />
                         )}
                       </button>
-                      {expandedInvoice === invoice._id
-                        ? invoice?.items.map((item, index) => (
+                      {expandedInvoice === invoice?._id
+                        ? invoice?.items?.map((item, index) => (
                             <div key={index} className="item-detail">
                               <strong>{item?.name}</strong>
                               <span>
@@ -280,7 +280,7 @@ const InvoiceTable = () => {
             activeLinkClass="active-link"
           />
           <div className="back-arrow">
-            <button onClick={() => window.history.back()}>&larr; Back</button>
+            <button onClick={() => window?.history?.back()}>&larr; Back</button>
           </div>
         </>
       ) : (

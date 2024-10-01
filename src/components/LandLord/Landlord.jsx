@@ -116,7 +116,7 @@ function Landlord() {
     <div>
       <div className="tenant">
         <div className="registration">
-          <h3>Input Landlord&apos;s details to register</h3>
+          <h3>Input Caretaker&apos;s details to register</h3>
           <div className="form">
             <form onSubmit={handleSubmit}>
               {/* Name */}
@@ -192,7 +192,7 @@ function Landlord() {
               {/* Floor Selection */}
               <div className="forminput">
                 <label htmlFor="floor">
-                  Floor<span>*</span>
+                  Floor<span></span>
                 </label>
                 <select
                   id="floor"
@@ -253,26 +253,24 @@ function Landlord() {
                   </div>
                 </div>
               )}
-
               {/* Custom House Input and Submit */}
-              {showCustomHouseInput && (
-                <div className="forminput">
-                  <label htmlFor="customHouse">
-                    Custom House<span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="customHouse"
-                    name="customHouse"
-                    value={customHouseInput}
-                    onChange={handleCustomHouseChange}
-                    placeholder="Enter custom house number"
-                  />
-                  <button type="button" onClick={handleCustomHouseSubmit}>
-                    Submit Custom House
-                  </button>
-                </div>
-              )}
+
+              <div className="forminput">
+                <label htmlFor="customHouse">
+                  Custom House<span></span>
+                </label>
+                <input
+                  type="text"
+                  id="customHouse"
+                  name="customHouse"
+                  value={customHouseInput}
+                  onChange={handleCustomHouseChange}
+                  placeholder="Enter custom house number"
+                />
+                <button type="button" onClick={handleCustomHouseSubmit}>
+                  Submit Custom House
+                </button>
+              </div>
 
               {/* Assigned House No */}
               <div className="forminput">

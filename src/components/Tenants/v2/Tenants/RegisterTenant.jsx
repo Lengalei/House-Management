@@ -115,6 +115,7 @@ const RegisterTenant = () => {
     });
   };
 
+  //apartment selection
   const handleApartmentSelection = (apartment) => {
     setSelectedApartment(apartment);
     setSelectedFloor(null);

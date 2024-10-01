@@ -96,49 +96,89 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
 
       // Proceed to generate the PDF after successful save
       const doc = new jsPDF();
-      doc.setFontSize(20);
-      doc.text('Invoice', 14, 22);
-      doc.setFontSize(12);
-      doc.text(`Invoice Number: ${generatedInvoiceNumber}`, 14, 32);
-      doc.text(`Client Name: ${clientName}`, 14, 42);
-      doc.text(`House No: ${HouseNo}`, 14, 52);
 
-      const tableColumn = ['Item', 'Description', 'Price'];
-      const tableRows = [];
+      // Set up the logo
+      const logo = new Image();
+      logo.src = '/homelogo.png'; // Path to the logo
 
-      editableItems.forEach((item) => {
-        if (item.name === 'Monthly Rent Transaction' && item.price > 0) {
-          tableRows.push(['Rent', item.description, item.price.toFixed(2)]);
-        }
-        if (item.name === 'Monthly Water Transaction' && item.price > 0) {
-          tableRows.push(['Water', item.description, item.price.toFixed(2)]);
-        }
-        if (item.name === 'Monthly Garbage Transaction' && item.price > 0) {
-          tableRows.push(['Garbage', item.description, item.price.toFixed(2)]);
-        }
-        if (
-          item.name === 'Monthly Extra Charges Transaction' &&
-          item.price > 0
-        ) {
-          tableRows.push([
-            'Extra Charges',
-            item.description,
-            item.price.toFixed(2),
-          ]);
-        }
-      });
+      // Wait for the logo to load
+      logo.onload = () => {
+        // Add the letterhead (logo and company info)
+        const logoWidth = 50; // Desired logo width
+        const aspectRatio = logo.width / logo.height;
+        const logoHeight = logoWidth / aspectRatio; // Calculate height based on aspect ratio
 
-      doc.autoTable(tableColumn, tableRows, { startY: 62 });
-      doc.text(
-        `Total Amount: KSH ${totalAmount.toFixed(2)}`,
-        14,
-        doc.lastAutoTable.finalY + 10
-      );
+        doc.addImage(logo, 'PNG', 10, 10, logoWidth, logoHeight);
 
-      doc.save(`invoice_${generatedInvoiceNumber}.pdf`);
+        // Set font for the letterhead
+        doc.setFontSize(14);
+        doc.text('Sleek Abode Apartments', 70, 20);
+        doc.setFontSize(10);
+        doc.text('Kimbo, Ruiru.', 70, 30);
+        doc.text('Contact: your-email@example.com', 70, 35);
+        doc.text('Phone: (+254) 88-413-323', 70, 40);
 
-      // Show success toast
-      toast.success('Invoice posted and downloaded successfully!');
+        // Add a line to separate the letterhead from the invoice details
+        doc.setLineWidth(1);
+        doc.line(10, 45, 200, 45);
+
+        // Add invoice title and details
+        doc.setFontSize(20);
+        doc.text('Invoice', 14, 60); // Adjust position to fit below the letterhead
+        doc.setFontSize(12);
+        doc.text(`Invoice Number: ${generatedInvoiceNumber}`, 14, 70);
+        doc.text(`Client Name: ${clientName}`, 14, 80);
+        doc.text(`House No: ${HouseNo}`, 14, 90);
+
+        // Prepare the invoice items
+        const tableColumn = ['Item', 'Description', 'Price'];
+        const tableRows = [];
+
+        editableItems.forEach((item) => {
+          if (item.name === 'Monthly Rent Transaction' && item.price > 0) {
+            tableRows.push(['Rent', item.description, item.price.toFixed(2)]);
+          }
+          if (item.name === 'Monthly Water Transaction' && item.price > 0) {
+            tableRows.push(['Water', item.description, item.price.toFixed(2)]);
+          }
+          if (item.name === 'Monthly Garbage Transaction' && item.price > 0) {
+            tableRows.push([
+              'Garbage',
+              item.description,
+              item.price.toFixed(2),
+            ]);
+          }
+          if (
+            item.name === 'Monthly Extra Charges Transaction' &&
+            item.price > 0
+          ) {
+            tableRows.push([
+              'Extra Charges',
+              item.description,
+              item.price.toFixed(2),
+            ]);
+          }
+        });
+
+        // Create the autoTable for the invoice items
+        doc.autoTable(tableColumn, tableRows, { startY: 100 }); // Adjust startY based on your layout
+        doc.text(
+          `Total Amount: KSH ${totalAmount.toFixed(2)}`,
+          14,
+          doc.lastAutoTable.finalY + 10
+        );
+
+        // Save the PDF
+        doc.save(`invoice_${generatedInvoiceNumber}.pdf`);
+
+        // Show success toast
+        toast.success('Invoice posted and downloaded successfully!');
+      };
+
+      // Handle image loading error
+      logo.onerror = () => {
+        toast.error('Error loading logo image.');
+      };
     } catch (error) {
       // Show error toast if there was an error
       toast.error('There was an issue posting the invoice: ' + error.message);

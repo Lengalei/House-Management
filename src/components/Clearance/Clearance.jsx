@@ -94,16 +94,15 @@ function Clearance() {
 
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleCLearTenantFinal = async (e) => {
-    e.preventDefault();
+  const handleCLearTenantFinal = async (totalRefundAmunt) => {
     setLoading(true);
     try {
-      const response = await apiRequest.put(
-        `/v2/tenants/setTenantWatingClearingList/${tenant._id}`
+      const response = await apiRequest.post(
+        `/v2/tenants/sendEmails/${tenant?._id}`,
+        { refundAmount: totalRefundAmunt }
       );
       if (response.status) {
         toast.success('Tenant Cleared');
-        navigate('/listAllTenants');
         setLoading(false);
       }
     } catch (error) {
@@ -192,8 +191,10 @@ function Clearance() {
                 <p>House No: {tenant?.houseDetails?.houseNo}</p>
                 <p>
                   Amount Avaliable :{' '}
-                  {(tenant?.houseDetails?.rentDeposit || 0) +
-                    (tenant?.houseDetails?.waterDeposit + 0) +
+                  {(mostRecentPayments?.tenant?.houseDetails?.rentDeposit ||
+                    0) +
+                    (mostRecentPayments?.tenant?.houseDetails?.waterDeposit +
+                      0) +
                     (mostRecentPayments?.overpay || 0)}
                 </p>
               </div>
@@ -218,9 +219,10 @@ function Clearance() {
                         </td>
                         <td>{mostRecentPayments?.totalAmountPaid}</td>
                         <td>
-                          {mostRecentPayments?.tenant?.deposits?.rentDeposit +
-                            mostRecentPayments?.tenant?.deposits
-                              ?.waterDeposit || 0}
+                          {(mostRecentPayments?.tenant?.deposits?.rentDeposit ||
+                            0) +
+                            (mostRecentPayments?.tenant?.deposits
+                              ?.waterDeposit || 0)}
                         </td>
                         <td>
                           {mostRecentPayments?.isCleared
@@ -266,14 +268,14 @@ function Clearance() {
               <label htmlFor="">
                 House Deposit :{' '}
                 <span className="clearspan">
-                  {tenant?.deposits?.rentDeposit}{' '}
+                  {mostRecentPayments?.tenant?.houseDetails?.rentDeposit}{' '}
                 </span>
               </label>{' '}
               <hr />
               <label htmlFor="">
                 Water Deposit :{' '}
                 <span className="clearspan">
-                  {tenant?.deposits?.waterDeposit}
+                  {mostRecentPayments?.tenant?.houseDetails?.waterDeposit}
                 </span>
               </label>
               {mostRecentPayments?.overpay > 0 && (
@@ -288,9 +290,9 @@ function Clearance() {
               <label htmlFor="">
                 Cash at Hand :
                 <span className="clearspan">
-                  {tenant?.deposits?.rentDeposit +
-                    tenant?.deposits?.waterDeposit +
-                    mostRecentPayments?.overpay || 0}
+                  {(mostRecentPayments?.tenant?.deposits?.rentDeposit || 0) +
+                    (mostRecentPayments?.tenant?.deposits?.waterDeposit || 0) +
+                    (mostRecentPayments?.overpay || 0)}
                 </span>
               </label>
             </div>
@@ -299,12 +301,21 @@ function Clearance() {
             <div className="clear">
               <label htmlFor="">
                 Refund:{' '}
-                {tenant?.deposits?.rentDeposit +
-                  tenant?.deposits?.waterDeposit +
-                  mostRecentPayments?.overpay || 0}
+                {(mostRecentPayments?.tenant?.deposits?.rentDeposit || 0) +
+                  (mostRecentPayments?.tenant?.deposits?.waterDeposit || 0) +
+                  (mostRecentPayments?.overpay || 0)}
               </label>
             </div>
-            <button className="btn" onClick={handleCLearTenantFinal}>
+            <button
+              className="btn"
+              onClick={() =>
+                handleCLearTenantFinal(
+                  (mostRecentPayments?.tenant?.deposits?.rentDeposit || 0) +
+                    (mostRecentPayments?.tenant?.deposits?.waterDeposit || 0) +
+                    (mostRecentPayments?.overpay || 0)
+                )
+              }
+            >
               Clear
             </button>
           </div>
@@ -327,8 +338,9 @@ function Clearance() {
       {isPopupOpen && (
         <div className="popup-overlay">
           <div className="popup">
-            <h2>Outstanding Payments</h2>
-            <h5>Name: {tenant?.name} Outstanding Payments</h5>
+            <div className="header">
+              <h3>{tenant?.name} Outstanding Payments</h3>
+            </div>
             <table className="payment-table">
               <thead>
                 <tr>
@@ -339,19 +351,20 @@ function Clearance() {
                 </tr>
               </thead>
               <tbody>
-                {mostRecentPayments
-                  ?.slice(
-                    (activePage - 1) * itemsPerPage,
-                    activePage * itemsPerPage
-                  )
-                  ?.map((payment, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{payment?.globalDeficit}</td>
-                      <td>{payment?.month + ', ' + payment?.year}</td>
-                      <td>{payment?.isCleared ? 'Cleared' : 'Pending'}</td>
-                    </tr>
-                  ))}
+                {mostRecentPayments &&
+                  mostRecentPayments
+                    ?.slice(
+                      (activePage - 1) * itemsPerPage,
+                      activePage * itemsPerPage
+                    )
+                    ?.map((payment, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{payment?.globalDeficit}</td>
+                        <td>{payment?.month + ', ' + payment?.year}</td>
+                        <td>{payment?.isCleared ? 'Cleared' : 'Pending'}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
             <Pagination
