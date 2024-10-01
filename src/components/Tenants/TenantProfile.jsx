@@ -3,6 +3,7 @@ import { FaEdit } from 'react-icons/fa';
 import { CgPlayListRemove } from 'react-icons/cg';
 import { MdOutlineNotListedLocation } from 'react-icons/md';
 import { GiHazardSign } from 'react-icons/gi';
+import { MdAutorenew } from 'react-icons/md';
 import './TenantProfile.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import apiRequest from '../../lib/apiRequest';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TailSpin } from 'react-loader-spinner';
+import DepoReceipt from '../Rent Payment/Payment/Receipt/DepoReceipt';
 
 function TenantProfile() {
   const { _id } = useParams();
@@ -17,28 +19,27 @@ function TenantProfile() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [tenant, setTenant] = useState(null);
+  console.log(tenant);
 
   useEffect(() => {
-    const fetchTenant = async () => {
-      setLoading(true);
-      try {
-        const res = await apiRequest(`/v2/tenants/getSingleTenant/${_id}`);
-        if (res.status) {
-          // console.log(res.data);
-          setTenant(res.data);
-          // console.log(res.data);
-          // toast.success('Tenant data fetched successfully');
-        }
-      } catch (error) {
-        setError(error.response.data.message || 'Error getting Tenant');
-        toast.error(error.response.data.message || 'Error getting Tenant');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchTenant();
   }, [_id]);
-
+  const fetchTenant = async () => {
+    setLoading(true);
+    try {
+      const res = await apiRequest(`/v2/tenants/getSingleTenant/${_id}`);
+      if (res.status) {
+        console.log(res.data);
+        setTenant(res.data);
+        // toast.success('Tenant data fetched successfully');
+      }
+    } catch (error) {
+      setError(error.response.data.message || 'Error getting Tenant');
+      toast.error(error.response.data.message || 'Error getting Tenant');
+    } finally {
+      setLoading(false);
+    }
+  };
   const [deleteConfirmationPopup, setDeleteConfirmationPopup] = useState(false);
   const handleDeleteBtnClick = () => {
     setDeleteConfirmationPopup(true);
@@ -67,7 +68,7 @@ function TenantProfile() {
   };
 
   const handleEditTenant = async () => {
-    console.log(_id);
+    // console.log(_id);
     navigate(`/tenant/edit/${_id}`);
   };
 
@@ -77,9 +78,10 @@ function TenantProfile() {
       const res = await apiRequest.patch(`/v2/tenants/blackListTenant/${_id}`);
       if (res.status) {
         toast.success('Tenant blacklisted successfully');
-        setTimeout(() => {
-          navigate(`/tenantProfile/${_id}`);
-        }, 1000);
+        await fetchTenant();
+        // setTimeout(() => {
+        //   navigate(`/tenantProfile/${_id}`);
+        // }, 1000);
       }
     } catch (error) {
       setError(error.response.data.message || 'Error blacklisting Tenant');
@@ -93,24 +95,52 @@ function TenantProfile() {
     setLoading(true);
     try {
       const res = await apiRequest.patch(`/v2/tenants/whiteListTenant/${_id}`);
-      if (!res.status) {
-        setError(res.data.error);
-        toast.error(res.data.error);
-      } else {
+      if (res.status) {
         // console.log('tenant whitelisted!');
         toast.success('Tenant whitelisted successfully');
-        setTimeout(() => {
-          navigate(`/tenantProfile/${_id}`);
-        }, 1000);
+        await fetchTenant();
+        // setTimeout(() => {
+        //   navigate(`/tenantProfile/${_id}`);
+        // }, 1000);
       }
     } catch (error) {
       setError(error.response.data.message || 'Error whitelisting Tenant');
       toast.error(error.response.data.message || 'Error whitelisting Tenant');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  const [receiptRegenPopup, setReceiptRegenPopup] = useState(false);
+  const handleDepoReceiptGeneration = () => {
+    setReceiptRegenPopup(true);
+  };
+  const closePopup = () => {
+    setReceiptRegenPopup(false);
+  };
+  const receiptData = {
+    rentDeposit: {
+      amount: tenant?.deposits?.rentDeposit,
+    },
+    waterDeposit: {
+      amount: tenant?.deposits?.waterDeposit,
+    },
+    rent: {
+      amount: tenant?.deposits?.initialRentPayment,
+    },
+    tenant: {
+      _id: tenant?._id,
+      name: tenant?.name,
+      email: tenant?.email,
+      phoneNo: tenant?.phoneNo,
+      depositDate: tenant?.deposits?.depositDate,
+    },
+    totalAmountPaid:
+      tenant?.deposits?.rentDeposit +
+      tenant?.deposits?.waterDeposit +
+      tenant?.deposits?.initialRentPayment,
+    referenceNumber: tenant?.referenceNo,
+  };
   return (
     <div className="TenantProfile">
       <ToastContainer />
@@ -142,7 +172,9 @@ function TenantProfile() {
                   />
                 ) : (
                   <img
-                    src={tenant?.profile ? tenant.profile : '/tenantprofile.png'}
+                    src={
+                      tenant?.profile ? tenant.profile : '/tenantprofile.png'
+                    }
                     alt="profile"
                   />
                 )}
@@ -217,7 +249,8 @@ function TenantProfile() {
                     <th>
                       {tenant
                         ? tenant.deposits.rentDeposit +
-                          tenant.deposits.waterDeposit
+                          tenant.deposits.waterDeposit +
+                          tenant.deposits.initialRentPayment
                         : 'amount'}
                     </th>
                   </tr>
@@ -232,6 +265,19 @@ function TenantProfile() {
                     <td>Water Deposit</td>
                     <td>{tenant ? tenant.deposits.waterDeposit : '2500'}</td>
                   </tr>
+                  <tr>
+                    <td>initial Rent</td>
+                    <td>
+                      {tenant ? tenant.deposits.initialRentPayment : '1700'}
+                    </td>
+                  </tr>
+                  <button
+                    onClick={handleDepoReceiptGeneration}
+                    className="edit-icon"
+                  >
+                    <MdAutorenew onClick={handleDepoReceiptGeneration} />
+                    Receipt
+                  </button>
                 </tbody>
               </table>
             </div>
@@ -283,6 +329,13 @@ function TenantProfile() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {receiptRegenPopup && (
+        <div className="confirmation-popup-overlay">
+          <div className="confirmation-popup">
+            <DepoReceipt receiptData={receiptData} onClose={closePopup} />
           </div>
         </div>
       )}

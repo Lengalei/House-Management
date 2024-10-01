@@ -107,6 +107,7 @@ const ApartmentRegistration = () => {
     }
   };
   const fetchApartments = async () => {
+    setLoading(true);
     try {
       const response = await apiRequest.get('/v2/apartments/getAllApartments');
       if (response.status) {
@@ -115,6 +116,8 @@ const ApartmentRegistration = () => {
       }
     } catch (error) {
       toast.error(error.response.data.message || 'Error Fetching apartments');
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -209,7 +212,7 @@ const ApartmentRegistration = () => {
           <TailSpin
             height="100"
             width="100"
-            color="#4fa94d"
+            color="crimson"
             ariaLabel="loading"
             visible={true}
           />

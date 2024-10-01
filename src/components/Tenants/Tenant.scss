@@ -3,28 +3,31 @@
   justify-content: center;
   background-image: linear-gradient(rgba(9, 9, 9, 0.8), rgba(9, 8, 8, 0.8)),
     url('/tenantbg.webp');
- 
+
   align-items: center;
   height: 100%;
 
   // background-color: #f2f2f2;
 
   .registration {
-
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: rgba(74, 122, 194, 0.3) 0px 19px 38px, rgba(74, 122, 194, 0.3) 0px 15px 12px;
-   margin: 40px;
+    box-shadow: rgba(74, 122, 194, 0.3) 0px 19px 38px,
+      rgba(74, 122, 194, 0.3) 0px 15px 12px;
+    margin: 40px;
     width: 90%;
     height: 88%;
     overflow: scroll;
     overflow-x: hidden;
     max-width: 600px;
- background-image: linear-gradient(rgba(248, 246, 246, 0.9), rgba(250, 248, 248, 0.8)),
-    url('/housebg.jfif');
+    background-image: linear-gradient(
+        rgba(248, 246, 246, 0.9),
+        rgba(250, 248, 248, 0.8)
+      ),
+      url('/housebg.jfif');
     background-repeat: no-repeat;
     background-size: cover;
-  align-items: center;
+    align-items: center;
     h3 {
       text-align: center;
       margin-bottom: 2rem;
@@ -190,6 +193,178 @@
       }
     }
   }
+
+  .floor-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 80%;
+    overflow: scroll;
+    overflow-x: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    // border: 1px solid crimson;
+
+    .closePopup {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      color: #333;
+      top: 10px;
+      right: 10px;
+      transition: all 300ms ease-in-out;
+    }
+    .closePopup:hover {
+      background-color: #6cb619;
+    }
+
+    h3 {
+      margin: 10px 0;
+    }
+
+    .apartment-selection {
+      display: flex;
+      flex-direction: column;
+
+      .apartment-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .floorAndHouse {
+      display: flex;
+      align-items: flex-start;
+      // justify-content: space-between;
+      gap: 2px;
+      width: 100%;
+    }
+    // Floor selection styles
+    .floor-selection {
+      display: flex;
+      flex-direction: column;
+      margin-top: 15px;
+      width: 40%;
+
+      .floor-option {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+
+    .houseSelectionParent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 15px;
+      width: 60%;
+      flex-wrap: wrap;
+      border-radius: 10px;
+      padding: 5px;
+      border: 1px solid wheat;
+    }
+
+    // House selection styles
+    .house-selection {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex-wrap: wrap;
+
+      h3 {
+        margin-top: 5px;
+      }
+
+      .house-option {
+        padding: 2px;
+        width: 25%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &.selected {
+          background-color: #007bff;
+          color: white;
+        }
+
+        &.occupied {
+          color: red;
+        }
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+  }
+
+  // Responsive design
+  @media (min-width: 768px) {
+    .floor-popup {
+      display: flex;
+      flex-direction: column;
+
+      .house-selection {
+        display: flex;
+        flex-direction: row; // Align house options in a row
+        flex-wrap: wrap; // Allow wrapping for smaller screens
+
+        border: 1px solid crimson;
+        transition: all 300ms ease-in-out;
+
+        .house-option {
+          flex: 1 1 calc(50% - 10px); // Two options per row with spacing
+          margin-right: 10px; // Spacing between options
+
+          &:nth-child(2n) {
+            margin-right: 0; // Remove margin on every second child
+          }
+        }
+      }
+      .house-selection:hover {
+        cursor: pointer;
+        background-color: #6cb619;
+      }
+    }
+  }
 }
 
 .paymentPopup {
@@ -307,4 +482,76 @@
   margin: 2px;
   border-radius: 15px;
   background-color: chartreuse;
+}
+.confirmation-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); // Semi-transparent background
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; // Ensure it overlays other content
+
+  .confirmation-popup {
+    background-color: #fff; // White background for the popup
+    border-radius: 8px; // Rounded corners
+    padding: 20px;
+    max-width: 400px;
+    width: 100%; // Responsive width
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); // Subtle shadow
+    text-align: center; // Center text
+
+    h3 {
+      margin-bottom: 15px; // Space below heading
+      font-size: 18px; // Font size for heading
+      color: #333; // Darker text color
+    }
+
+    p {
+      margin-bottom: 20px; // Space below paragraph
+      font-size: 16px; // Font size for description
+      color: #555; // Slightly lighter text color
+    }
+
+    .confirmation-actions {
+      display: flex;
+      justify-content: space-between; // Space buttons apart
+      margin-top: 20px; // Space above buttons
+      width: 100%;
+      // border: 1px solid crimson;
+
+      .submit-btn {
+        background-color: #28a745; // Green background for submit button
+        color: #fff; // White text color
+        border: none; // No border
+        padding: 5px; // Padding around the button
+        border-radius: 5px; // Rounded corners
+        width: 45%;
+        cursor: pointer; // Pointer on hover
+        transition: background-color 0.3s ease; // Smooth background change
+
+        &:hover {
+          background-color: #218838; // Darker green on hover
+        }
+      }
+
+      .cancel-btn {
+        background-color: #dc3545; // Red background for cancel button
+        color: #fff; // White text color
+        border: none; // No border
+        padding: 5px; // Padding around the button
+        border-radius: 5px; // Rounded corners
+        cursor: pointer; // Pointer on hover
+        width: 45%;
+        transition: background-color 0.3s ease; // Smooth background change
+
+        &:hover {
+          background-color: #c82333; // Darker red on hover
+        }
+      }
+    }
+  }
 }

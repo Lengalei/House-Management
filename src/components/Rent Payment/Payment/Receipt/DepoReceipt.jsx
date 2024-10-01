@@ -2,16 +2,17 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import './Receipt.scss';
+import moment from 'moment';
 
-const Receipt = ({ receiptData }) => {
-  const { tenant, rent, waterBill, garbageFee, extraCharges } = receiptData;
+const DepoReceipt = ({ receiptData, onClose }) => {
+  const { tenant, rent, waterDeposit, rentDeposit } = receiptData;
 
   const handleDownload = () => {
     const doc = new jsPDF();
 
     // Load the logo image to get its dimensions
     const logo = new Image();
-    logo.src = 'public/homelogo.png'; // Path to the logo
+    logo.src = '/public/homelogo.png'; // Path to the logo
 
     logo.onload = function () {
       // Get original dimensions
@@ -38,19 +39,22 @@ const Receipt = ({ receiptData }) => {
       doc.line(10, 45, 200, 45);
 
       doc.setFontSize(20);
-      doc.text('Receipt', 14, 60);
+      doc.text('Deposit Receipt', 14, 60);
       doc.setFontSize(12);
       doc.text(`Tenant Name: ${tenant.name}`, 14, 70);
       doc.text(`Email: ${tenant.email}`, 14, 80);
       doc.text(`Phone No: ${tenant.phoneNo}`, 14, 90);
-      doc.text(`Reference Number: ${receiptData.referenceNumber}`, 14, 100);
+      doc.text(
+        `Deposit Date: ${moment(tenant.depositDate).toLocaleString()}`,
+        14,
+        100
+      );
 
       // Payment summary table
       const details = [
-        ['Rent', `KSH ${rent.amount.toFixed(2)}`],
-        ['Water Bill', `KSH ${waterBill.amount.toFixed(2)}`],
-        ['Garbage Fee', `KSH ${garbageFee.amount.toFixed(2)}`],
-        ['Extra Charges', `KSH ${extraCharges.amount.toFixed(2)}`],
+        ['Rent Deposit ', `KSH ${rentDeposit.amount.toFixed(2)}`],
+        ['Water Deposit', `KSH ${waterDeposit.amount.toFixed(2)}`],
+        ['Rent Payable', `KSH ${rent.amount.toFixed(2)}`],
         ['Total Amount Paid', `KSH ${receiptData.totalAmountPaid.toFixed(2)}`],
       ];
 
@@ -69,8 +73,15 @@ const Receipt = ({ receiptData }) => {
 
   return (
     <div className="receipt">
+      <div className="holderOfClosebtn">
+        {' '}
+        <button className="close-button" onClick={onClose}>
+          close
+        </button>
+      </div>
+
       <div className="header">
-        <img src="public/homelogo.png" alt="Logo" className="logo" />
+        <img src="/public/homelogo.png" alt="Logo" className="logo" />
         <h1>Sleek Abode Apartments</h1>
         <p className="company-info">Kimbo, Ruiru</p>
         <p className="company-info">Phone: (254) 88-413-323</p>
@@ -86,6 +97,10 @@ const Receipt = ({ receiptData }) => {
         <p>
           <strong>Phone No:</strong> {tenant.phoneNo}
         </p>
+        <p>
+          <strong>Deposit Date:</strong>{' '}
+          {moment(tenant.depositDate).toLocaleString()}
+        </p>
       </div>
       <hr />
       <div className="payment-summary">
@@ -99,20 +114,16 @@ const Receipt = ({ receiptData }) => {
           </thead>
           <tbody>
             <tr>
-              <td>Rent</td>
+              <td>Rent Deposit</td>
+              <td>KSH {rentDeposit.amount.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Water Deposit</td>
+              <td>KSH {waterDeposit.amount.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Rent Payable</td>
               <td>KSH {rent.amount.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>Water Bill</td>
-              <td>KSH {waterBill.amount.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>Garbage Fee</td>
-              <td>KSH {garbageFee.amount.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>Extra Charges</td>
-              <td>KSH {extraCharges.amount.toFixed(2)}</td>
             </tr>
             <tr className="total">
               <td>
@@ -132,4 +143,4 @@ const Receipt = ({ receiptData }) => {
   );
 };
 
-export default Receipt;
+export default DepoReceipt;

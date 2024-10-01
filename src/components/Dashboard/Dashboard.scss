@@ -1,111 +1,109 @@
-@import "../../responsive.scss";
-.dashboard{
-    // border: 10px solid crimson;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    /* flex-direction: column; */
+@import '../../responsive.scss';
+.dashboard {
+  // border: 10px solid crimson;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  /* flex-direction: column; */
 
-    color: white;
+  color: white;
 }
-.summary{
-    width: 100%;
-    height: 100%;
-    // border: solid 1px blue;
+.summary {
+  width: 100%;
+  height: 100%;
+  // border: solid 1px blue;
 }
-.dashboardheading .h1{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
+.dashboardheading .h1 {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
 }
-.rentimage{
-    width:70px;
-    height:70px;
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--primary-color);
+.rentimage {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--primary-color);
 }
-.rentimage img{
-    width:100%;
-    height:100%;
-    border-radius: 50%;
-    object-fit: contain;
+.rentimage img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
 }
-.dashboardcontent{
-   padding: 15px;
-   width: 100%;
-   height: auto;
-   background-image: 
-    url('/bghm.jfif');
+.dashboardcontent {
+  padding: 15px;
+  width: 100%;
+  height: auto;
+  background-image: url('/bghm.jfif');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   @include md {
-      height: 100%;
-    }
-    @include sm {
-      height: 100%;
-    }
+    height: 100%;
+  }
+  @include sm {
+    height: 100%;
+  }
 }
-.dashboardheading{
-    width: 100%;
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.dashboardheading {
+  width: 100%;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-.container-info{
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+.container-info {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-.box{
-    width: 200px;
-    height: 150px;
-    background-color: var(--yellow);
-     box-shadow: 0 0 10px var(--primary-color);
-    display: flex;
-    gap: 20px;
-    padding: 30px;
-    border: .5px solid var(--primary-color);
-    border-radius: 5px;
+.box {
+  width: 200px;
+  height: 150px;
+  background-color: var(--yellow);
+  box-shadow: 0 0 10px var(--primary-color);
+  display: flex;
+  gap: 20px;
+  padding: 30px;
+  border: 0.5px solid var(--primary-color);
+  border-radius: 5px;
 }
-.box p{
-    color: white;
-    font-size: 25px;
-    font-weight: 600;
+.box p {
+  color: white;
+  font-size: 25px;
+  font-weight: 600;
 }
-.charts{
-    display: flex;
-    flex-wrap: wrap;
-   padding-bottom: 15px;
-    height: 25vh;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 30px;
+.charts {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 15px;
+  height: 25vh;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60px;
+  // border: solid 1px crimson;
 
-    // border: solid 1px crimson;
-
-    @include md {
-      height: 35vh;
-    }
-    @include sm {
-      height: 35vh;
-    }
+  @include md {
+    height: 35vh;
+  }
+  @include sm {
+    height: 35vh;
+  }
 }
-.chart1{
+.chart1 {
   width: 400px;
   height: 150px;
-  background-image: url("/chart1dash.gif");
+  background-image: url('/chart1dash.gif');
   background-repeat: no-repeat;
 }
-.chart2{
+.chart2 {
   width: 400px;
   height: 150px;
-  background-image: url("/chart3.png");
+  background-image: url('/chart3.png');
   background-repeat: no-repeat;
 }
 // .linechart{
@@ -135,4 +133,3 @@
 //       height: 45%;
 //     }
 // }
-

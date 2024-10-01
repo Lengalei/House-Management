@@ -6,6 +6,7 @@ import House from '../../../models/houses.js';
 import Payment from '../../../models/v2/models/v2Payment.model.js';
 import ScheduledJob from '../../../models/v2/models/ScheduledJob.js';
 import Invoice from '../../../models/v2/models/Invoice.js';
+import { sendEmail } from '../../../utils/v2/utils/clearanceEmailSender.js';
 
 // Register Tenant Details
 export const createTenant = async (req, res) => {
@@ -1352,6 +1353,73 @@ export const whiteListTenant = async (req, res) => {
   }
 };
 
+// Patch Single Tenant
+export const updateSingleTenantData = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+
+  try {
+    const tenant = await Tenant.findById(id);
+    //update the house if it has changed
+    if (tenant.houseDetails.houseNo !== req.body.houseDetails.houseNo) {
+      //make the original house not occupied
+      const houseName = 'House' + ' ' + tenant?.houseDetails?.houseNo;
+      const house = await House.findOneAndUpdate(
+        {
+          houseName: houseName,
+          apartment: tenant.apartmentId,
+        },
+        { isOccupied: false },
+        { new: true }
+      );
+      if (!house) {
+        return res.status(404).json({ mesage: 'No previous house found!' });
+      }
+      //from there make the new chosen house occupied
+      const newHouseName = 'House' + ' ' + req?.body?.houseDetails?.houseNo;
+      //check if there is a tenant in the new house
+      const isHouseOccupied = await House.findOne({
+        houseName: newHouseName,
+        apartment: req.body.apartmentId,
+      });
+      if (isHouseOccupied.isOccupied) {
+        return res.status(400).json({ message: 'New House already occupied!' });
+      }
+      //update the new house to be occuppied
+      const newHouse = await House.findOneAndUpdate(
+        {
+          houseName: newHouseName,
+          apartment: req.body.apartmentId,
+        },
+        { isOccupied: true },
+        { new: true }
+      );
+      if (!newHouse) {
+        return res.status(404).json({ mesage: 'No new house found!' });
+      }
+    }
+
+    //from there update the rest of the tenant data.
+    const updatedTenant = await Tenant.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    if (!updatedTenant) {
+      return res.status(404).json({ error: 'Tenant not found' });
+    }
+
+    return res.status(200).json(updatedTenant);
+  } catch (err) {
+    console.error('Error updating tenant:', err);
+    return res
+      .status(500)
+      .json({ error: 'Server error', message: err.message });
+  }
+};
+
 //check if tenant has any payment records
 export const checkTenantPaymentRecord = async (req, res) => {
   const { tenantId } = req.params;
@@ -1396,6 +1464,53 @@ export const getMostRecentPaymentByTenantId = async (req, res) => {
       message: 'Server error while fetching the most recent payment.',
       error: error.message,
     });
+  }
+};
+
+// src/controllers/invoiceController.js
+export const sendTenantAndOwnerEmails = async (req, res) => {
+  const tenantId = req.params.id; // Tenant ID from request params
+  const refundAmount = req.body.refundAmount; // Refund amount from request body
+
+  try {
+    // Fetch tenant information and their most recent payment
+    const tenant = await Tenant.findById(tenantId).populate('apartmentId');
+
+    const recentPayment = await Payment.findOne({ tenant: tenantId }).sort({
+      createdAt: -1,
+    });
+
+    if (!tenant || !recentPayment) {
+      return res.status(404).json({ message: 'Tenant or payment not found.' });
+    }
+
+    // Extract details
+    const tenantName = tenant.name; // Assuming tenant has a 'name' field
+    const houseDetails = tenant.houseDetails; // Assuming house details are available in tenant
+
+    // Prepare emails
+    const tenantEmail = tenant.email; // Tenant's email
+    const ownerEmail = req.user.email; // Owner's email from authenticated user (req.user)
+    const ownerName = req.user.username; // Owner's email from authenticated user (req.user)
+
+    // Email for tenant
+    const tenantSubject = 'Thank You for Your Stay';
+    const tenantText = `Dear ${tenantName},\n\nThank you for being with us. Your expected exit date is ${recentPayment.month}.\nYour refund amount is KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
+
+    // Email for owner
+    const ownerSubject = 'Tenant Exit Notification';
+    const ownerText = `Dear ${ownerName},\n\nThe tenant ${tenantName} is exiting the property${tenant.apartmentId.name},house number:(${houseDetails.houseNo}).\nExpected exit date: ${recentPayment.month}.\nRefund amount: KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
+
+    // Send emails
+    await Promise.all([
+      sendEmail(tenantEmail, tenantSubject, tenantText),
+      sendEmail(ownerEmail, ownerSubject, ownerText),
+    ]);
+
+    return res.status(200).json({ message: 'Emails sent successfully.' });
+  } catch (error) {
+    console.error('Error sending emails:', error.message);
+    return res.status(500).json({ message: 'Failed to send emails.' });
   }
 };
 
@@ -1783,8 +1898,9 @@ export const clearTenant = async (req, res) => {
 
     // Calculate the scheduled time (48 hours from now)
     const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
-    const scheduledHour = scheduledTime.getUTCHours();
-    const scheduledMinute = scheduledTime.getUTCMinutes();
+    const currentdate = new Date(Date.now);
+    console.log('currentdate: ', currentdate);
+    // const scheduledTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Save the scheduled job in the database
     await ScheduledJob.findOneAndUpdate(
@@ -1792,6 +1908,10 @@ export const clearTenant = async (req, res) => {
       { scheduledTime, isActive: true },
       { upsert: true } // Create a new record if no match is found
     );
+
+    // Calculate scheduled time components for cron job
+    const scheduledMinute = scheduledTime.getUTCMinutes();
+    const scheduledHour = scheduledTime.getUTCHours() % 24; // Handle overflow for hours
 
     // Schedule the deletion job using cron
     const job = cron.schedule(
@@ -1900,8 +2020,8 @@ export const restoreScheduledJobs = async () => {
   for (const job of scheduledJobs) {
     const timeDiff = job.scheduledTime - new Date();
     if (timeDiff > 0) {
-      const scheduledHour = job.scheduledTime.getUTCHours();
       const scheduledMinute = job.scheduledTime.getUTCMinutes();
+      const scheduledHour = job.scheduledTime.getUTCHours() % 24; // Handle overflow for hours
       cron.schedule(
         `${scheduledMinute} ${scheduledHour} * * *`,
         async () => {

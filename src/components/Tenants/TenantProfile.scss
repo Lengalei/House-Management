@@ -3,7 +3,6 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 100%;
   width: 100%;
   overflow: scroll;
   overflow-x: hidden;
@@ -11,6 +10,7 @@
   color: black;
   padding: 1px;
   outline: none;
+  height: 70%;
   //   border: 1px solid lawngreen;
 
   .loader {
@@ -44,13 +44,13 @@
 
     .profile {
       max-width: 100%;
-      height: 100%;
-     padding-top: 20px; 
+      height: 80%;
+      overflow: scroll;
+      overflow-x: hidden;
+      padding-top: 20px;
       width: 100%;
       padding-top: 10px;
       display: flex;
-      
-      gap: 50px;
       flex-direction: column;
       // flex-wrap: wrap;
       align-items: center;
@@ -66,22 +66,20 @@
         border: none;
         color: black;
         outline: none;
-        // border: 1px solid greenyellow;
+        border: 1px solid crimson;
         .user {
           //   padding: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 20px;
           max-width: 450px;
-
           height: auto;
           background-color: white;
           box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
             rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
             rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
           border-radius: 10px;
-          border: 1px solid var(--primary-color);
+          border: 1px solid greenyellow;
         }
         .user .profile-image {
           width: 100px;
@@ -120,13 +118,12 @@
       .payment {
         width: 80%;
         display: flex;
-        gap: 20px;
-        padding: 20px;
-        // border: 1px solid greenyellow;
+        // padding: 20px;
+        // border: 1px solid orangered;
       }
       .payment-details {
         max-width: 400px;
-        height: 200px;
+        height: auto;
         display: flex;
         color: black;
         padding: 20px;
@@ -137,31 +134,36 @@
         /* border: 1px solid var(--yellow); */
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
       }
-      .pd {
-        max-width: 450px;
 
-        height: auto;
-        display: flex;
-        padding: 20px;
-        background-color: white;
-        flex-direction: column;
-        border-radius: 10px;
-        color: black;
-        align-items: center;
-        border: 1px solid gold;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-      }
       .dets {
         width: 90%;
         height: auto;
         display: flex;
         justify-content: space-between;
+        overflow: scroll;
+        overflow-x: hidden;
       }
       .deposits {
         display: flex;
         width: 80%;
-        gap: 20px;
+        height: 38%;
         // border: 1px solid greenyellow;
+
+        .pd {
+          max-width: 450px;
+          height: 100%;
+          overflow: scroll;
+          overflow-x: hidden;
+          display: flex;
+          padding: 20px;
+          background-color: white;
+          flex-direction: column;
+          border-radius: 10px;
+          color: black;
+          align-items: center;
+          border: 1px solid gold;
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
       }
       .deposits .payment-details {
         height: 200px;
@@ -214,6 +216,9 @@
       width: 100%; // Responsive width
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); // Subtle shadow
       text-align: center; // Center text
+      height: 90%;
+      overflow: scroll;
+      overflow-x: hidden;
 
       h3 {
         margin-bottom: 15px; // Space below heading
@@ -265,5 +270,19 @@
         }
       }
     }
+  }
+  .edit-icon {
+    margin-top: 3px;
+    padding: 5px;
+    color: olivedrab;
+    background-color: aquamarine;
+    border: 1px solid wheat;
+    border-radius: 8px;
+    transition: all 300ms ease-in-out;
+  }
+  .edit-icon:hover {
+    cursor: pointer;
+    color: olive;
+    background-color: rgb(10, 61, 63);
   }
 }

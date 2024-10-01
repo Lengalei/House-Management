@@ -5,6 +5,7 @@ import { MdDeleteForever } from 'react-icons/md';
 import apiRequest from '../../../lib/apiRequest';
 import MiniPaymentsPopup from './MiniPaymentsPopup/MiniPaymentsPopup';
 import Pagination from 'react-js-pagination'; // Import Pagination
+import { InfinitySpin } from 'react-loader-spinner';
 
 const TenantPaymentList = () => {
   const { tenantId } = useParams();
@@ -21,8 +22,11 @@ const TenantPaymentList = () => {
   const [activePage, setActivePage] = useState(1);
   const itemsPerPage = 4; // Define how many items you want to show per page
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchPayments = async () => {
+      setLoading(true);
       try {
         const response = await apiRequest.get(
           `/v2/payments/paymentsByTenant/${tenantId}`
@@ -32,6 +36,8 @@ const TenantPaymentList = () => {
         setOnEntryOverPay(response.data.onEntryOverPay);
       } catch (error) {
         setError('Failed to fetch payments.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,6 +55,7 @@ const TenantPaymentList = () => {
   };
 
   const handleDeletePaymentDetail = async () => {
+    setLoading(true);
     try {
       const response = await apiRequest.delete(
         `/v2/payments/deletePayment/${paymentToDelete}`
@@ -62,6 +69,8 @@ const TenantPaymentList = () => {
       }
     } catch (error) {
       setError('Failed to delete payment.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,7 +127,7 @@ const TenantPaymentList = () => {
                   <button>View Details</button>
                 </Link>
                 <MdDeleteForever
-                  size={20}
+                  size={25}
                   color={'red'}
                   className="paymentRecordDeletebtn"
                   onClick={() => handleOpenModal(payment?._id)}
@@ -160,6 +169,18 @@ const TenantPaymentList = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {loading && (
+        <div className="loader-overlay">
+          <InfinitySpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
         </div>
       )}
 

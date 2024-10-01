@@ -82,7 +82,7 @@ function UpdateLandlord() {
     <div>
       <div className="tenant">
         <div className="registration">
-          <h3>Edit Landlord{`'`}s Details</h3>
+          <h3>Edit Caretaker{`'`}s Details</h3>
           <div className="form">
             <form onSubmit={handleSubmit}>
               <div className="forminput">
