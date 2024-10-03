@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import './TenantPaymentsV2.scss';
-import apiRequest from '../../../../lib/apiRequest';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import "./TenantPaymentsV2.scss";
+import apiRequest from "../../../../lib/apiRequest";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { TailSpin } from 'react-loader-spinner';
-import { toast, ToastContainer } from 'react-toastify';
-import Invoice from '../../../Rent Payment/Payment/Invoice/Invoice';
+import { TailSpin } from "react-loader-spinner";
+import { toast, ToastContainer } from "react-toastify";
+import Invoice from "../../../Rent Payment/Payment/Invoice/Invoice";
 
 const TenantPayments = () => {
   const location = useLocation();
@@ -15,34 +15,34 @@ const TenantPayments = () => {
   const navigate = useNavigate();
 
   const { tenantId } = useParams();
-  const [selectedTab, setSelectedTab] = useState('complete'); // Toggle between Complete and Outstanding
+  const [selectedTab, setSelectedTab] = useState("complete"); // Toggle between Complete and Outstanding
   const [showPopup, setShowPopup] = useState(false); // Popup for updating default values
   const [showPaymentPopup, setShowPaymentPopup] = useState(false); // Popup for outstanding payments
 
   const [completePayments, setCompletePayments] = useState([]);
   const [outstandingPayments, setOutstandingPayments] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [selectedPayment, setSelectedPayment] = useState(null); // Selected outstanding payment
 
-  const [selectedYear, setSelectedYear] = useState(''); // Selected year
+  const [selectedYear, setSelectedYear] = useState(""); // Selected year
   const [years, setYears] = useState([]); // Available years
   const [filteredPayments, setFilteredPayments] = useState([]); // Payments filtered by year
 
-  const [currentMonth, setCurrentMonth] = useState('');
-  const [currentYear, setCurrentyear] = useState('');
-  const [nextMonth, setNextMonth] = useState('');
+  const [currentMonth, setCurrentMonth] = useState("");
+  const [currentYear, setCurrentyear] = useState("");
+  const [nextMonth, setNextMonth] = useState("");
 
   // New States for Water Bill Dropdown
   const [waterBillDropdownOpen, setWaterBillDropdownOpen] = useState(false); // Toggle dropdown
-  const [accumulatedWaterBill, setAccumulatedWaterBill] = useState(''); // Accumulated Water Bill
-  const [paidWaterBill, setPaidWaterBill] = useState(''); // Paid Water Bill
+  const [accumulatedWaterBill, setAccumulatedWaterBill] = useState(""); // Accumulated Water Bill
+  const [paidWaterBill, setPaidWaterBill] = useState(""); // Paid Water Bill
 
   //
   const [extraChargesDropdownOpen, setExtraChargesDropdownOpen] =
     useState(false); // Toggle dropdown
   const [selectedExtraCharge, setSelectedExtraCharge] = useState({
-    expectedAmount: '',
-    description: '',
+    expectedAmount: "",
+    description: "",
   }); // Selected extra charge
 
   const [
@@ -53,8 +53,8 @@ const TenantPayments = () => {
     previousMonthSelectedExtraCharge,
     setPreviousMonthSelectedExtraCharge,
   ] = useState({
-    expectedAmount: '',
-    description: '',
+    expectedAmount: "",
+    description: "",
   }); // Selected extra charge
 
   const [displayRefNoHistory, setDisplayRefNoHistory] = useState(false);
@@ -68,7 +68,7 @@ const TenantPayments = () => {
     setPreviousMonthExtraChargesDropdownOpen((prevState) => !prevState);
   };
 
-  const [fetchedTenantDetails, setTenantDetails] = useState('');
+  const [fetchedTenantDetails, setTenantDetails] = useState("");
   // Separate function to fetch unpaid payments
   const fetchUnpaidPayments = async (tenantId) => {
     setLoading(true);
@@ -76,11 +76,11 @@ const TenantPayments = () => {
       const response = await apiRequest.get(
         `/v2/payments/unpaidPayments/${tenantId}`
       );
-      console.log('unfinished: ', response.data);
+      console.log("unfinished: ", response.data);
       setOutstandingPayments(response.data);
     } catch (error) {
       if (error.response.data.unpaidPayments.lenght < 0) {
-        console.log('no outstanding payments');
+        console.log("no outstanding payments");
       }
       // setError(error.response.data.message);
       console.log(error.response);
@@ -91,18 +91,18 @@ const TenantPayments = () => {
 
   // Separate function to fetch fully paid payments
   const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const fetchFullyPaidPayments = async (tenantId) => {
@@ -114,21 +114,21 @@ const TenantPayments = () => {
       );
       // console.log(response.data);
       setCompletePayments(response.data);
-      setError('');
+      setError("");
     } catch (error) {
       setError(
-        error.response?.data?.message || 'Error fetching fully paid payments'
+        error.response?.data?.message || "Error fetching fully paid payments"
       );
       throw new Error(
-        error.response?.data?.message || 'Error fetching fully paid payments'
+        error.response?.data?.message || "Error fetching fully paid payments"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const [previousMonth, setPreviousMonth] = useState('');
-  const [previousYear, setPreviousYear] = useState('');
+  const [previousMonth, setPreviousMonth] = useState("");
+  const [previousYear, setPreviousYear] = useState("");
   const [mostRecentPayment, setMostRecentPayments] = useState({});
   // console.log(mostRecentPayment);
   const getMostRecentPaymentByTenantId = async (tenantId) => {
@@ -167,7 +167,7 @@ const TenantPayments = () => {
           .reduce((max, current) => (current > max ? current : max), -1);
 
         const currentMonthName = months[mostRecentMonth];
-        console.log('currentMonthName: ', currentMonthName);
+        console.log("currentMonthName: ", currentMonthName);
 
         // Step 5: Determine the next month
         // const nextMonthIndex = (mostRecentMonth + 1) % 12;
@@ -178,7 +178,7 @@ const TenantPayments = () => {
           mostRecentYear
         );
 
-        setError('');
+        setError("");
         setCurrentMonth(currentMonthName);
         setNextMonth(findNextYear.nextMonthName);
         // console.log('month: ', findNextYear.nextMonthName);
@@ -191,23 +191,23 @@ const TenantPayments = () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const [nextYear, setNextYear] = useState('');
+  const [nextYear, setNextYear] = useState("");
 
   // Helper function to determine the next year based on current month
   const determineYearForNextMonth = (currentMonth, currentYear) => {
     const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
 
     // Find index of the current month
@@ -259,9 +259,9 @@ const TenantPayments = () => {
     setSelectedTab(tab);
   };
 
-  const [newMonthlyAmount, setNewMonthlyAmount] = useState('');
-  const [referenceNumber, setReferenceNumber] = useState('');
-  const [newPaymentDate, setNewPaymentDate] = useState('');
+  const [newMonthlyAmount, setNewMonthlyAmount] = useState("");
+  const [referenceNumber, setReferenceNumber] = useState("");
+  const [newPaymentDate, setNewPaymentDate] = useState("");
 
   // const [rentDeficit, setRentDeficit] = useState('');
   // const [waterDeficit, setWaterDeficit] = useState('');
@@ -270,7 +270,7 @@ const TenantPayments = () => {
   // const [previousOtherChargesDeficit, setPreviousOtherChargesDeficit] =
   //   useState('');
   const [previousAccumulatedWaterBill, setPreviousAccumulatedWaterBill] =
-    useState('');
+    useState("");
 
   const handleAddPayment = async (e) => {
     e.preventDefault();
@@ -288,7 +288,7 @@ const TenantPayments = () => {
 
     try {
       const response = await apiRequest.post(
-        '/v2/payments/monthlyPayProcessing',
+        "/v2/payments/monthlyPayProcessing",
         {
           tenantId,
           newMonthlyAmount: isOverpayTransferred ? 0 : newMonthlyAmount,
@@ -304,33 +304,33 @@ const TenantPayments = () => {
 
       if (response.status) {
         // Reset form fields
-        setNewMonthlyAmount('');
-        setReferenceNumber('');
-        setNewPaymentDate('');
-        setSelectedExtraCharge({ expectedAmount: '', description: '' });
+        setNewMonthlyAmount("");
+        setReferenceNumber("");
+        setNewPaymentDate("");
+        setSelectedExtraCharge({ expectedAmount: "", description: "" });
         setPreviousMonthSelectedExtraCharge({
-          expectedAmount: '',
-          description: '',
+          expectedAmount: "",
+          description: "",
         });
-        setPreviousAccumulatedWaterBill('');
+        setPreviousAccumulatedWaterBill("");
 
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
         await getMostRecentPaymentByTenantId(tenantId);
 
-        setError('');
+        setError("");
         toast.success(`Success`);
       }
     } catch (error) {
-      console.log('Error occurred:', error);
+      console.log("Error occurred:", error);
       setError(error?.response?.data?.message);
-      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+      toast.error(error.response?.data?.message || "Failed to clear tenant");
     } finally {
       setLoading(false);
     }
   };
-  const [rentDefault, setRentDefault] = useState('');
-  const [garbageDefault, setGarbageDefault] = useState('');
+  const [rentDefault, setRentDefault] = useState("");
+  const [garbageDefault, setGarbageDefault] = useState("");
 
   const handleUpdateDefaults = async (e) => {
     e.preventDefault();
@@ -351,16 +351,16 @@ const TenantPayments = () => {
       if (response.status) {
         console.log(response.data);
       }
-      setRentDefault('');
-      setGarbageDefault('');
+      setRentDefault("");
+      setGarbageDefault("");
       setShowPopup(false);
 
-      setError('');
+      setError("");
       toast.success(`Success Updating Defaults`);
     } catch (error) {
       setError(error.response.data.message);
       toast.error(
-        error.response?.data?.message || 'Failed to update tenant Defaults'
+        error.response?.data?.message || "Failed to update tenant Defaults"
       );
     } finally {
       setLoading(false);
@@ -401,11 +401,11 @@ const TenantPayments = () => {
       const response = await apiRequest.put(
         `/v2/payments/updatePayment/${selectedPayment._id}`,
         {
-          rentDeficit: formData.get('rentDeficit'),
-          garbageDeficit: formData.get('garbageDeficit'),
-          waterDeficit: formData.get('waterDeficit'),
-          referenceNumber: formData.get('referenceNumber'),
-          date: formData.get('date'),
+          rentDeficit: formData.get("rentDeficit"),
+          garbageDeficit: formData.get("garbageDeficit"),
+          waterDeficit: formData.get("waterDeficit"),
+          referenceNumber: formData.get("referenceNumber"),
+          date: formData.get("date"),
           month: selectedPayment.month,
           year: selectedPayment.year,
           accumulatedWaterBill: accumulatedWaterBill, // Send accumulated water bill
@@ -419,14 +419,14 @@ const TenantPayments = () => {
         // fetchUnpaidPayments(tenantId);
         // fetchFullyPaidPayments(tenantId);
         // await getMostRecentPaymentByTenantId(tenantId);
-        setError('');
+        setError("");
       }
       setShowPaymentPopup(false);
       // Optionally, refresh the outstanding payments
       fetchUnpaidPayments(tenantId);
     } catch (error) {
       setError(error.response.data.message);
-      toast.error(error.response.data.message || 'Failed to update payment');
+      toast.error(error.response.data.message || "Failed to update payment");
     } finally {
       setLoading(false);
     }
@@ -443,9 +443,9 @@ const TenantPayments = () => {
     setAddInternalAmountPopup(true);
   };
 
-  const [extraAmount, setExtraAmount] = useState('');
-  const [extraAmountReferenceNo, setExtraAmountReferenceNo] = useState('');
-  const [extraAmountGivenDate, setExtraAmountGivenDate] = useState('');
+  const [extraAmount, setExtraAmount] = useState("");
+  const [extraAmountReferenceNo, setExtraAmountReferenceNo] = useState("");
+  const [extraAmountGivenDate, setExtraAmountGivenDate] = useState("");
 
   const handleInternalMonthExtraGivenAmount = async (e) => {
     e.preventDefault();
@@ -462,17 +462,19 @@ const TenantPayments = () => {
         }
       );
       if (response.status) {
-        console.log('All good');
+        console.log("All good");
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
-        setExtraAmount('');
-        setExtraAmountReferenceNo('');
-        setExtraAmountGivenDate('');
+        setExtraAmount("");
+        setExtraAmountReferenceNo("");
+        setExtraAmountGivenDate("");
         await getMostRecentPaymentByTenantId(tenantId);
         setAddInternalAmountPopup(false);
+        toast.success('Amount Added!')
       }
     } catch (error) {
       setError(error.response.data.message);
+      toast.error(error.response.data.message || "Failed to Add payment");
     } finally {
       setLoading(false);
     }
@@ -489,7 +491,7 @@ const TenantPayments = () => {
       setNewMonthlyAmount(mostRecentPayment?.overpay || 0); // Transfer overpay to monthly amount
       setIsOverpayTransferred(true); // Mark overpay as transferred
     } else {
-      setNewMonthlyAmount(''); // Reset the monthly amount
+      setNewMonthlyAmount(""); // Reset the monthly amount
       setIsOverpayTransferred(false); // Mark overpay as not transferred
     }
   };
@@ -515,13 +517,13 @@ const TenantPayments = () => {
     setShowUpdatePaymentModal(false);
   };
 
-  const [updatedRentDeficit, setUpdatedRentDeficit] = useState('');
-  const [updatedWaterDeficit, setUpdatedWaterDeficit] = useState('');
+  const [updatedRentDeficit, setUpdatedRentDeficit] = useState("");
+  const [updatedWaterDeficit, setUpdatedWaterDeficit] = useState("");
   const [updatedAccumulatedWaterBill, setUpdatedAccumulatedWaterBill] =
-    useState('');
-  const [updatedGarbageDeficit, setUpdatedGarbageDeficit] = useState('');
-  const [updatedExtraCharges, setUpdatedExtraCharges] = useState('');
-  const [updatedReferenceNumber, setUpdatedReferenceNumber] = useState('');
+    useState("");
+  const [updatedGarbageDeficit, setUpdatedGarbageDeficit] = useState("");
+  const [updatedExtraCharges, setUpdatedExtraCharges] = useState("");
+  const [updatedReferenceNumber, setUpdatedReferenceNumber] = useState("");
 
   //handle deficit updates
   const handleDeficitsUpdate = async (e) => {
@@ -552,30 +554,30 @@ const TenantPayments = () => {
         }
       );
       if (response.status) {
-        toast.success('Sucess');
+        toast.success("Sucess");
         /**********/
         fetchUnpaidPayments(tenantId);
         fetchFullyPaidPayments(tenantId);
         getMostRecentPaymentByTenantId(tenantId);
 
         //reset deficit update values
-        setUpdatedRentDeficit('');
-        setUpdatedWaterDeficit('');
-        setUpdatedAccumulatedWaterBill('');
-        setUpdatedGarbageDeficit('');
-        setUpdatedExtraCharges('');
-        setUpdatedReferenceNumber('');
-        setError('');
+        setUpdatedRentDeficit("");
+        setUpdatedWaterDeficit("");
+        setUpdatedAccumulatedWaterBill("");
+        setUpdatedGarbageDeficit("");
+        setUpdatedExtraCharges("");
+        setUpdatedReferenceNumber("");
+        setError("");
         setShowUpdatePaymentModal(false);
       }
     } catch (error) {
       console.log(error.response.data.message);
       setError(error.response.data.message);
-      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+      toast.error(error.response?.data?.message || "Failed to clear tenant");
     }
   };
 
-  const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState('');
+  const [invoiceSelectedPayment, setInvoiceSelectedPayment] = useState("");
   console.log(invoiceSelectedPayment);
   const [isInvoiceVisible, setIsInvoiceVisible] = useState(false);
 
@@ -593,23 +595,23 @@ const TenantPayments = () => {
     HouseNo: invoiceSelectedPayment?.tenant?.houseDetails?.houseNo,
     items: [
       invoiceSelectedPayment.rent?.deficit > 0 && {
-        name: 'Monthly Rent Transaction',
-        description: 'Rent Deficit',
+        name: "Monthly Rent Transaction",
+        description: "Rent Deficit",
         price: invoiceSelectedPayment.rent.deficit,
       },
       invoiceSelectedPayment.waterBill?.deficit > 0 && {
-        name: 'Monthly Water Transaction',
-        description: 'Water Deficit',
+        name: "Monthly Water Transaction",
+        description: "Water Deficit",
         price: invoiceSelectedPayment.waterBill.deficit,
       },
       invoiceSelectedPayment.garbageFee?.deficit > 0 && {
-        name: 'Monthly Garbage Transaction',
-        description: 'Garbage Deficit',
+        name: "Monthly Garbage Transaction",
+        description: "Garbage Deficit",
         price: invoiceSelectedPayment.garbageFee.deficit,
       },
       invoiceSelectedPayment.extraCharges?.deficit > 0 && {
-        name: 'Monthly Extra Charges Transaction',
-        description: 'ExtraCharges Deficit',
+        name: "Monthly Extra Charges Transaction",
+        description: "ExtraCharges Deficit",
         price: invoiceSelectedPayment.extraCharges.deficit,
       },
     ].filter(Boolean),

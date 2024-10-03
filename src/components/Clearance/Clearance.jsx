@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import './Clearance.scss';
-import { useLocation, useNavigate } from 'react-router-dom';
-import apiRequest from '../../lib/apiRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import { TailSpin } from 'react-loader-spinner';
-import Pagination from 'react-js-pagination';
+import { useEffect, useState } from "react";
+import "./Clearance.scss";
+import { useLocation, useNavigate } from "react-router-dom";
+import apiRequest from "../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import { TailSpin } from "react-loader-spinner";
+import Pagination from "react-js-pagination";
 
 function Clearance() {
   const location = useLocation();
@@ -12,15 +12,15 @@ function Clearance() {
   const { tenant } = location.state || {};
   // console.log(tenant);
 
-  const [waterBill, setWaterBill] = useState('');
-  const [garbageFee, setGarbageFee] = useState('');
-  const [paintingFee, setPaintingFee] = useState('');
-  const [otherCharges, setOtherCharges] = useState('');
-  const [date, setDate] = useState('');
+  const [waterBill, setWaterBill] = useState("");
+  const [garbageFee, setGarbageFee] = useState("");
+  const [paintingFee, setPaintingFee] = useState("");
+  const [otherCharges, setOtherCharges] = useState("");
+  const [date, setDate] = useState("");
 
   const extraCharges = Number(otherCharges) + Number(paintingFee);
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // New state for popup
   const [paymentData, setPaymentData] = useState([]); // State to hold payment data from backend
@@ -39,7 +39,7 @@ function Clearance() {
         if (response.status) {
           // console.log(response.data);
           setMostRecentPayments(response.data.mostRecentPayment[0]);
-          setError('');
+          setError("");
         }
       } catch (error) {
         setError(error.response.data.message);
@@ -52,7 +52,7 @@ function Clearance() {
   const handleClearTenant = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const response = await apiRequest.put(
         `/v2/tenants/clearTenant/${tenant._id}`,
@@ -65,16 +65,16 @@ function Clearance() {
       );
       if (response.status) {
         console.log(response.data.payment);
-        setWaterBill('');
-        setGarbageFee('');
-        setPaintingFee('');
-        setOtherCharges('');
-        setDate('');
-        toast.success('Tenant cleared successfully!');
+        setWaterBill("");
+        setGarbageFee("");
+        setPaintingFee("");
+        setOtherCharges("");
+        setDate("");
+        toast.success("Tenant cleared successfully!");
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred');
-      toast.error(error.response?.data?.message || 'Failed to clear tenant');
+      setError(error.response?.data?.message || "An error occurred");
+      toast.error(error.response?.data?.message || "Failed to clear tenant");
 
       // Open popup with payment data if the error is related to payments
       if (error.response?.data?.mostRecentPayment) {
@@ -102,11 +102,11 @@ function Clearance() {
         { refundAmount: totalRefundAmunt }
       );
       if (response.status) {
-        toast.success('Tenant Cleared');
+        toast.success("Tenant Cleared! Check confirmation for Email");
         setLoading(false);
       }
     } catch (error) {
-      toast.error(error.response.data.message || 'Error Clearing Tenant');
+      toast.error(error.response.data.message || "Error Clearing Tenant");
     } finally {
       setLoading(false);
     }
@@ -117,7 +117,7 @@ function Clearance() {
       <h1>CLEAR TENANT</h1>
       <div className="forms">
         {/* Flipping card structure */}
-        <div className={`flip-card ${isFlipped ? 'flipped' : ''}`}>
+        <div className={`flip-card ${isFlipped ? "flipped" : ""}`}>
           <div className="flip-card-inner">
             {/* Front Side: Tenant Bill Form */}
             <div className="flip-card-front">
@@ -190,7 +190,7 @@ function Clearance() {
                 <p>Name: {tenant?.name}</p>
                 <p>House No: {tenant?.houseDetails?.houseNo}</p>
                 <p>
-                  Amount Avaliable :{' '}
+                  Amount Avaliable :{" "}
                   {(mostRecentPayments?.tenant?.houseDetails?.rentDeposit ||
                     0) +
                     (mostRecentPayments?.tenant?.houseDetails?.waterDeposit +
@@ -214,7 +214,7 @@ function Clearance() {
                       <tr>
                         <td>
                           {mostRecentPayments?.month +
-                            ', ' +
+                            ", " +
                             mostRecentPayments?.year || new Date()}
                         </td>
                         <td>{mostRecentPayments?.totalAmountPaid}</td>
@@ -226,8 +226,8 @@ function Clearance() {
                         </td>
                         <td>
                           {mostRecentPayments?.isCleared
-                            ? 'Cleared'
-                            : 'Pending'}
+                            ? "Cleared"
+                            : "Pending"}
                         </td>
                       </tr>
                     )}
@@ -266,14 +266,14 @@ function Clearance() {
             </div>
             <div className="form1Clear">
               <label htmlFor="">
-                House Deposit :{' '}
+                House Deposit :{" "}
                 <span className="clearspan">
-                  {mostRecentPayments?.tenant?.houseDetails?.rentDeposit}{' '}
+                  {mostRecentPayments?.tenant?.houseDetails?.rentDeposit}{" "}
                 </span>
-              </label>{' '}
+              </label>{" "}
               <hr />
               <label htmlFor="">
-                Water Deposit :{' '}
+                Water Deposit :{" "}
                 <span className="clearspan">
                   {mostRecentPayments?.tenant?.houseDetails?.waterDeposit}
                 </span>
@@ -300,7 +300,7 @@ function Clearance() {
           <div className="cleardiv">
             <div className="clear">
               <label htmlFor="">
-                Refund:{' '}
+                Refund:{" "}
                 {(mostRecentPayments?.tenant?.deposits?.rentDeposit || 0) +
                   (mostRecentPayments?.tenant?.deposits?.waterDeposit || 0) +
                   (mostRecentPayments?.overpay || 0)}
@@ -361,8 +361,8 @@ function Clearance() {
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{payment?.globalDeficit}</td>
-                        <td>{payment?.month + ', ' + payment?.year}</td>
-                        <td>{payment?.isCleared ? 'Cleared' : 'Pending'}</td>
+                        <td>{payment?.month + ", " + payment?.year}</td>
+                        <td>{payment?.isCleared ? "Cleared" : "Pending"}</td>
                       </tr>
                     ))}
               </tbody>

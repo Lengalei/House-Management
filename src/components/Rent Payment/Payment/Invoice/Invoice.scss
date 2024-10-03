@@ -7,6 +7,10 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
   background-color: white;
+  height: 80%;
+  overflow: scroll;
+  overflow-x: hidden;
+
   position: relative; // for close button positioning
 
   h1 {
@@ -75,8 +79,8 @@
       color: #ff0000;
     }
   }
-  input[type='text'],
-  input[type='number'] {
+  input[type="text"],
+  input[type="number"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #ddd;

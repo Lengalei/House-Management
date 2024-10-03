@@ -3,7 +3,7 @@
 .tenant-payments-container {
   width: 100%;
   text-transform: capitalize;
-  background-image: url('/background354.jpeg');
+  background-image: url("/background354.jpeg");
   background-size: cover;
   height: 100%;
   color: black;
@@ -13,7 +13,7 @@
   position: relative;
   padding-top: 30px;
 
-  .h1{
+  .h1 {
     width: 40%;
     height: 40px;
     background-color: white;
@@ -21,7 +21,8 @@
     display: flex;
     justify-content: center;
     border-radius: 15px;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+      rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
     color: black;
 
     @include md {
@@ -31,27 +32,27 @@
       padding: 10px;
     }
   }
-// added h1
+  // added h1
   .h1 h1 {
-    font-size: 20px;
+    font-size: 15px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-     color: black;
-     span{
+    color: black;
+    span {
       color: var(--primary-color);
       font-weight: 700;
       margin-right: 5px;
-     }
-     @include md {
+    }
+    @include md {
       font-size: 13px;
     }
     @include sm {
       font-size: 13px;
     }
   }
-  
+
   span {
     color: darkgoldenrod;
   }
@@ -130,7 +131,6 @@
           height: 100%;
           overflow: scroll;
           overflow-x: hidden;
-          
 
           .mini-card {
             border: 1px solid var(--yellow);
@@ -172,13 +172,12 @@
         right: 58%;
         top: 80%;
         border: 1px solid var(--primary-color);
-          @include md {
-      width: 30%;
-    }
-    @include sm {
-      width: 30%;
-    }
-
+        @include md {
+          width: 30%;
+        }
+        @include sm {
+          width: 30%;
+        }
       }
 
       .addExtraAmount:hover {
@@ -226,7 +225,7 @@
       color: var(--primary-color);
     }
 
-    .popup {
+    .popup-content {
       background: #ddd;
       border-radius: 8px;
       padding: 20px;
@@ -241,7 +240,7 @@
         right: 10px;
         border: none;
         padding: 6px;
-        background-color: var(--primary-color);;
+        background-color: var(--primary-color);
         border-radius: 12px;
         font-size: 15px;
         cursor: pointer;
@@ -286,7 +285,7 @@
     right: 10px;
     border: none;
     padding: 2px 6px;
-    background-color: var(--primary-color);;
+    background-color: var(--primary-color);
     border-radius: 12px;
     font-size: 18px;
     cursor: pointer;
@@ -294,7 +293,7 @@
   .update {
     border: none;
     padding: 6px;
-    background-color: var(--primary-color);;
+    background-color: var(--primary-color);
     border-radius: 8px;
     font-size: 15px;
     cursor: pointer;
@@ -316,7 +315,7 @@
 
     /* Add a semi-transparent overlay */
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -464,12 +463,12 @@
     }
 
     .cancel-btn {
-      background-color: var(--primary-color);;
+      background-color: var(--primary-color);
       color: white;
     }
 
     .confirm-btn {
-      background-color: var(--primary-color);;
+      background-color: var(--primary-color);
       color: white;
     }
   }
@@ -487,7 +486,7 @@
       // border: 1px solid crimson;
 
       .confirm-btn {
-        background-color: var(--primary-color);;
+        background-color: var(--primary-color);
         color: #fff;
         padding: 10px 20px;
         border: none;

@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
-import cron from 'node-cron';
-import Tenant from '../../../models/v2/models/v2Tenant.model.js';
-import { createPaymentRecord } from '../../../utils/v2/utils/paymentHelper.js';
-import House from '../../../models/houses.js';
-import Payment from '../../../models/v2/models/v2Payment.model.js';
-import ScheduledJob from '../../../models/v2/models/ScheduledJob.js';
-import Invoice from '../../../models/v2/models/Invoice.js';
-import { sendEmail } from '../../../utils/v2/utils/clearanceEmailSender.js';
+import mongoose from "mongoose";
+import cron from "node-cron";
+import Tenant from "../../../models/v2/models/v2Tenant.model.js";
+import { createPaymentRecord } from "../../../utils/v2/utils/paymentHelper.js";
+import House from "../../../models/houses.js";
+import Payment from "../../../models/v2/models/v2Payment.model.js";
+import ScheduledJob from "../../../models/v2/models/ScheduledJob.js";
+import Invoice from "../../../models/v2/models/Invoice.js";
+import { sendEmail } from "../../../utils/v2/utils/clearanceEmailSender.js";
 
 // Register Tenant Details
 export const createTenant = async (req, res) => {
@@ -34,18 +34,18 @@ export const createTenant = async (req, res) => {
     !emergencyContactNumber ||
     !emergencyContactName
   ) {
-    return res.status(400).json({ message: 'All fields required!.' });
+    return res.status(400).json({ message: "All fields required!." });
   }
 
   try {
     // Check if the houseNo already exists
     const existingTenant = await Tenant.findOne({
-      'houseDetails.houseNo': houseNo,
+      "houseDetails.houseNo": houseNo,
       apartmentId: apartmentId,
     });
     if (existingTenant) {
       return res.status(400).json({
-        message: 'House number is already assigned to another tenant.',
+        message: "House number is already assigned to another tenant.",
       });
     }
 
@@ -56,9 +56,9 @@ export const createTenant = async (req, res) => {
     let garbageFee = 0;
 
     if (
-      houseNo.endsWith('A') ||
-      houseNo.endsWith('B') ||
-      houseNo.endsWith('C')
+      houseNo.endsWith("A") ||
+      houseNo.endsWith("B") ||
+      houseNo.endsWith("C")
     ) {
       rent = 17000;
       rentDeposit = 17000;
@@ -75,10 +75,10 @@ export const createTenant = async (req, res) => {
     if (existingNationalId) {
       return res
         .status(409)
-        .json({ message: 'Tenant National ID already exists!' });
+        .json({ message: "Tenant National ID already exists!" });
     }
 
-    let houseName = 'House ' + houseNo; // Assuming houseNo is defined and valid
+    let houseName = "House " + houseNo; // Assuming houseNo is defined and valid
     const match = houseNo.match(/\d+/);
     const floorNumber = match ? match[0] : null; // Extract the numeric part
 
@@ -89,7 +89,7 @@ export const createTenant = async (req, res) => {
       isOccupied: true,
     });
     if (existingTenantInHouse) {
-      return res.status(400).json({ message: 'House Already Occupied!' });
+      return res.status(400).json({ message: "House Already Occupied!" });
     }
 
     const house = await House.findOneAndUpdate(
@@ -98,7 +98,7 @@ export const createTenant = async (req, res) => {
       { new: true }
     );
     if (!house) {
-      return res.status(404).json({ message: 'House not found!' });
+      return res.status(404).json({ message: "House not found!" });
     }
 
     // Create tenant
@@ -152,13 +152,13 @@ export const addDeposits = async (req, res) => {
     if (!tenantId || !depositDate) {
       return res
         .status(400)
-        .json({ message: 'Tenant ID and deposit date are required.' });
+        .json({ message: "Tenant ID and deposit date are required." });
     }
 
     // Find tenant
     const tenant = await Tenant.findById(tenantId);
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found.' });
+      return res.status(404).json({ message: "Tenant not found." });
     }
 
     // Initialize deposit amounts
@@ -218,7 +218,7 @@ export const addDeposits = async (req, res) => {
       tenant.depositHistory.push({
         date: depositDate,
         amount: updatedRentDeposit,
-        type: 'rentDeposit',
+        type: "rentDeposit",
         referenceNo,
       });
 
@@ -236,7 +236,7 @@ export const addDeposits = async (req, res) => {
       tenant.depositHistory.push({
         date: depositDate,
         amount: updatedWaterDeposit,
-        type: 'waterDeposit',
+        type: "waterDeposit",
         referenceNo,
       });
 
@@ -254,7 +254,7 @@ export const addDeposits = async (req, res) => {
       tenant.depositHistory.push({
         date: depositDate,
         amount: initialRentPayment,
-        type: 'initialRentPayment',
+        type: "initialRentPayment",
         referenceNo,
       });
 
@@ -581,10 +581,10 @@ export const addDeposits = async (req, res) => {
 
     await tenant.save();
 
-    res.status(200).json({ message: 'Deposits updated successfully.', tenant });
+    res.status(200).json({ message: "Deposits updated successfully.", tenant });
   } catch (error) {
-    console.error('Error adding deposits:', error);
-    res.status(500).json({ message: 'Error adding deposits.', error });
+    console.error("Error adding deposits:", error);
+    res.status(500).json({ message: "Error adding deposits.", error });
   }
 };
 
@@ -596,7 +596,7 @@ export const addSingleAmountDeposit = async (req, res) => {
     const tenant = await Tenant.findById(tenantId);
 
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
 
     const {
@@ -654,7 +654,7 @@ export const addSingleAmountDeposit = async (req, res) => {
       tenant.depositHistory.push({
         date: depositDate,
         amount: rentDepositAmount,
-        type: 'rentDeposit',
+        type: "rentDeposit",
         referenceNo,
       });
     }
@@ -663,7 +663,7 @@ export const addSingleAmountDeposit = async (req, res) => {
       tenant.deposits.rentDepositDeficitHistory.push({
         date: depositDate,
         amount: rentDepositDeficit,
-        description: 'Rent deposit deficit recorded',
+        description: "Rent deposit deficit recorded",
       });
     }
 
@@ -690,7 +690,7 @@ export const addSingleAmountDeposit = async (req, res) => {
       tenant.depositHistory.push({
         date: depositDate,
         amount: waterDepositAmount,
-        type: 'waterDeposit',
+        type: "waterDeposit",
         referenceNo,
       });
     }
@@ -699,7 +699,7 @@ export const addSingleAmountDeposit = async (req, res) => {
       tenant.deposits.waterDepositDeficitHistory.push({
         date: depositDate,
         amount: waterDepositDeficit,
-        description: 'Water deposit deficit recorded',
+        description: "Water deposit deficit recorded",
       });
     }
 
@@ -728,7 +728,7 @@ export const addSingleAmountDeposit = async (req, res) => {
           tenant.depositHistory.push({
             date: depositDate,
             amount: initialRentPayment,
-            type: 'initialRentPayment',
+            type: "initialRentPayment",
             referenceNo,
           });
         }
@@ -738,7 +738,7 @@ export const addSingleAmountDeposit = async (req, res) => {
           tenant.deposits.initialRentPaymentDeficitHistory.push({
             date: depositDate,
             amount: initialRentPaymentDeficit,
-            description: 'Initial rent payment deficit recorded',
+            description: "Initial rent payment deficit recorded",
           });
         }
       }
@@ -749,7 +749,7 @@ export const addSingleAmountDeposit = async (req, res) => {
       tenant.excessHistory.push({
         date: depositDate,
         amount: excessAmount,
-        description: 'Excess recorded before payment creation',
+        description: "Excess recorded before payment creation",
       });
 
       const formattedPlacementDate = new Date(tenant.placementDate);
@@ -774,7 +774,7 @@ export const addSingleAmountDeposit = async (req, res) => {
         tenant.excessHistory.push({
           date: depositDate,
           amount: 0,
-          description: 'Excess used up after payment creation',
+          description: "Excess used up after payment creation",
         });
       }
     } else {
@@ -787,7 +787,7 @@ export const addSingleAmountDeposit = async (req, res) => {
         date: depositDate,
         amount: fullInitialRentDeficit,
         description:
-          'Full initial rent payment deficit due to insufficient deposits',
+          "Full initial rent payment deficit due to insufficient deposits",
       });
     }
 
@@ -804,13 +804,13 @@ export const addSingleAmountDeposit = async (req, res) => {
     tenant.depositHistory.push({
       date: depositDate,
       amount: parseFloat(totalAmount),
-      type: 'totalDeposit',
+      type: "totalDeposit",
       referenceNo,
     });
 
     // Save the tenant document with updated deposit details
     await tenant.save();
-    res.status(200).json({ message: 'Deposits updated successfully.', tenant });
+    res.status(200).json({ message: "Deposits updated successfully.", tenant });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -828,10 +828,10 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
   try {
     // Validate inputs
     if (!paymentAmount || !depositDate || !referenceNo) {
-      return res.status(400).json({ message: 'All fields must be filled!' });
+      return res.status(400).json({ message: "All fields must be filled!" });
     }
     if (!mongoose.Types.ObjectId.isValid(tenantId)) {
-      return res.status(400).json({ message: 'Invalid ID provided!' });
+      return res.status(400).json({ message: "Invalid ID provided!" });
     }
 
     const tenant = await Tenant.findById(tenantId);
@@ -839,7 +839,7 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
     if (!tenant) {
       return res
         .status(404)
-        .json({ success: false, message: 'Tenant not found' });
+        .json({ success: false, message: "Tenant not found" });
     }
 
     const { houseDetails, deposits } = tenant;
@@ -873,14 +873,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
         date: depositDate,
         amount: parseFloat(requiredAmount),
         previousAmount: parseFloat(deposits.rentDeposit - requiredAmount),
-        referenceNo: referenceNo || '',
+        referenceNo: referenceNo || "",
       });
 
       tenant.depositHistory.push({
         date: depositDate,
         amount: parseFloat(requiredAmount),
-        type: 'rentDeposit',
-        referenceNo: referenceNo || '',
+        type: "rentDeposit",
+        referenceNo: referenceNo || "",
       });
 
       // Check if rentDeposit is fully satisfied
@@ -890,14 +890,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
         deposits.rentDepositDeficitHistory.push({
           date: depositDate,
           amount: parseFloat(deposits.rentDepositDeficit),
-          description: 'Remaining rent deposit deficit after partial payment',
+          description: "Remaining rent deposit deficit after partial payment",
         });
       } else {
         deposits.rentDepositDeficit = 0;
         deposits.rentDepositDeficitHistory.push({
           date: depositDate,
           amount: 0,
-          description: 'Rent deposit fully satisfied',
+          description: "Rent deposit fully satisfied",
         });
       }
     }
@@ -916,14 +916,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
         date: depositDate,
         amount: parseFloat(requiredAmount),
         previousAmount: parseFloat(deposits.waterDeposit - requiredAmount),
-        referenceNo: referenceNo || '',
+        referenceNo: referenceNo || "",
       });
 
       tenant.depositHistory.push({
         date: depositDate,
         amount: parseFloat(requiredAmount),
-        type: 'waterDeposit',
-        referenceNo: referenceNo || '',
+        type: "waterDeposit",
+        referenceNo: referenceNo || "",
       });
 
       // Check if waterDeposit is fully satisfied
@@ -933,14 +933,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
         deposits.waterDepositDeficitHistory.push({
           date: depositDate,
           amount: parseFloat(deposits.waterDepositDeficit),
-          description: 'Remaining water deposit deficit after partial payment',
+          description: "Remaining water deposit deficit after partial payment",
         });
       } else {
         deposits.waterDepositDeficit = 0;
         deposits.waterDepositDeficitHistory.push({
           date: depositDate,
           amount: 0,
-          description: 'Water deposit fully satisfied',
+          description: "Water deposit fully satisfied",
         });
       }
     }
@@ -963,14 +963,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
           previousAmount: parseFloat(
             deposits.initialRentPayment - requiredAmount
           ),
-          referenceNo: referenceNo || '',
+          referenceNo: referenceNo || "",
         });
 
         tenant.depositHistory.push({
           date: depositDate,
           amount: parseFloat(requiredAmount),
-          type: 'initialRentPayment',
-          referenceNo: referenceNo || '',
+          type: "initialRentPayment",
+          referenceNo: referenceNo || "",
         });
 
         // Check if initialRentPayment is fully satisfied
@@ -981,14 +981,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
             date: depositDate,
             amount: parseFloat(deposits.initialRentPaymentDeficit),
             description:
-              'Remaining initial rent payment deficit after partial payment',
+              "Remaining initial rent payment deficit after partial payment",
           });
         } else {
           deposits.initialRentPaymentDeficit = 0;
           deposits.initialRentPaymentDeficitHistory.push({
             date: depositDate,
             amount: 0,
-            description: 'Initial rent payment fully satisfied',
+            description: "Initial rent payment fully satisfied",
           });
         }
       } else if (deposits.initialRentPayment < houseDetails.rent) {
@@ -1005,14 +1005,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
           previousAmount: parseFloat(
             deposits.initialRentPayment - requiredAmount
           ),
-          referenceNo: referenceNo || '',
+          referenceNo: referenceNo || "",
         });
 
         tenant.depositHistory.push({
           date: depositDate,
           amount: parseFloat(requiredAmount),
-          type: 'initialRentPayment',
-          referenceNo: referenceNo || '',
+          type: "initialRentPayment",
+          referenceNo: referenceNo || "",
         });
 
         // Check if initialRentPayment is fully satisfied after this payment
@@ -1023,14 +1023,14 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
             date: depositDate,
             amount: parseFloat(deposits.initialRentPaymentDeficit),
             description:
-              'Remaining initial rent payment deficit after partial payment',
+              "Remaining initial rent payment deficit after partial payment",
           });
         } else {
           deposits.initialRentPaymentDeficit = 0;
           deposits.initialRentPaymentDeficitHistory.push({
             date: depositDate,
             amount: 0,
-            description: 'Initial rent payment fully satisfied',
+            description: "Initial rent payment fully satisfied",
           });
         }
       }
@@ -1042,7 +1042,7 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
       tenant.excessHistory.push({
         date: depositDate,
         amount: parseFloat(remainingPayment),
-        description: 'Excess payment after fulfilling all deficits',
+        description: "Excess payment after fulfilling all deficits",
       });
       remainingPayment = 0;
     }
@@ -1052,10 +1052,10 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
       parseFloat(deposits.initialRentPayment) + parseFloat(tenant.excessAmount);
 
     // Step 5: Record the Payment
-    console.log('tenantId: ', tenantId);
-    console.log('totalAmount: ', totalAmount);
-    console.log('depositDate: ', depositDate);
-    console.log('referenceNo: ', referenceNo);
+    console.log("tenantId: ", tenantId);
+    console.log("totalAmount: ", totalAmount);
+    console.log("depositDate: ", depositDate);
+    console.log("referenceNo: ", referenceNo);
 
     const formattedPlacementDate = new Date(tenant.placementDate);
 
@@ -1080,7 +1080,7 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
       date: depositDate,
       amount: 0,
       description:
-        'Excess amount recorded after covering deficits and creating payment',
+        "Excess amount recorded after covering deficits and creating payment",
     });
 
     const totalDepositAmount =
@@ -1091,8 +1091,8 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
     tenant.depositHistory.push({
       date: depositDate,
       amount: parseFloat(totalDepositAmount),
-      type: 'totalDeposit',
-      referenceNo: referenceNo || '',
+      type: "totalDeposit",
+      referenceNo: referenceNo || "",
     });
 
     // Final Step: Save the tenant's updated details
@@ -1100,13 +1100,13 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Payment processed successfully',
+      message: "Payment processed successfully",
       tenant,
     });
   } catch (error) {
     return res
       .status(500)
-      .json({ success: false, message: 'Error processing payment', error });
+      .json({ success: false, message: "Error processing payment", error });
   }
 };
 
@@ -1117,7 +1117,7 @@ export const updateWithIndividualDepoAmount = async (req, res) => {
 export const tenantsWithIncompleteDeposits = async (req, res) => {
   try {
     // Query to find tenants where deposits.isCleared is false
-    const tenants = await Tenant.find({ 'deposits.isCleared': false });
+    const tenants = await Tenant.find({ "deposits.isCleared": false });
 
     // Return the list of tenants with incomplete deposits
     res.status(200).json({ success: true, tenants });
@@ -1131,7 +1131,7 @@ export const tenantsWithIncompleteDeposits = async (req, res) => {
 export const getTenants = async (req, res) => {
   try {
     const tenants = await Tenant.find({
-      'deposits.isCleared': true,
+      "deposits.isCleared": true,
       toBeCleared: false,
     }).sort({
       createdAt: -1,
@@ -1144,7 +1144,7 @@ export const getTenants = async (req, res) => {
 export const getListAllTenants = async (req, res) => {
   try {
     const tenants = await Tenant.find({
-      'deposits.isCleared': true,
+      "deposits.isCleared": true,
     }).sort({
       createdAt: -1,
     });
@@ -1158,7 +1158,7 @@ export const getListAllTenants = async (req, res) => {
 export const getToBeClearedTenants = async (req, res) => {
   try {
     const tenants = await Tenant.find({
-      'deposits.isCleared': true,
+      "deposits.isCleared": true,
       toBeCleared: true,
     }).sort({
       createdAt: -1,
@@ -1173,7 +1173,7 @@ export const getToBeClearedTenants = async (req, res) => {
 export const getTenantById = async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id);
-    if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
+    if (!tenant) return res.status(404).json({ message: "Tenant not found" });
     res.status(200).json(tenant);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -1187,7 +1187,7 @@ export const updateTenant = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!tenant) return res.status(404).json({ message: 'Tenant not found' });
+    if (!tenant) return res.status(404).json({ message: "Tenant not found" });
     res.status(200).json(tenant);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -1202,14 +1202,14 @@ export const updateTenantHouseDetails = async (req, res) => {
 
     // Validate input
     if (rentDefault === undefined || garbageDefault === undefined) {
-      return res.status(400).json({ message: 'All fields must be filled!' });
+      return res.status(400).json({ message: "All fields must be filled!" });
     }
 
     // Check if both values are numbers and non-negative
     if (isNaN(rentDefault) || isNaN(garbageDefault)) {
       return res
         .status(400)
-        .json({ message: 'Rent and Garbage Fee must be valid numbers!' });
+        .json({ message: "Rent and Garbage Fee must be valid numbers!" });
     }
 
     const rent = parseFloat(rentDefault);
@@ -1218,13 +1218,13 @@ export const updateTenantHouseDetails = async (req, res) => {
     if (rent < 0 || garbageFee < 0) {
       return res
         .status(400)
-        .json({ message: 'Rent and Garbage Fee must be non-negative values!' });
+        .json({ message: "Rent and Garbage Fee must be non-negative values!" });
     }
 
     // Find tenant
     const tenant = await Tenant.findById(tenantId);
     if (!tenant) {
-      return res.status(404).json({ message: 'No Tenant Found!' });
+      return res.status(404).json({ message: "No Tenant Found!" });
     }
 
     // Update tenant details
@@ -1234,9 +1234,9 @@ export const updateTenantHouseDetails = async (req, res) => {
     await tenant.save();
     res.status(200).json(tenant);
   } catch (error) {
-    console.error('Error updating tenant house details:', error); // Add error logging
+    console.error("Error updating tenant house details:", error); // Add error logging
     res.status(500).json({
-      message: 'An error occurred while updating tenant house details.',
+      message: "An error occurred while updating tenant house details.",
     });
   }
 };
@@ -1247,18 +1247,18 @@ export const deleteTenant = async (req, res) => {
 
   // Validate ID
   if (!id) {
-    return res.status(400).json({ message: 'No ID provided!' });
+    return res.status(400).json({ message: "No ID provided!" });
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid ID provided!' });
+    return res.status(400).json({ message: "Invalid ID provided!" });
   }
 
   try {
     // 1. Find the tenant by ID
     const tenant = await Tenant.findById(id);
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found!' });
+      return res.status(404).json({ message: "Tenant not found!" });
     }
 
     // 2. Delete all payment records associated with the tenant
@@ -1273,14 +1273,14 @@ export const deleteTenant = async (req, res) => {
     // 3. Find the tenant's house by houseName and houseNo from tenant's houseDetails
     const houseNo = tenant.houseDetails.houseNo;
     const apartmentId = tenant.apartmentId;
-    console.log('hoiseNo: ', houseNo);
-    let houseName = 'House ' + houseNo;
+    console.log("hoiseNo: ", houseNo);
+    let houseName = "House " + houseNo;
     const house = await House.findOne({
       houseName: houseName,
       apartment: apartmentId,
     });
     if (!house) {
-      return res.status(404).json({ message: 'House not found!' });
+      return res.status(404).json({ message: "House not found!" });
     }
 
     //check if there is an invoice related to the tenant:
@@ -1308,7 +1308,7 @@ export const deleteTenant = async (req, res) => {
 export const blackListTenant = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
   try {
     const tenant = await Tenant.findByIdAndUpdate(
@@ -1317,14 +1317,14 @@ export const blackListTenant = async (req, res) => {
       { new: true }
     );
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
     res
       .status(200)
-      .json({ message: 'Tenant blacklisted successfully', tenant });
+      .json({ message: "Tenant blacklisted successfully", tenant });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -1332,7 +1332,7 @@ export const blackListTenant = async (req, res) => {
 export const whiteListTenant = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
   try {
     const tenant = await Tenant.findByIdAndUpdate(
@@ -1341,15 +1341,15 @@ export const whiteListTenant = async (req, res) => {
       { new: true }
     );
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
     console.log(tenant);
     res
       .status(200)
-      .json({ message: 'Tenant whitelisted successfully', tenant });
+      .json({ message: "Tenant whitelisted successfully", tenant });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -1358,7 +1358,7 @@ export const updateSingleTenantData = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ error: 'Invalid ID format' });
+    return res.status(400).json({ error: "Invalid ID format" });
   }
 
   try {
@@ -1366,7 +1366,7 @@ export const updateSingleTenantData = async (req, res) => {
     //update the house if it has changed
     if (tenant.houseDetails.houseNo !== req.body.houseDetails.houseNo) {
       //make the original house not occupied
-      const houseName = 'House' + ' ' + tenant?.houseDetails?.houseNo;
+      const houseName = "House" + " " + tenant?.houseDetails?.houseNo;
       const house = await House.findOneAndUpdate(
         {
           houseName: houseName,
@@ -1376,17 +1376,17 @@ export const updateSingleTenantData = async (req, res) => {
         { new: true }
       );
       if (!house) {
-        return res.status(404).json({ mesage: 'No previous house found!' });
+        return res.status(404).json({ mesage: "No previous house found!" });
       }
       //from there make the new chosen house occupied
-      const newHouseName = 'House' + ' ' + req?.body?.houseDetails?.houseNo;
+      const newHouseName = "House" + " " + req?.body?.houseDetails?.houseNo;
       //check if there is a tenant in the new house
       const isHouseOccupied = await House.findOne({
         houseName: newHouseName,
         apartment: req.body.apartmentId,
       });
       if (isHouseOccupied.isOccupied) {
-        return res.status(400).json({ message: 'New House already occupied!' });
+        return res.status(400).json({ message: "New House already occupied!" });
       }
       //update the new house to be occuppied
       const newHouse = await House.findOneAndUpdate(
@@ -1398,7 +1398,7 @@ export const updateSingleTenantData = async (req, res) => {
         { new: true }
       );
       if (!newHouse) {
-        return res.status(404).json({ mesage: 'No new house found!' });
+        return res.status(404).json({ mesage: "No new house found!" });
       }
     }
 
@@ -1408,15 +1408,15 @@ export const updateSingleTenantData = async (req, res) => {
     });
 
     if (!updatedTenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+      return res.status(404).json({ error: "Tenant not found" });
     }
 
     return res.status(200).json(updatedTenant);
   } catch (err) {
-    console.error('Error updating tenant:', err);
+    console.error("Error updating tenant:", err.message);
     return res
       .status(500)
-      .json({ error: 'Server error', message: err.message });
+      .json({ error: "Server error", message: err.message });
   }
 };
 
@@ -1428,12 +1428,12 @@ export const checkTenantPaymentRecord = async (req, res) => {
     if (!tenantPayments) {
       return res
         .status(404)
-        .json({ message: 'No payments for this Tenant', status: false });
+        .json({ message: "No payments for this Tenant", status: false });
     }
 
     res.status(200).json({ tenantPayments, status: true });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+    res.status(500).json({ message: "Server Error", error });
   }
 };
 
@@ -1445,23 +1445,23 @@ export const getMostRecentPaymentByTenantId = async (req, res) => {
     // Find the most recent payment for the tenant, sorted by the creation date
     const mostRecentPayment = await Payment.find({ tenant: tenantId })
       .sort({ createdAt: -1 })
-      .populate('tenant');
+      .populate("tenant");
 
     if (!mostRecentPayment) {
       return res.status(404).json({
-        message: 'No payment record found for this tenant.',
+        message: "No payment record found for this tenant.",
       });
     }
 
     // Return the most recent payment data
     return res.status(200).json({
-      message: 'Most recent payment fetched successfully.',
+      message: "Most recent payment fetched successfully.",
       mostRecentPayment,
     });
   } catch (error) {
-    console.error('Error fetching recent payment:', error);
+    console.error("Error fetching recent payment:", error);
     return res.status(500).json({
-      message: 'Server error while fetching the most recent payment.',
+      message: "Server error while fetching the most recent payment.",
       error: error.message,
     });
   }
@@ -1474,14 +1474,14 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
 
   try {
     // Fetch tenant information and their most recent payment
-    const tenant = await Tenant.findById(tenantId).populate('apartmentId');
+    const tenant = await Tenant.findById(tenantId).populate("apartmentId");
 
     const recentPayment = await Payment.findOne({ tenant: tenantId }).sort({
       createdAt: -1,
     });
 
     if (!tenant || !recentPayment) {
-      return res.status(404).json({ message: 'Tenant or payment not found.' });
+      return res.status(404).json({ message: "Tenant or payment not found." });
     }
 
     // Extract details
@@ -1494,11 +1494,11 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
     const ownerName = req.user.username; // Owner's email from authenticated user (req.user)
 
     // Email for tenant
-    const tenantSubject = 'Thank You for Your Stay';
+    const tenantSubject = "Thank You for Your Stay";
     const tenantText = `Dear ${tenantName},\n\nThank you for being with us. Your expected exit date is ${recentPayment.month}.\nYour refund amount is KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
 
     // Email for owner
-    const ownerSubject = 'Tenant Exit Notification';
+    const ownerSubject = "Tenant Exit Notification";
     const ownerText = `Dear ${ownerName},\n\nThe tenant ${tenantName} is exiting the property${tenant.apartmentId.name},house number:(${houseDetails.houseNo}).\nExpected exit date: ${recentPayment.month}.\nRefund amount: KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
 
     // Send emails
@@ -1507,10 +1507,10 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
       sendEmail(ownerEmail, ownerSubject, ownerText),
     ]);
 
-    return res.status(200).json({ message: 'Emails sent successfully.' });
+    return res.status(200).json({ message: "Emails sent successfully." });
   } catch (error) {
-    console.error('Error sending emails:', error.message);
-    return res.status(500).json({ message: 'Failed to send emails.' });
+    console.error("Error sending emails:", error.message);
+    return res.status(500).json({ message: "Failed to send emails." });
   }
 };
 
@@ -1522,14 +1522,14 @@ export const clearTenant = async (req, res) => {
   try {
     // Convert the date to a JavaScript Date object and Extract the month and year
     const parsedDate = new Date(date);
-    const month = parsedDate.toLocaleString('default', { month: 'long' });
+    const month = parsedDate.toLocaleString("default", { month: "long" });
     const year = parsedDate.getFullYear();
 
     // Fetch tenant by ID
     const tenant = await Tenant.findById(tenantId);
 
     if (!tenant) {
-      return res.status(404).json({ message: 'Tenant not found' });
+      return res.status(404).json({ message: "Tenant not found" });
     }
 
     // Check if there are any previous uncleared payments
@@ -1539,7 +1539,7 @@ export const clearTenant = async (req, res) => {
     });
     if (mostRecentPayment.length > 0) {
       return res.status(404).json({
-        message: 'Complete pending payments to clear Tenant',
+        message: "Complete pending payments to clear Tenant",
         mostRecentPayment,
       });
     }
@@ -1550,21 +1550,21 @@ export const clearTenant = async (req, res) => {
     // Check if there is any previous (last) payment overpay value
     // Convert month name to previous month
     const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     const monthIndex = months.indexOf(month);
-    if (monthIndex === -1) throw new Error('Invalid month name');
+    if (monthIndex === -1) throw new Error("Invalid month name");
 
     const prevMonth = monthIndex === 0 ? 11 : monthIndex - 1;
     const prevYear = monthIndex === 0 ? year - 1 : year;
@@ -1856,7 +1856,7 @@ export const clearTenant = async (req, res) => {
       (parseFloat(payment.garbageFee.amount) || 0) +
       (parseFloat(payment.extraCharges.amount) || 0);
 
-    console.log('globalTotalAmountPaid: ', globalTotalAmountPaid);
+    console.log("globalTotalAmountPaid: ", globalTotalAmountPaid);
     payment.totalAmountPaid = parseFloat(globalTotalAmountPaid);
     //add global transaction
     payment.globalTransactionHistory.push({
@@ -1897,10 +1897,10 @@ export const clearTenant = async (req, res) => {
     await tenant.save();
 
     // Calculate the scheduled time (48 hours from now)
-    const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    // const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
     const currentdate = new Date(Date.now);
-    console.log('currentdate: ', currentdate);
-    // const scheduledTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    console.log("currentdate: ", currentdate);
+    const scheduledTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Save the scheduled job in the database
     await ScheduledJob.findOneAndUpdate(
@@ -1923,18 +1923,18 @@ export const clearTenant = async (req, res) => {
       },
       {
         scheduled: true,
-        timezone: 'UTC',
+        timezone: "UTC",
       }
     );
 
     res.status(200).json({
-      message: 'Tenant cleared successfully',
+      message: "Tenant cleared successfully",
       payment,
       tenant,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error clearing tenant', error });
+    res.status(500).json({ message: "Error clearing tenant", error });
   }
 };
 
@@ -1976,15 +1976,15 @@ const deleteTenantById = async (tenantId) => {
     // 2. Find the tenant's house by houseName and houseNo from tenant's houseDetails
     const houseNo = tenant.houseDetails.houseNo;
     const apartmentId = tenant.apartmentId;
-    console.log('houseNo: ', houseNo);
-    let houseName = 'House ' + houseNo;
+    console.log("houseNo: ", houseNo);
+    let houseName = "House " + houseNo;
     const house = await House.findOne({
       houseName: houseName,
       apartment: apartmentId,
     });
     if (!house) {
       console.error(`House ${houseName} not found for tenant ${tenantId}.`);
-      return { success: false, message: 'House not found!' };
+      return { success: false, message: "House not found!" };
     }
 
     //check if there is an invoice related to the tenant:
@@ -2008,8 +2008,8 @@ const deleteTenantById = async (tenantId) => {
       message: `Tenant ${tenantId} deleted successfully.`,
     };
   } catch (error) {
-    console.error('Error deleting tenant:', error);
-    return { success: false, message: 'Error deleting tenant.', error };
+    console.error("Error deleting tenant:", error);
+    return { success: false, message: "Error deleting tenant.", error };
   }
 };
 
@@ -2037,7 +2037,7 @@ export const restoreScheduledJobs = async () => {
         },
         {
           scheduled: true,
-          timezone: 'UTC',
+          timezone: "UTC",
         }
       );
     } else {
