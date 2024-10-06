@@ -19,6 +19,7 @@ import apartmentRoutes from './Routes/v2/routes/Apartment.routes.js';
 import v2TenantRoutes from './Routes/v2/routes/tenant.routes.js';
 import v2PaymentRoutes from './Routes/v2/routes/payment.routes.js';
 import InvoiceRoutes from './Routes/v2/routes/invoice.routes.js';
+
 import clearanceRoutes from './Routes/v2/routes/clearance.routes.js';
 import { restoreScheduledJobs } from './controllers/v2/controllers/tenant.controller.js';
 

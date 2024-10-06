@@ -6,6 +6,7 @@ import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { ThreeDots } from 'react-loader-spinner';
+import { FaDownload } from "react-icons/fa6";
 import { toast, ToastContainer } from 'react-toastify';
 
 const Listall = () => {
@@ -152,6 +153,7 @@ const Listall = () => {
     <div className="summary2">
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
+        <button className="btn">Print Tenants Data</button>
         {error && <span>{error}</span>}
         {loading ? (
           <div className="loader">
@@ -185,9 +187,9 @@ const Listall = () => {
                       <td>
                         {tenant?.houseDetails?.houseNo
                           ? tenant.houseDetails?.houseNo
-                          : ''}
+                          : ""}
                       </td>
-                      <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
+                      <td>{tenant.toBeCleared ? "yes" : "No"}</td>
                       <td className="actions">
                         <Link
                           to={`/tenantProfile/${tenant._id}`}
@@ -195,6 +197,9 @@ const Listall = () => {
                         >
                           More Details
                         </Link>
+                        <button>
+                          <FaDownload />
+                        </button>
                         <button
                           onClick={() => {
                             handleTenantClearance(tenant);

@@ -1438,7 +1438,7 @@ export const updateSingleTenantData = async (req, res) => {
 
     return res.status(200).json(updatedTenant);
   } catch (err) {
-    console.error('Error updating tenant:', err);
+    console.error('Error updating tenant:', err.message);
     return res
       .status(500)
       .json({ error: 'Server error', message: err.message });

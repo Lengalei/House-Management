@@ -471,9 +471,11 @@ const TenantPayments = () => {
         setExtraAmountGivenDate('');
         await getMostRecentPaymentByTenantId(tenantId);
         setAddInternalAmountPopup(false);
+        toast.success('Amount Added!');
       }
     } catch (error) {
       setError(error.response.data.message);
+      toast.error(error.response.data.message || 'Failed to Add payment');
     } finally {
       setLoading(false);
     }
