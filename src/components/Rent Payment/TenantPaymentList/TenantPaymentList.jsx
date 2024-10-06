@@ -6,6 +6,7 @@ import apiRequest from '../../../lib/apiRequest';
 import MiniPaymentsPopup from './MiniPaymentsPopup/MiniPaymentsPopup';
 import Pagination from 'react-js-pagination'; // Import Pagination
 import { InfinitySpin } from 'react-loader-spinner';
+import { FaDownload } from "react-icons/fa6";
 
 const TenantPaymentList = () => {
   const { tenantId } = useParams();
@@ -116,19 +117,22 @@ const TenantPaymentList = () => {
         <tbody>
           {currentPayments.map((payment) => (
             <tr key={payment?._id}>
-              <td>{payment?.month + ', ' + payment?.year}</td>
-              <td>{payment?.rent?.amount || 'None'}</td>
-              <td>{payment?.waterBill?.amount || 'None'}</td>
-              <td>{payment?.garbageFee?.amount || 'None'}</td>
-              <td>{payment?.extraCharges?.amount || 'None'}</td>
-              <td>{payment?.totalAmountPaid || 'None'}</td>
+              <td>{payment?.month + ", " + payment?.year}</td>
+              <td>{payment?.rent?.amount || "None"}</td>
+              <td>{payment?.waterBill?.amount || "None"}</td>
+              <td>{payment?.garbageFee?.amount || "None"}</td>
+              <td>{payment?.extraCharges?.amount || "None"}</td>
+              <td>{payment?.totalAmountPaid || "None"}</td>
               <td>
                 <Link to="/paymentDetails" state={{ payment, onEntryOverPay }}>
                   <button>View Details</button>
                 </Link>
+                <button>
+                  <FaDownload />
+                </button>
                 <MdDeleteForever
                   size={25}
-                  color={'red'}
+                  color={"red"}
                   className="paymentRecordDeletebtn"
                   onClick={() => handleOpenModal(payment?._id)}
                 />

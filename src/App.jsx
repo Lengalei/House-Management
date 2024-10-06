@@ -38,6 +38,7 @@ import ApartmentListPage from './components/houses/Apartments/ApartmentListPage.
 import AdminPage from './components/Userprofile/AdminPage/AdminPage.jsx';
 import AdminEditPage from './components/Userprofile/AdminPage/EditAdmin/AdminEditPage.jsx';
 import InvoiceTable from './components/Userprofile/AdminPage/Invoices/InvoiceTable.jsx';
+import NewDashboard from './components/Dashboard/New Dashborad/NewDashboard.jsx';
 
 function App() {
   return (
@@ -50,7 +51,8 @@ function App() {
           <Route path="/resetPasswordLinkClicked" element={<ResetPassword />} />
         </Route>
         <Route element={<RequireAuth />}>
-          <Route index element={<Dashboard />} />
+          {/* <Route index element={<Dashboard />} /> */}
+          <Route index element={<NewDashboard />} />
           <Route path="/registerTenant" element={<Tenant />} />
           <Route path="/registerLandlord" element={<Landlord />} />
           <Route path="/listAllTenants" element={<Listall />} />
