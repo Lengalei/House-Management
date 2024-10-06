@@ -57,7 +57,7 @@ const sendEmailWithMailjet = async (to, subject, text) => {
         {
           From: {
             Email: process.env.MAILJET_FROM_EMAIL,
-            Name: 'Your Company Name',
+            Name: 'Sleek Abode Apartments',
           },
           To: [{ Email: to }],
           Subject: subject,

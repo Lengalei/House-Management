@@ -45,7 +45,7 @@ router.get('/garbageRecords', getAllGarbageRecords);
 router.get('/paymentsByTenant/:tenantId', getPaymentsByTenant);
 router.delete(
   '/deletePayment/:paymentId',
-  authorizeRoles('super_admin', 'admin'),
+  authorizeRoles('super_admin'),
   deletePayment
 );
 

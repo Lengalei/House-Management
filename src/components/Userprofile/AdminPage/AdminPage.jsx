@@ -515,7 +515,7 @@ const AdminPage = () => {
                       clearancePage * itemsPerPageForClearance
                     )
                     ?.map((tenant, index) => (
-                      <tr key={tenant?.id}>
+                      <tr key={tenant?._id}>
                         <td>
                           {(clearancePage - 1) * itemsPerPageForClearance +
                             index +
@@ -524,10 +524,7 @@ const AdminPage = () => {
                         <td>{tenant?.name}</td>
                         <td>{tenant?.email}</td>
                         <td>{tenant?.houseDetails?.houseNo}</td>
-                        <td>
-                          {tenant?.deposits?.rentDeposit +
-                            tenant?.deposits?.waterDeposit}
-                        </td>
+                        <td>{tenant?.clearanceData[0]?.overpay}</td>
                         <td>
                           <button
                             className="restore-btn"

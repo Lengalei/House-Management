@@ -7,9 +7,10 @@ import apiRequest from '../../../../lib/apiRequest';
 import { toast, ToastContainer } from 'react-toastify';
 import { TailSpin } from 'react-loader-spinner';
 
-const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
+const Invoice = ({ invoiceData, onClose, tenantId }) => {
   // Added tenantId as a prop
-  const { clientName, HouseNo, items, invoiceNumber } = invoiceData;
+  const { clientData, HouseNo, items, invoiceNumber, selectedPayment } =
+    invoiceData;
 
   const [loading, setLoading] = useState(false);
   const generatedInvoiceNumber =
@@ -81,12 +82,12 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
     // Prepare the invoice data to send
     const invoiceToSend = {
       invoiceNumber: generatedInvoiceNumber,
-      clientName,
+      clientData,
       HouseNo,
       items: editableItems,
       totalAmount,
       tenantId,
-      paymentId,
+      selectedPayment,
     };
 
     setLoading(true); // Show loader while posting
@@ -127,7 +128,7 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
         doc.text('Invoice', 14, 60); // Adjust position to fit below the letterhead
         doc.setFontSize(12);
         doc.text(`Invoice Number: ${generatedInvoiceNumber}`, 14, 70);
-        doc.text(`Client Name: ${clientName}`, 14, 80);
+        doc.text(`Client Name: ${clientData.name}`, 14, 80);
         doc.text(`House No: ${HouseNo}`, 14, 90);
 
         // Prepare the invoice items
@@ -200,7 +201,7 @@ const Invoice = ({ invoiceData, onClose, tenantId, paymentId }) => {
             <strong>Invoice Number:</strong> {generatedInvoiceNumber}
           </p>
           <p>
-            <strong>Client Name:</strong> {clientName}
+            <strong>Client Name:</strong> {clientData.name}
           </p>
           <p>
             <strong>House No:</strong> {HouseNo}

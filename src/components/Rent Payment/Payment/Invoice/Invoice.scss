@@ -134,18 +134,19 @@
 
 // Styles for the modal (popup)
 .invoice-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 
   .invoice {
+    height: 80%;
+    overflow: scroll;
+    overflow-x: hidden;
     animation: popupAnimation 0.3s ease-out;
   }
 }

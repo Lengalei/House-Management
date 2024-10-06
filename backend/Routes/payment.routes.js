@@ -14,11 +14,12 @@ import {
   deletePayment,
   deletePaymentsByTenant,
 } from '../controllers/payment.controller.js';
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
 
 // Route to create a new payment record
-router.post('/create', createPayment);
+router.post('/create', authorizeRoles('super_admin'), createPayment);
 
 // Route to get a specific payment record by ID
 router.get('/getPaymentByDate/:tenantId/', getPaymentByDate);
@@ -46,12 +47,24 @@ router.get('/previousPayment/:tenantId', getPreviousPayment);
 router.get('/paymentsByTenant/:tenantId', getPaymentsByTenant);
 
 // Route to update a specific payment record by ID
-router.put('/updatePayment/:paymentId', updatePayment);
+router.put(
+  '/updatePayment/:paymentId',
+  authorizeRoles('super_admin'),
+  updatePayment
+);
 
 // Route to delete a specific payment record by ID
-router.delete('/deletePayment/:paymentId', deletePayment);
+router.delete(
+  '/deletePayment/:paymentId',
+  authorizeRoles('super_admin'),
+  deletePayment
+);
 
 // Route to delete all payment records
-router.delete('/deletePayments/:tenantId', deletePaymentsByTenant);
+router.delete(
+  '/deletePayments/:tenantId',
+  authorizeRoles('super_admin'),
+  deletePaymentsByTenant
+);
 
 export default router;

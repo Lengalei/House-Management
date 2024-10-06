@@ -158,73 +158,73 @@ const Rent = () => {
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
         {error && <span>{error}</span>}
-        {loading ? (
-          <div className="loader">
-            <TailSpin
-              height="100"
-              width="100"
-              color="#4fa94d"
-              ariaLabel="loading"
-              visible={true}
-            />
-          </div>
-        ) : (
-          <div className="table-container">
-            <table className="tenant-table">
-              <thead>
-                <tr>
-                  <th>Tenant{`'`}s Name</th>
-                  <th>House No.</th>
-                  {/* <th>All Payments</th> */}
-                  {/* <th>Month</th> */}
-                  {/* <th>{} Status</th> */}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants &&
-                  tenants.map((tenant) => (
-                    <tr key={tenant._id}>
-                      <td>{tenant.name}</td>
-                      <td>
-                        {tenant?.houseDetails
-                          ? tenant?.houseDetails?.houseNo
-                          : ''}
-                      </td>
-                      {/* <td>{tenant.totalAmount}</td> */}
-                      {/* <td>{tenant.balance}</td>
+
+        <div className="table-container">
+          <table className="tenant-table">
+            <thead>
+              <tr>
+                <th>Tenant{`'`}s Name</th>
+                <th>House No.</th>
+                {/* <th>All Payments</th> */}
+                {/* <th>Month</th> */}
+                {/* <th>{} Status</th> */}
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tenants &&
+                tenants.map((tenant) => (
+                  <tr key={tenant._id}>
+                    <td>{tenant.name}</td>
+                    <td>
+                      {tenant?.houseDetails
+                        ? tenant?.houseDetails?.houseNo
+                        : ''}
+                    </td>
+                    {/* <td>{tenant.totalAmount}</td> */}
+                    {/* <td>{tenant.balance}</td>
                       <td>
                         {getStatus(tenant.balance, tenant.monthInQuestionPay)}
                       </td> */}
-                      <td className="actions">
-                        <p
-                          onClick={() => {
-                            handleSingleTenantClick(tenant);
-                          }}
-                          className="edit-btn"
-                        >
-                          Add-Payment
-                        </p>
-                        <Link
-                          to={`/tenantPaymentList/${tenant._id}`}
-                          className="edit-btn"
-                        >
-                          Payments
-                        </Link>
-                        <button
-                          onClick={() => handleOpenModal(tenant._id)} // Open modal instead of directly deleting
-                          className="delete-btn"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    <td className="actions">
+                      <p
+                        onClick={() => {
+                          handleSingleTenantClick(tenant);
+                        }}
+                        className="edit-btn"
+                      >
+                        Add-Payment
+                      </p>
+                      <Link
+                        to={`/tenantPaymentList/${tenant._id}`}
+                        className="edit-btn"
+                      >
+                        Payments
+                      </Link>
+                      <button
+                        onClick={() => handleOpenModal(tenant._id)} // Open modal instead of directly deleting
+                        className="delete-btn"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+      {loading && (
+        <div className="loader">
+          <TailSpin
+            height="100"
+            width="100"
+            color="#4fa94d"
+            ariaLabel="loading"
+            visible={true}
+          />
+        </div>
+      )}
       {showModal && (
         <div className="confirmation-modal">
           <div className="modal-content">

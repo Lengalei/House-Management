@@ -18,6 +18,7 @@ import {
   deleteTenant,
   updateWithIndividualDepoAmount,
   clearTenant,
+  clearance,
   blackListTenant,
   whiteListTenant,
   updateSingleTenantData,
@@ -57,22 +58,30 @@ router.get('/getToBeClearedTenantsTrue', getToBeClearedTenants); //getToBeCleare
 router.get('/getSingleTenant/:id', getTenantById);
 
 // Route to update a tenant by ID
-router.put(
-  '/updateTenant/:id',
-  authorizeRoles('super_admin', 'admin'),
-  updateTenant
-);
+router.put('/updateTenant/:id', authorizeRoles('super_admin'), updateTenant);
 
 router.put(
   '/updateTenantHouseDetails/:tenantId',
-  authorizeRoles('super_admin', 'admin'),
+  authorizeRoles('super_admin'),
   updateTenantHouseDetails
 );
 // Route to delete a tenant by ID
 router.delete('/deleteTenant/:id', authorizeRoles('super_admin'), deleteTenant);
-router.patch('/blackListTenant/:id', blackListTenant);
-router.patch('/whiteListTenant/:id', whiteListTenant);
-router.put('/updateSingleTenantData/:id', updateSingleTenantData);
+router.patch(
+  '/blackListTenant/:id',
+  authorizeRoles('super_admin'),
+  blackListTenant
+);
+router.patch(
+  '/whiteListTenant/:id',
+  authorizeRoles('super_admin'),
+  whiteListTenant
+);
+router.put(
+  '/updateSingleTenantData/:id',
+  authorizeRoles('super_admin'),
+  updateSingleTenantData
+);
 
 router.get('/checkTenantPaymentRecord/:tenantId', checkTenantPaymentRecord);
 
@@ -82,6 +91,9 @@ router.put(
   authorizeRoles('super_admin'),
   clearTenant
 );
+//clear tenant 2.0
+router.put('/clearance/:tenantId', authorizeRoles('super_admin'), clearance);
+
 router.post(
   '/sendEmails/:id',
   authorizeRoles('super_admin'),

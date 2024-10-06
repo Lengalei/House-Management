@@ -552,7 +552,7 @@ export const monthlyPayProcessing = async (req, res) => {
     tenantId,
     newMonthlyAmount,
     referenceNumber: referenceNo,
-    newPaymentDate: depositDate,
+    newPaymentDate,
     extraCharges: frontendExtraCharges,
     previousMonthExtraCharges,
     month,
@@ -562,6 +562,7 @@ export const monthlyPayProcessing = async (req, res) => {
 
   try {
     let amount = newMonthlyAmount;
+    const depositDate = new Date(newPaymentDate);
     // Convert month name to previous month
     const months = [
       'January',
@@ -620,7 +621,6 @@ export const monthlyPayProcessing = async (req, res) => {
 
       const remainingWaterDeficit = parseFloat(accumulatedWaterBill);
       previousPayment.waterBill.deficit += remainingWaterDeficit;
-
       // Add a deficit transaction history
       previousPayment.waterBill.deficitHistory.push({
         amount: remainingWaterDeficit,
@@ -712,7 +712,12 @@ export const monthlyPayProcessing = async (req, res) => {
       // ExtraCharges not fully paid
       previousPayment.extraCharges.paid = false;
     }
-
+    if (
+      parseFloat(accumulatedWaterBill) > 0 ||
+      previousMonthExtraChargesExpectedAmount > 0
+    ) {
+      previousPayment.isCleared = false;
+    }
     // Save the updated payment record
     await previousPayment.save();
     // console.log('updatePreviousPayment: ', previousPayment);
@@ -722,7 +727,9 @@ export const monthlyPayProcessing = async (req, res) => {
       tenantId,
       amount,
       depositDate,
-      referenceNo
+      referenceNo,
+      month,
+      year
     );
     amount = parseFloat(remainingAmount);
     // console.log('amountAfterPreviousDeficitHandling: ', amount);
@@ -1408,6 +1415,46 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
       remainingAmount -= amountToClear;
     }
 
+    // ------water deficit handling ----
+    if (remainingAmount > 0 && payment.waterBill.deficit > 0) {
+      let waterBillDeficit =
+        payment.waterBill.accumulatedAmount - payment.waterBill.amount;
+
+      // Clear water Deficit  using remaining amount
+      let amountToClear = Math.min(waterBillDeficit, remainingAmount);
+      payment.waterBill.amount += amountToClear;
+      payment.waterBill.paid =
+        payment.waterBill.amount >= payment.waterBill.accumulatedAmount;
+
+      // Record waterBill  transaction
+      payment.waterBill.transactions.push({
+        amount: amountToClear,
+        date: extraAmountGivenDate,
+        referenceNumber: extraAmountReferenceNo,
+      });
+
+      // Update waterBill deficit
+      if (waterBillDeficit > 0) {
+        waterBillDeficit -= amountToClear;
+        payment.waterBill.deficit = waterBillDeficit;
+        payment.waterBill.deficitHistory.push({
+          amount: waterBillDeficit,
+          date: extraAmountGivenDate,
+          description: `waterBill deficit of ${waterBillDeficit} remains`,
+        });
+      } else {
+        waterBillDeficit -= amountToClear;
+        payment.waterBill.deficit = 0;
+        payment.waterBill.deficitHistory.push({
+          amount: 0,
+          date: extraAmountGivenDate,
+          description: 'waterBill fully cleared',
+        });
+      }
+
+      remainingAmount -= amountToClear;
+    }
+
     // ----- Garbage Fee Deficit Handling -----
     if (
       remainingAmount > 0 &&
@@ -1536,6 +1583,11 @@ export const ExtraAmountGivenInAmonth = async (req, res) => {
     });
     payment.referenceNumber = extraAmountReferenceNo;
 
+    payment.isCleared =
+      payment.rent.paid &&
+      payment.waterBill.amount >= payment.waterBill.accumulatedAmount &&
+      payment.garbageFee.paid &&
+      payment.extraCharges.amount >= payment.extraCharges.expected;
     // Save updated payment
     await payment.save();
 

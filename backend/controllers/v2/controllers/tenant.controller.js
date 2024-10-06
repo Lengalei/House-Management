@@ -1,12 +1,16 @@
 import mongoose from 'mongoose';
 import cron from 'node-cron';
 import Tenant from '../../../models/v2/models/v2Tenant.model.js';
-import { createPaymentRecord } from '../../../utils/v2/utils/paymentHelper.js';
+import {
+  clearDeficitsForPreviousPayments,
+  createPaymentRecord,
+} from '../../../utils/v2/utils/paymentHelper.js';
 import House from '../../../models/houses.js';
 import Payment from '../../../models/v2/models/v2Payment.model.js';
 import ScheduledJob from '../../../models/v2/models/ScheduledJob.js';
 import Invoice from '../../../models/v2/models/Invoice.js';
 import { sendEmail } from '../../../utils/v2/utils/clearanceEmailSender.js';
+import Clearance from '../../../models/v2/models/clearance.model.js';
 
 // Register Tenant Details
 export const createTenant = async (req, res) => {
@@ -1157,13 +1161,29 @@ export const getListAllTenants = async (req, res) => {
 // Get all to be cleared Tenants
 export const getToBeClearedTenants = async (req, res) => {
   try {
-    const tenants = await Tenant.find({
-      'deposits.isCleared': true,
-      toBeCleared: true,
-    }).sort({
-      createdAt: -1,
-    });
-    res.status(200).json(tenants);
+    const tenantsWithClearanceData = await Tenant.aggregate([
+      {
+        $match: {
+          'deposits.isCleared': true,
+          toBeCleared: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'clearances', // Name of the Clearance collection
+          localField: '_id',
+          foreignField: 'tenant', // Field in Clearance that references Tenant
+          as: 'clearanceData',
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+
+    res.status(200).json(tenantsWithClearanceData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -1286,7 +1306,12 @@ export const deleteTenant = async (req, res) => {
     //check if there is an invoice related to the tenant:
     const deletedInvoice = await Invoice.deleteMany({ tenant: tenant._id });
     const invoicesDeleted = deletedInvoice.deletedCount;
-    console.log(`Deelted Invoices: `, invoicesDeleted);
+    console.log(`Delted Invoices: `, invoicesDeleted);
+
+    //check if there is any clearance data and delete them
+    const clearancedata = await Clearance.deleteMany({ tenant: tenant._id });
+    const clearancedataDeleted = clearancedata.deletedCount;
+    console.log(`Delted clearance Data: `, clearancedataDeleted);
 
     // 4. Set the isOccupied flag of the house to false
     house.isOccupied = false;
@@ -1481,7 +1506,13 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
     });
 
     if (!tenant || !recentPayment) {
-      return res.status(404).json({ message: 'Tenant or payment not found.' });
+    }
+
+    const recentClearance = await Clearance.find({ tenant: tenantId }).sort({
+      createdAt: -1,
+    });
+    if (!recentClearance) {
+      return res.status(404).json({ message: 'Clearance data not found.' });
     }
 
     // Extract details
@@ -1493,13 +1524,19 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
     const ownerEmail = req.user.email; // Owner's email from authenticated user (req.user)
     const ownerName = req.user.username; // Owner's email from authenticated user (req.user)
 
+    const exitingDate = new Date(recentClearance[0].exitingDate);
+    const formattedDate = exitingDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long', // Full month name
+      day: 'numeric',
+    });
     // Email for tenant
     const tenantSubject = 'Thank You for Your Stay';
-    const tenantText = `Dear ${tenantName},\n\nThank you for being with us. Your expected exit date is ${recentPayment.month}.\nYour refund amount is KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
+    const tenantText = `Dear ${tenantName},\n\nThank you for being with us. Your expected exit date is ${formattedDate}.\nYour refund amount is KSH ${refundAmount}.\n\nBest regards,\nSleek Abode Apartments`;
 
     // Email for owner
     const ownerSubject = 'Tenant Exit Notification';
-    const ownerText = `Dear ${ownerName},\n\nThe tenant ${tenantName} is exiting the property${tenant.apartmentId.name},house number:(${houseDetails.houseNo}).\nExpected exit date: ${recentPayment.month}.\nRefund amount: KSH ${refundAmount}.\n\nBest regards,\nYour Company Name`;
+    const ownerText = `Dear ${ownerName},\n\nThe tenant ${tenantName} is exiting the property ${tenant.apartmentId.name}, house number: (${houseDetails.houseNo}).\nExpected exit date: ${formattedDate}.\nRefund amount: KSH ${refundAmount}.\n\nBest regards,\nSleek Abode Apartments`;
 
     // Send emails
     await Promise.all([
@@ -1507,10 +1544,422 @@ export const sendTenantAndOwnerEmails = async (req, res) => {
       sendEmail(ownerEmail, ownerSubject, ownerText),
     ]);
 
+    // Calculate the scheduled time (48 hours from now)
+    const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    // const scheduledTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    // Save the scheduled job in the database
+    await ScheduledJob.findOneAndUpdate(
+      { tenantId },
+      { scheduledTime, isActive: true },
+      { upsert: true } // Create a new record if no match is found
+    );
+
+    // Calculate scheduled time components for cron job
+    const scheduledMinute = scheduledTime.getUTCMinutes();
+    const scheduledHour = scheduledTime.getUTCHours() % 24; // Handle overflow for hours
+
+    // Schedule the deletion job using cron
+    const job = cron.schedule(
+      `${scheduledMinute} ${scheduledHour} * * *`, // Cron expression
+      async () => {
+        console.log(`Running tenant deletion job for tenant ${tenantId}...`);
+        await deleteTenantById(tenantId);
+        job.stop(); // Stop the job after executing
+      },
+      {
+        scheduled: true,
+        timezone: 'UTC',
+      }
+    );
+
+    // Mark the tenant to be cleared
+    tenant.toBeCleared = true;
+    await tenant.save();
+
     return res.status(200).json({ message: 'Emails sent successfully.' });
   } catch (error) {
     console.error('Error sending emails:', error.message);
     return res.status(500).json({ message: 'Failed to send emails.' });
+  }
+};
+
+//clearance 2.0
+export const clearance = async (req, res) => {
+  const { date, paintingFee, miscellaneous } = req.body;
+  const { tenantId } = req.params;
+
+  try {
+    //validation of date abd send data
+    if (!date || isNaN(new Date(date).getTime())) {
+      return res.status(400).json({ message: 'Invalid date provided.' });
+    }
+    if (paintingFee < 0 || miscellaneous < 0) {
+      return res.status(400).json({ message: 'Fees must be non-negative.' });
+    }
+
+    // Fetch tenant data
+    const tenant = await Tenant.findById(tenantId);
+    if (!tenant) {
+      return res.status(400).json({ message: 'No such Tenant found!' });
+    }
+
+    // Extract the month and year from the date
+    const paymentDate = new Date(date);
+    const month = paymentDate.getMonth() + 1; // Months are zero-indexed
+    const year = paymentDate.getFullYear();
+
+    const monthIndex = paymentDate.getMonth(); // Get the zero-indexed month
+
+    // Create an array of month names
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    // Get the month name using the month index
+    const monthName = monthNames[monthIndex];
+
+    // Extract the rentDeposit and waterDeposit
+    const availableRentDeposit = Math.max(
+      0,
+      parseFloat(tenant.deposits.rentDeposit || 0)
+    );
+    const availableWaterDeposit = Math.max(
+      0,
+      parseFloat(tenant.deposits.waterDeposit || 0)
+    );
+
+    const totalAvailableDepo = availableRentDeposit + availableWaterDeposit;
+
+    console.log('Total available deposit:', totalAvailableDepo);
+
+    // Call the helper function to clear previous deficits, send month and year
+    const remainingAmount = await clearDeficitsForPreviousPayments(
+      tenantId,
+      totalAvailableDepo,
+      date,
+      tenant.deposits.referenceNo,
+      monthName,
+      year
+    );
+    console.log('remainingAmount Depo Amount: ', remainingAmount);
+
+    // Initialize the paintingFee and miscellaneous charges
+    const paintingFeeAmount = parseFloat(paintingFee || 0);
+    const miscellaneousAmount = parseFloat(miscellaneous || 0);
+
+    let clearance = new Clearance({
+      tenant: tenantId,
+      year,
+      month,
+      exitingDate: date,
+      referenceNumber: tenant.deposits.referenceNo,
+      referenceNoHistory: [],
+      paintingFee: {
+        expected: paintingFeeAmount,
+        amount: 0,
+        paid: false,
+        transactions: [],
+        deficitHistory: [],
+      },
+      miscellaneous: {
+        expected: miscellaneousAmount,
+        amount: 0,
+        paid: false,
+        transactions: [],
+        deficitHistory: [],
+      },
+      isCleared: false,
+      totalAmountPaid: 0,
+      globalDeficit: 0,
+      globalDeficitHistory: [],
+      globalTransactions: [], // New global transaction field
+      globalAmountPaid: 0, // New global amount paid field
+    });
+
+    clearance.referenceNoHistory.push({
+      date: date,
+      referenceNumber: tenant.deposits.referenceNo,
+      previousReferenceNumber: tenant.deposits.referenceNo,
+    });
+
+    // If remaining amount is greater than 0, create a new clearance record
+    if (parseFloat(remainingAmount) > 0) {
+      let remaining = parseFloat(remainingAmount);
+
+      // Handle painting fee
+      if (remaining >= paintingFeeAmount) {
+        clearance.paintingFee.amount = paintingFeeAmount;
+        clearance.paintingFee.paid = true;
+        remaining -= paintingFeeAmount;
+
+        // Record the transaction
+        let paintingTransaction = {
+          amount: paintingFeeAmount,
+          expected: paintingFeeAmount,
+          date: date,
+          referenceNumber: tenant.deposits.referenceNo,
+          description: 'Painting fee paid using deposits',
+        };
+        clearance.paintingFee.transactions.push(paintingTransaction);
+
+        // Add to global transactions
+        clearance.globalTransactions.push(paintingTransaction);
+        clearance.globalAmountPaid += paintingFeeAmount;
+      } else if (remaining > 0) {
+        let partialAmountPaid = remaining;
+        let deficit = paintingFeeAmount - partialAmountPaid;
+        remaining = 0;
+
+        clearance.paintingFee.amount = partialAmountPaid;
+        clearance.paintingFee.paid = false;
+        clearance.paintingFee.deficit = deficit;
+
+        // Record the transaction
+        let partialPaintingTransaction = {
+          amount: partialAmountPaid,
+          expected: paintingFeeAmount,
+          date: date,
+          referenceNumber: tenant.deposits.referenceNo,
+          description: 'Partial payment of painting fee using deposits',
+        };
+        clearance.paintingFee.transactions.push(partialPaintingTransaction);
+
+        // Add to global transactions
+        clearance.globalTransactions.push(partialPaintingTransaction);
+        clearance.globalAmountPaid += partialAmountPaid;
+
+        // Record the deficit
+        clearance.paintingFee.deficitHistory.push({
+          amount: deficit,
+          date: date,
+          description: 'Remaining amount due for painting fee',
+        });
+      } else {
+        clearance.paintingFee.amount = 0;
+        clearance.paintingFee.paid = false;
+        clearance.paintingFee.deficit = paintingFeeAmount;
+
+        clearance.paintingFee.deficitHistory.push({
+          amount: paintingFeeAmount,
+          date: date,
+          description: 'Full amount due for painting fee',
+        });
+      }
+
+      // Handle miscellaneous fee
+      if (remaining >= miscellaneousAmount) {
+        clearance.miscellaneous.amount = miscellaneousAmount;
+        clearance.miscellaneous.paid = true;
+        remaining -= miscellaneousAmount;
+
+        // Record the transaction
+        let miscellaneousTransaction = {
+          amount: miscellaneousAmount,
+          expected: miscellaneousAmount,
+          date: date,
+          referenceNumber: tenant.deposits.referenceNo,
+          description: 'Miscellaneous fee paid using deposits',
+        };
+        clearance.miscellaneous.transactions.push(miscellaneousTransaction);
+
+        // Add to global transactions
+        clearance.globalTransactions.push(miscellaneousTransaction);
+        clearance.globalAmountPaid += miscellaneousAmount;
+      } else if (remaining > 0) {
+        let partialAmountPaid = remaining;
+        let deficit = miscellaneousAmount - partialAmountPaid;
+        remaining = 0;
+
+        clearance.miscellaneous.amount = partialAmountPaid;
+        clearance.miscellaneous.paid = false;
+        clearance.miscellaneous.deficit = deficit;
+
+        // Record the transaction
+        let partialMiscellaneousTransaction = {
+          amount: partialAmountPaid,
+          expected: miscellaneousAmount,
+          date: date,
+          referenceNumber: tenant.deposits.referenceNo,
+          description: 'Partial payment of miscellaneous fee using deposits',
+        };
+        clearance.miscellaneous.transactions.push(
+          partialMiscellaneousTransaction
+        );
+
+        // Add to global transactions
+        clearance.globalTransactions.push(partialMiscellaneousTransaction);
+        clearance.globalAmountPaid += partialAmountPaid;
+
+        // Record the deficit
+        clearance.miscellaneous.deficitHistory.push({
+          amount: deficit,
+          date: date,
+          description: 'Remaining amount due for miscellaneous fee',
+        });
+      } else {
+        clearance.miscellaneous.amount = 0;
+        clearance.miscellaneous.paid = false;
+        clearance.miscellaneous.deficit = miscellaneousAmount;
+
+        clearance.miscellaneous.deficitHistory.push({
+          amount: miscellaneousAmount,
+          date: date,
+          description: 'Full amount due for miscellaneous fee',
+        });
+      }
+
+      //handle extra amount remaining
+      if (remaining > 0) {
+        clearance.excessHistory.push({
+          initialOverpay: 0,
+          excessAmount: remaining,
+          description: `Remaining amount after handling painting and miscalleneous fees`,
+          date,
+        });
+        clearance.overpay = remaining;
+      }
+
+      // Update isCleared status
+      if (clearance.paintingFee.paid && clearance.miscellaneous.paid) {
+        clearance.isCleared = true;
+      }
+
+      // Update totalAmountPaid
+      clearance.totalAmountPaid =
+        clearance.paintingFee.amount + clearance.miscellaneous.amount;
+
+      // Update globalDeficit
+      clearance.globalDeficit =
+        (clearance.paintingFee.deficit || 0) +
+        (clearance.miscellaneous.deficit || 0);
+
+      // Record globalDeficitHistory if there is any deficit
+      if (clearance.globalDeficit > 0) {
+        clearance.globalDeficitHistory.push({
+          amount: clearance.globalDeficit,
+          date: date,
+          description: 'Total deficit from painting and miscellaneous fees',
+        });
+      }
+
+      // Update tenant's deposits
+
+      // Update rent deposit
+      tenant.deposits.rentDepositHistory.push({
+        date,
+        amount: remaining,
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: tenant.deposits.rentDeposit,
+      });
+      tenant.deposits.rentDeposit = remaining;
+
+      // Update water deposit
+      tenant.deposits.waterDepositHistory.push({
+        date,
+        amount: 0,
+        referenceNo: tenant.deposits.referenceNo,
+        previousAmount: tenant.deposits.waterDeposit,
+      });
+      tenant.deposits.waterDeposit = 0;
+
+      // Save the updated tenant and clearance records
+      await tenant.save();
+      await clearance.save();
+
+      res.status(200).json({
+        message: 'Clearance completed',
+        status: true,
+        remainingAmount: remaining,
+        clearance,
+      });
+    } else {
+      // If there's no remaining amount after clearing previous payment deficits
+      if (parseFloat(remainingAmount) <= 0) {
+        // Update the paintingFee field with deficit
+        clearance.paintingFee.amount = 0;
+        clearance.paintingFee.paid = false;
+        clearance.paintingFee.deficit = paintingFeeAmount;
+
+        clearance.paintingFee.deficitHistory.push({
+          amount: paintingFeeAmount,
+          date: date,
+          description: 'Full amount due for painting fee',
+        });
+
+        // Update the miscellaneous field with deficit
+        clearance.miscellaneous.amount = 0;
+        clearance.miscellaneous.paid = false;
+        clearance.miscellaneous.deficit = miscellaneousAmount;
+
+        clearance.miscellaneous.deficitHistory.push({
+          amount: miscellaneousAmount,
+          date: date,
+          description: 'Full amount due for miscellaneous fee',
+        });
+
+        // Update total global deficit
+        clearance.globalDeficit = paintingFeeAmount + miscellaneousAmount;
+
+        // Record globalDeficitHistory
+        clearance.globalDeficitHistory.push({
+          amount: clearance.globalDeficit,
+          date: date,
+          description: 'Deficit from painting and miscellaneous fees',
+        });
+
+        // Update isCleared status
+        if (clearance.paintingFee.paid && clearance.miscellaneous.paid) {
+          clearance.isCleared = true;
+        } else {
+          clearance.isCleared = false;
+        }
+        console.log('we have reached here!!');
+        // Update tenant's deposits
+
+        // Update rent deposit
+        tenant.deposits.rentDepositHistory.push({
+          date,
+          amount: 0,
+          referenceNo: tenant.deposits.referenceNo,
+          previousAmount: tenant.deposits.rentDeposit,
+        });
+        tenant.deposits.rentDeposit = 0;
+
+        // Update water deposit
+        tenant.deposits.waterDepositHistory.push({
+          date,
+          amount: 0,
+          referenceNo: tenant.deposits.referenceNo,
+          previousAmount: tenant.deposits.waterDeposit,
+        });
+        tenant.deposits.waterDeposit = 0;
+
+        // Save the updated tenant and clearance records
+        await tenant.save();
+        await clearance.save();
+
+        return res.status(200).json({
+          message:
+            'No remaining amount. Deficits recorded for painting and miscellaneous fees.',
+          status: false,
+          clearance: clearance, // Return clearance object
+        });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Error clearing tenant' });
   }
 };
 
@@ -1898,8 +2347,6 @@ export const clearTenant = async (req, res) => {
 
     // Calculate the scheduled time (48 hours from now)
     const scheduledTime = new Date(Date.now() + 48 * 60 * 60 * 1000);
-    const currentdate = new Date(Date.now);
-    console.log('currentdate: ', currentdate);
     // const scheduledTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Save the scheduled job in the database
@@ -1990,7 +2437,12 @@ const deleteTenantById = async (tenantId) => {
     //check if there is an invoice related to the tenant:
     const deletedInvoice = await Invoice.deleteMany({ tenant: tenant._id });
     const invoicesDeleted = deletedInvoice.deletedCount;
-    console.log(`Deelted Invoices: `, invoicesDeleted);
+    console.log(`Delted Invoices: `, invoicesDeleted);
+
+    //check if there is any clearance data and delete them
+    const clearancedata = await Clearance.deleteMany({ tenant: tenant._id });
+    const clearancedataDeleted = clearancedata.deletedCount;
+    console.log(`Delted clearance Data: `, clearancedataDeleted);
 
     // 3. Set the isOccupied flag of the house to false
     house.isOccupied = false;
