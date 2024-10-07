@@ -48,16 +48,44 @@ const RegisterTenant = () => {
   const [houses, setHouses] = useState([]);
   const [organizedData, setOrganizedData] = useState({});
 
-  const floors = [
-    { floorNumber: 0, name: 'Ground Floor' },
-    { floorNumber: 1, name: 'First Floor' },
-    { floorNumber: 2, name: 'Second Floor' },
-    { floorNumber: 3, name: 'Third Floor' },
-    { floorNumber: 4, name: 'Fourth Floor' },
-    { floorNumber: 5, name: 'Fifth Floor' },
-    { floorNumber: 6, name: 'Sixth Floor' },
-    { floorNumber: 7, name: 'Seventh Floor' },
-  ];
+  const [floors, setFloors] = useState([
+    { floorNumber: 0, floorName: 'Ground Floor' },
+    { floorNumber: 1, floorName: 'First Floor' },
+    { floorNumber: 2, floorName: 'Second Floor' },
+    { floorNumber: 3, floorName: 'Third Floor' },
+    { floorNumber: 4, floorName: 'Fourth Floor' },
+    { floorNumber: 5, floorName: 'Fifth Floor' },
+    { floorNumber: 6, floorName: 'Sixth Floor' },
+    { floorNumber: 7, floorName: 'Seventh Floor' },
+  ]);
+
+  const getFloorName = (floorNumber) => {
+    if (floorNumber === 0) return 'Ground Floor';
+
+    const ordinalSuffix = (n) => {
+      const s = ['th', 'st', 'nd', 'rd'];
+      const v = n % 100;
+      return s[(v - 20) % 10] || s[v] || s[0];
+    };
+
+    return `${floorNumber}${ordinalSuffix(floorNumber)} Floor`;
+  };
+  // Fetch available floors from backend
+  const fetchFloors = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get('/v2/floors/getAllFloors');
+      const floorsData = response.data.map((floor) => ({
+        floorName: getFloorName(floor.floorNumber),
+        floorNumber: floor.floorNumber,
+      }));
+      setFloors(floorsData);
+    } catch (error) {
+      toast.error('Error fetching floors');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -90,7 +118,7 @@ const RegisterTenant = () => {
         setLoading(false);
       }
     };
-
+    fetchFloors();
     fetchHouses();
   }, []);
 
@@ -298,7 +326,7 @@ const RegisterTenant = () => {
                       }`}
                       onClick={() => handleFloorSelection(floor?.floorNumber)}
                     >
-                      {floor?.name}
+                      {floor?.floorName}
                     </div>
                   ))}
                 </div>

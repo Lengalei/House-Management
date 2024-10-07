@@ -6,13 +6,17 @@ import apiRequest from '../../../lib/apiRequest';
 import MiniPaymentsPopup from './MiniPaymentsPopup/MiniPaymentsPopup';
 import Pagination from 'react-js-pagination'; // Import Pagination
 import { InfinitySpin } from 'react-loader-spinner';
-import { FaDownload } from "react-icons/fa6";
+// import { FaDownload } from 'react-icons/fa6';
+import { FaFileDownload } from 'react-icons/fa';
+import PaymentDataPopup from './PaymentDataPopup/PaymentDataPopup';
 
 const TenantPaymentList = () => {
   const { tenantId } = useParams();
   const [payments, setPayments] = useState([]);
+  console.log('payments: ', payments);
   const [onEntryOverPay, setOnEntryOverPay] = useState([]);
-  const [tenant, setTenant] = useState();
+  const [tenant, setTenant] = useState('');
+  console.log('tenant: ', tenant);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -98,10 +102,23 @@ const TenantPaymentList = () => {
     indexOfLastPayment
   );
 
+  const [paymentPopupDonwload, setPaymentPopupDonwload] = useState(false);
+  const handleDowloadBtnClicked = () => {
+    setPaymentPopupDonwload(true);
+  };
+
+  const closeDonwloadPopup = () => {
+    setPaymentPopupDonwload(false);
+  };
   return (
     <div className="tenant-payment-list">
       {error && <span className="error-message">{error}</span>}
       <h2>{tenant?.name} Payment History</h2>
+      <button className="btn" onClick={handleDowloadBtnClicked}>
+        <span className="downloadSpan">
+          Print Tenants <FaFileDownload />
+        </span>
+      </button>
       <table>
         <thead>
           <tr>
@@ -117,22 +134,22 @@ const TenantPaymentList = () => {
         <tbody>
           {currentPayments.map((payment) => (
             <tr key={payment?._id}>
-              <td>{payment?.month + ", " + payment?.year}</td>
-              <td>{payment?.rent?.amount || "None"}</td>
-              <td>{payment?.waterBill?.amount || "None"}</td>
-              <td>{payment?.garbageFee?.amount || "None"}</td>
-              <td>{payment?.extraCharges?.amount || "None"}</td>
-              <td>{payment?.totalAmountPaid || "None"}</td>
+              <td>{payment?.month + ', ' + payment?.year}</td>
+              <td>{payment?.rent?.amount || 'None'}</td>
+              <td>{payment?.waterBill?.amount || 'None'}</td>
+              <td>{payment?.garbageFee?.amount || 'None'}</td>
+              <td>{payment?.extraCharges?.amount || 'None'}</td>
+              <td>{payment?.totalAmountPaid || 'None'}</td>
               <td>
                 <Link to="/paymentDetails" state={{ payment, onEntryOverPay }}>
                   <button>View Details</button>
                 </Link>
-                <button>
+                {/* <button>
                   <FaDownload />
-                </button>
+                </button> */}
                 <MdDeleteForever
                   size={25}
-                  color={"red"}
+                  color={'red'}
                   className="paymentRecordDeletebtn"
                   onClick={() => handleOpenModal(payment?._id)}
                 />
@@ -207,6 +224,18 @@ const TenantPaymentList = () => {
           nextClass="arrow"
         />
       </div>
+
+      {paymentPopupDonwload && (
+        <div className="tenantPopupModal">
+          <div className="downloadContent">
+            <PaymentDataPopup
+              paymentsData={payments}
+              paymentsDataTenant={tenant}
+              onClose={closeDonwloadPopup}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import './Records.scss';
 import apiRequest from '../../lib/apiRequest';
 import { Bars } from 'react-loader-spinner'; // Importing the spinner component from react-loader-spinner
-import * as XLSX from 'xlsx'; // Importing xlsx library for generating Excel files
+import jsPDF from 'jspdf'; // Importing jsPDF for PDF generation
+import html2canvas from 'html2canvas'; // Importing html2canvas for rendering HTML to canvas
 
 const Records = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -24,6 +25,7 @@ const Records = () => {
     garbage: {},
   });
   const [loading, setLoading] = useState(true); // Added loading state
+  const [logoImage, setLogoImage] = useState(null); // State for logo image
 
   useEffect(() => {
     const fetchAllRecords = async () => {
@@ -100,6 +102,15 @@ const Records = () => {
     fetchAllRecords();
   }, []);
 
+  // Load the logo image
+  useEffect(() => {
+    const logo = new Image();
+    logo.src = '/houselogo1.png'; // Update this path to your logo image
+    logo.onload = () => {
+      setLogoImage(logo); // Set the logo image when loaded
+    };
+  }, []);
+
   const handleCardClick = (recordType) => {
     if (selectedRecord === recordType) {
       setSelectedRecord(null);
@@ -126,28 +137,67 @@ const Records = () => {
   };
 
   const downloadRecords = () => {
-    if (!selectedRecord || !selectedYear[selectedRecord]) return;
+    if (!selectedRecord || !selectedYear[selectedRecord] || !logoImage) return;
 
     const year = selectedYear[selectedRecord];
     const data = records[selectedRecord][year] || [];
+    const totalAmount = data.reduce((acc, record) => acc + record.amount, 0);
 
-    // Prepare the data in a format suitable for Excel
-    const formattedData = data.map((record) => ({
-      Month: record.month,
-      Amount: record.amount,
-    }));
+    const doc = new jsPDF();
+    doc.setFont('helvetica', 'normal');
 
-    // Create a new workbook and worksheet
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      `${selectedRecord} Records`
+    // Add the logo to the document
+    const logoWidth = 50;
+    const aspectRatio = logoImage.width / logoImage.height;
+    const logoHeight = logoWidth / aspectRatio;
+    doc.addImage(logoImage, 'PNG', 10, 10, logoWidth, logoHeight);
+
+    // Company Details
+    const detailsX = 70; // X position for company details
+    let detailsY = 20; // Starting Y position for company details
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Sleek Abode Apartments', detailsX, detailsY);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    detailsY += 6; // Spacing between lines
+    doc.text('Kimbo, Ruiru.', detailsX, detailsY);
+    detailsY += 5; // Spacing between lines
+    doc.text('Contact: your-email@example.com', detailsX, detailsY);
+    detailsY += 5; // Spacing between lines
+    doc.text('Phone: (+254) 88-413-323', detailsX, detailsY);
+
+    // Records title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(
+      `Records for ${
+        selectedRecord.charAt(0).toUpperCase() + selectedRecord.slice(1)
+      } - ${year}`,
+      14,
+      detailsY + 15
     );
 
-    // Create the Excel file and trigger download
-    XLSX.writeFile(workbook, `${selectedRecord}-records-${year}.xlsx`);
+    // Adding table
+    doc.autoTable({
+      head: [['Month', 'Amount']],
+      body: data.map((record) => [record.month, formatNumber(record.amount)]),
+      startY: detailsY + 30, // Start below the title
+      theme: 'striped', // Adding a striped theme for a better look
+      headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }, // Custom header colors
+      styles: { cellPadding: 3, fontSize: 12 }, // Custom cell styles
+    });
+
+    // Total Amount
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    const totalText = `Total Amount: ${formatNumber(totalAmount)}`;
+    doc.text(totalText, 14, doc.lastAutoTable.finalY + 10);
+
+    // Save the document
+    doc.save(`${selectedRecord}-records-${year}.pdf`);
   };
 
   const renderTable = () => {
@@ -251,7 +301,6 @@ const Records = () => {
               ))}
             </select>
           </div>
-
           <div
             className="record-card"
             onClick={() => handleCardClick('garbage')}
@@ -269,7 +318,7 @@ const Records = () => {
             </select>
           </div>
         </div>
-        {renderTable()}
+        <div className="records-display">{renderTable()}</div>
       </div>
     </div>
   );

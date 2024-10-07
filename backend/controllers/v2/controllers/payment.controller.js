@@ -732,7 +732,7 @@ export const monthlyPayProcessing = async (req, res) => {
       year
     );
     amount = parseFloat(remainingAmount);
-    // console.log('amountAfterPreviousDeficitHandling: ', amount);
+    console.log('amountAfterPreviousDeficitHandling: ', amount);
 
     // Ensure depositDate is a Date objectn
     const dateObject = new Date(depositDate);
@@ -1311,13 +1311,22 @@ export const getPaymentsByTenant = async (req, res) => {
       .sort({ date: -1 })
       .populate('tenant', 'email name phoneNo');
 
+    // Calculate total amount paid
+    const totalAmountPaid = payments.reduce(
+      (total, payment) => total + payment.totalAmountPaid,
+      0
+    );
+
+    // Create the tenant object with totalAmountPaid included
     let foundTenant = {
       name: tenant.name,
       email: tenant.email,
       phoneNo: tenant.phoneNo,
       houseDetails: tenant.houseDetails,
+      totalAmountPaid,
     };
-    // Send response with payments and onEntryOverPay
+
+    // Send response with payments, onEntryOverPay, and the tenant object
     res.status(200).json({
       payments,
       onEntryOverPay,

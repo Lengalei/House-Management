@@ -6,15 +6,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import apiRequest from '../../lib/apiRequest';
 import { useLocation, useParams } from 'react-router-dom';
 
-const floorOptions = [
-  { label: 'Ground Floor', value: 0 },
-  { label: 'First Floor', value: 1 },
-  { label: 'Second Floor', value: 2 },
-  { label: 'Third Floor', value: 3 },
-  { label: 'Fourth Floor', value: 4 },
-  { label: 'Fifth Floor', value: 5 },
-  { label: 'Sixth Floor', value: 6 },
-];
+// Function to map floor number to floor name with dynamic ordinal suffix generation
+const getFloorName = (floorNumber) => {
+  if (floorNumber === 0) return 'Ground Floor';
+
+  const ordinalSuffix = (n) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
+  };
+
+  return `${floorNumber}${ordinalSuffix(floorNumber)} Floor`;
+};
 
 const houseLetterOptions = ['A', 'B', 'C', 'D'];
 
@@ -22,9 +25,7 @@ const RegisterHouse = () => {
   const { apartmentId } = useParams();
   const location = useLocation();
   const apartment = location?.state?.apartmentData || {};
-  console.log(apartment);
-  // console.log(apartmentId);
-  // eslint-disable-next-line no-unused-vars
+  const [floorOptions, setFloorOptions] = useState([]);
   const [floor, setFloor] = useState('');
   const [houseName, setHouseName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,11 +35,34 @@ const RegisterHouse = () => {
   const [showHouseNamePopup, setShowHouseNamePopup] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [registeredHouseNames, setRegisteredHouseNames] = useState([]);
+  const [showAddFloorPopup, setShowAddFloorPopup] = useState(false);
+  const [newFloorNumber, setNewFloorNumber] = useState('');
 
   useEffect(() => {
+    fetchFloors(); // Fetch available floors on component mount
     fetchHouses();
   }, []);
 
+  // Fetch available floors from backend
+  const fetchFloors = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get(
+        `/v2/floors/getAllFloorsInApartment/${apartmentId}`
+      );
+      const floorsData = response.data.map((floor) => ({
+        label: getFloorName(floor.floorNumber),
+        value: floor.floorNumber,
+      }));
+      setFloorOptions(floorsData);
+    } catch (error) {
+      toast.error('Error fetching floors');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch houses
   const fetchHouses = async () => {
     setLoading(true);
     try {
@@ -46,14 +70,12 @@ const RegisterHouse = () => {
         `/houses/getAllHouses/${apartmentId}`
       );
       const houseData = response.data;
-      // console.log(houseData);
       setHouses(houseData);
 
-      // Extract registered house names
       const registeredNames = houseData.map((house) => house.houseName);
       setRegisteredHouseNames(registeredNames);
     } catch (error) {
-      toast.error(error.response.data.message || 'Error getting Houses');
+      toast.error(error.response?.data?.message || 'Error getting Houses');
     } finally {
       setLoading(false);
     }
@@ -105,6 +127,28 @@ const RegisterHouse = () => {
     setShowHouseNamePopup(false);
   };
 
+  const handleAddFloor = async () => {
+    if (newFloorNumber === '') return;
+    const floorNumber = Number(newFloorNumber);
+    const floorName = getFloorName(floorNumber);
+
+    try {
+      const response = await apiRequest.post('/v2/floors/addFloor', {
+        floorNumber,
+        floorName,
+        apartmentId,
+      });
+      if (response.status === 200) {
+        toast.success('Floor added successfully!');
+        setShowAddFloorPopup(false);
+        setNewFloorNumber('');
+        await fetchFloors(); // Refetch floors after adding a new one
+      }
+    } catch (error) {
+      toast.error('Error adding floor');
+    }
+  };
+
   const indexOfLastHouse = currentPage * housesPerPage;
   const indexOfFirstHouse = indexOfLastHouse - housesPerPage;
   const currentHouses = houses.slice(indexOfFirstHouse, indexOfLastHouse);
@@ -133,7 +177,15 @@ const RegisterHouse = () => {
                 </option>
               ))}
             </select>
+            <button
+              type="button"
+              onClick={() => setShowAddFloorPopup(true)}
+              className="add-floor-btn"
+            >
+              +
+            </button>
           </div>
+
           {showHouseNamePopup && (
             <div className="house-name-popup">
               <h3>Select House Name</h3>
@@ -165,6 +217,7 @@ const RegisterHouse = () => {
               </button>
             </div>
           )}
+
           <div className="form-group">
             <label htmlFor="houseName">House Name</label>
             <input
@@ -183,6 +236,7 @@ const RegisterHouse = () => {
           </button>
         </form>
       </div>
+
       <div className="house-list">
         <h2>Registered Houses</h2>
         {currentHouses.map((house) => (
@@ -208,6 +262,25 @@ const RegisterHouse = () => {
           )}
         </div>
       </div>
+
+      {showAddFloorPopup && (
+        <div className="add-floor-popup">
+          <h3>Add New Floor</h3>
+          <input
+            type="number"
+            placeholder="Enter floor number"
+            value={newFloorNumber}
+            onChange={(e) => setNewFloorNumber(e.target.value)}
+          />
+          <button type="button" onClick={handleAddFloor}>
+            Add Floor
+          </button>
+          <button type="button" onClick={() => setShowAddFloorPopup(false)}>
+            Close
+          </button>
+        </div>
+      )}
+
       <ToastContainer />
       {loading && (
         <div className="loader">

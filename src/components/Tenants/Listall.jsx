@@ -6,8 +6,10 @@ import apiRequest from '../../lib/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTenants } from '../../features/Tenants/TenantsSlice';
 import { ThreeDots } from 'react-loader-spinner';
-import { FaDownload } from "react-icons/fa6";
+import { FaDownload } from 'react-icons/fa6';
 import { toast, ToastContainer } from 'react-toastify';
+import TenantDataPopup from './v2/TenantDataPopup/TenantDataPopup';
+import jsPDF from 'jspdf'; // Import jsPDF
 
 const Listall = () => {
   const fallbackTenants = [
@@ -81,6 +83,7 @@ const Listall = () => {
   const [tenantToDelete, setTenantToDelete] = useState(null); // State for selected tenant
   const dispatch = useDispatch();
   const tenants = useSelector((store) => store.tenantsData.tenants);
+  console.log('tenants: ', tenants);
 
   useEffect(() => {
     const fetchAllTenants = async () => {
@@ -149,79 +152,146 @@ const Listall = () => {
       state: { tenant },
     });
   };
+
+  const [tenantPopupDonwload, setTenantPopupDonwload] = useState(false);
+  const handleDowloadBtnClicked = () => {
+    setTenantPopupDonwload(true);
+  };
+  const closeDonwloadPopup = () => {
+    setTenantPopupDonwload(false);
+  };
+
+  const handleDownloadTenant = (tenant) => {
+    const doc = new jsPDF();
+
+    // Load the logo image
+    const img = new Image();
+    img.src = '/houselogo1.png'; // Path to your logo image
+
+    img.onload = function () {
+      // Define logo dimensions
+      const logoWidth = 50;
+      const aspectRatio = img.width / img.height;
+      const logoHeight = logoWidth / aspectRatio;
+
+      // Add the logo to the document
+      doc.addImage(img, 'PNG', 10, 10, logoWidth, logoHeight);
+
+      // Company Details
+      doc.setFontSize(14);
+      doc.text('Sleek Abode Apartments', 70, 20);
+      doc.setFontSize(10);
+      doc.text('Kimbo, Ruiru.', 70, 30);
+      doc.text('Contact: your-email@example.com', 70, 35);
+      doc.text('Phone: (+254) 88-413-323', 70, 40);
+
+      // Title for the tenant report
+      doc.setFontSize(16);
+      doc.setFont('times', 'bold');
+      doc.text('Tenant Report', 10, 70);
+
+      // Tenant Name and Details
+      doc.setFont('times', 'normal');
+      doc.text(`Tenant: ${tenant.name}`, 10, 80);
+      doc.text(`Email: ${tenant.email}`, 10, 90);
+      doc.text(`House No: ${tenant?.houseDetails?.houseNo || 'N/A'}`, 10, 100);
+      doc.text(`To Be Cleared: ${tenant.toBeCleared ? 'Yes' : 'No'}`, 10, 110);
+
+      // Date and Time
+      const today = new Date();
+      const date = `${today.getDate()}/${
+        today.getMonth() + 1
+      }/${today.getFullYear()}`;
+      const time = `${today.getHours()}:${today.getMinutes()}`;
+      doc.setFontSize(12);
+      doc.text(`Generated on: ${date} at ${time}`, 100, 70); // Right-aligned date
+
+      // Save the document as PDF
+      doc.save(`${tenant.name}_Report.pdf`);
+    };
+
+    // Error handler for logo loading
+    img.onerror = function () {
+      alert('Failed to load logo image.');
+    };
+  };
+
   return (
     <div className="summary2">
       <div className="tenantslist">
         <h2 className="title">Tenants List</h2>
-        <button className="btn">Print Tenants Data</button>
+        <button className="btn" onClick={handleDowloadBtnClicked}>
+          <span className="downloadSpan">
+            Print Tenants <FaDownload />
+          </span>
+        </button>
         {error && <span>{error}</span>}
-        {loading ? (
-          <div className="loader">
-            <ThreeDots
-              height="80"
-              width="80"
-              radius="9"
-              color="#4fa94d"
-              ariaLabel="three-dots-loading"
-              visible={true}
-            />
-          </div>
-        ) : (
-          <div className="table-container">
-            <table className="tenant-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>House No</th>
-                  <th>To Be Cleared</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants &&
-                  tenants.map((tenant) => (
-                    <tr key={tenant._id}>
-                      <td>{tenant.name}</td>
-                      <td>{tenant.email}</td>
-                      <td>
-                        {tenant?.houseDetails?.houseNo
-                          ? tenant.houseDetails?.houseNo
-                          : ""}
-                      </td>
-                      <td>{tenant.toBeCleared ? "yes" : "No"}</td>
-                      <td className="actions">
-                        <Link
-                          to={`/tenantProfile/${tenant._id}`}
-                          className="edit-btn"
-                        >
-                          More Details
-                        </Link>
-                        <button>
-                          <FaDownload />
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleTenantClearance(tenant);
-                          }}
-                          className="edit-btn"
-                        >
-                          Clear Tenant
-                        </button>
-                        <button
-                          onClick={() => handleOpenModal(tenant._id)}
-                          className="delete-btn"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="table-container">
+          <table className="tenant-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>House No</th>
+                <th>To Be Cleared</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tenants &&
+                tenants.map((tenant) => (
+                  <tr key={tenant._id}>
+                    <td>{tenant.name}</td>
+                    <td>{tenant.email}</td>
+                    <td>
+                      {tenant?.houseDetails?.houseNo
+                        ? tenant.houseDetails?.houseNo
+                        : ''}
+                    </td>
+                    <td>{tenant.toBeCleared ? 'yes' : 'No'}</td>
+                    <td className="actions">
+                      <Link
+                        to={`/tenantProfile/${tenant._id}`}
+                        className="edit-btn"
+                      >
+                        More Details
+                      </Link>
+                      <button onClick={() => handleDownloadTenant(tenant)}>
+                        <FaDownload />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleTenantClearance(tenant);
+                        }}
+                        className="edit-btn"
+                      >
+                        Clear Tenant
+                      </button>
+                      <button
+                        onClick={() => handleOpenModal(tenant._id)}
+                        className="delete-btn"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+      {loading && (
+        <div className="loader">
+          <ThreeDots
+            height="80"
+            width="80"
+            radius="9"
+            color="#4fa94d"
+            ariaLabel="three-dots-loading"
+            visible={true}
+          />
+        </div>
+      )}
       {showModal && (
         <div className="confirmation-modal">
           <div className="modal-content">
@@ -234,6 +304,17 @@ const Listall = () => {
                 Yes, Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {tenantPopupDonwload && (
+        <div className="tenantPopupModal">
+          <div className="downloadContent">
+            <TenantDataPopup
+              tenantData={tenants}
+              onClose={closeDonwloadPopup}
+            />
           </div>
         </div>
       )}

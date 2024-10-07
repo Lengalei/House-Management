@@ -19,6 +19,7 @@ import apartmentRoutes from './Routes/v2/routes/Apartment.routes.js';
 import v2TenantRoutes from './Routes/v2/routes/tenant.routes.js';
 import v2PaymentRoutes from './Routes/v2/routes/payment.routes.js';
 import InvoiceRoutes from './Routes/v2/routes/invoice.routes.js';
+import floorRoutes from './Routes/v2/routes/floor.routes.js';
 
 import clearanceRoutes from './Routes/v2/routes/clearance.routes.js';
 import { restoreScheduledJobs } from './controllers/v2/controllers/tenant.controller.js';
@@ -67,3 +68,4 @@ app.use('/api/v2/payments', v2PaymentRoutes);
 app.use('/api/v2/apartments', apartmentRoutes);
 app.use('/api/v2/invoices', InvoiceRoutes);
 app.use('/api/v2/clearance', clearanceRoutes);
+app.use('/api/v2/floors', floorRoutes);

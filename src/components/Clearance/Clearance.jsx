@@ -588,15 +588,16 @@ function Clearance() {
                 </span>
               </label>
             </div>
-            {clearanceDataArray?.length > 0 ? (
+            {clearanceDataArray?.length > 0 &&
+            clearanceDataArray[0].isCleared ? (
+              ''
+            ) : (
               <button
                 className={`btn`}
                 onClick={() => handleClearanceBtnClicked()}
               >
                 Clearance Deficit
               </button>
-            ) : (
-              ''
             )}
           </div>
           <div
@@ -623,11 +624,11 @@ function Clearance() {
               </label>
             </div>
             <button
-              disabled={mostRecentPayments?.some(
+              disabled={clearanceDataArray?.some(
                 (payment) => !payment.isCleared
               )}
               className={`btn ${
-                mostRecentPayments.some((payment) => !payment.isCleared)
+                clearanceDataArray.some((payment) => !payment.isCleared)
                   ? 'blur'
                   : ''
               }`}

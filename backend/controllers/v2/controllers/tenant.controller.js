@@ -1317,6 +1317,14 @@ export const deleteTenant = async (req, res) => {
     house.isOccupied = false;
     await house.save();
 
+    // Mark the job as inactive in the database
+    await ScheduledJob.findOneAndUpdate(
+      { tenantId: tenant._id },
+      { isActive: false }
+    );
+
+    await ScheduledJob.deleteMany({ tenantId: tenant._id, isActive: false });
+
     // 5. Delete the tenant
     await tenant.deleteOne();
 
@@ -2454,6 +2462,8 @@ const deleteTenantById = async (tenantId) => {
 
     // Mark the job as inactive in the database
     await ScheduledJob.findOneAndUpdate({ tenantId }, { isActive: false });
+
+    await ScheduledJob.deleteMany({ tenantId: tenantId, isActive: false });
 
     return {
       success: true,

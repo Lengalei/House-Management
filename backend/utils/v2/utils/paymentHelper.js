@@ -629,7 +629,7 @@ export const clearDeficitsForPreviousPayments = async (
       isCleared: false,
     }).sort({ createdAt: 1 });
 
-    if (previousPayments.length > 0) {
+    if (previousPayments?.length > 0) {
       for (const previousPayment of previousPayments) {
         let usedAmount = 0; // Keep track of how much of the amount is used for this payment
 
@@ -891,28 +891,48 @@ export const clearDeficitsForPreviousPayments = async (
       }
     } else {
       // Fetch previous payment record for the tenant and see if there is a valid overpay amount
-      const mostRecentPayment = await Payment.findOne({
+      const mostRecentPayments = await Payment.find({
         tenant: tenantId,
-        year: prevYear,
-        month: months[prevMonth],
-      });
-      if (
-        mostRecentPayment &&
-        mostRecentPayment?.overpay &&
-        mostRecentPayment?.overpay > 0
-      ) {
-        const overpayAmount = parseFloat(mostRecentPayment.overpay);
-        amount = parseFloat(amount) + parseFloat(overpayAmount); // Add the overpay to the current amount
+        isCleared: true,
+      }).sort({ createdAt: -1 });
+      // console.log('mostRecentPayment: ', mostRecentPayments);
 
-        // Reset the overpay to 0 and record the transaction in excessHistory
-        mostRecentPayment.excessHistory.push({
-          initialOverpay: mostRecentPayment.overpay,
-          excessAmount: 0,
-          date: depositDate,
-          description: `Overpay of ${overpayAmount} transfered from last payment to the new payment`,
-        });
-        mostRecentPayment.overpay = 0;
-        await mostRecentPayment.save();
+      for (const mostRecentPayment of mostRecentPayments) {
+        // Check for overpay in this previous payment
+        if (mostRecentPayment.overpay && mostRecentPayment.overpay > 0) {
+          const overpayAmount = parseFloat(mostRecentPayment.overpay);
+          amount = parseFloat(amount) + parseFloat(overpayAmount); // Add the overpay to the current amount
+
+          // Reset the overpay to 0 and record the transaction in excessHistory
+          mostRecentPayment.excessHistory.push({
+            initialOverpay: mostRecentPayment.overpay,
+            excessAmount: 0,
+            date: depositDate,
+            description: `Used overpay of ${overpayAmount} transfered to amount to create new payment`,
+          });
+          mostRecentPayment.overpay = 0;
+
+          await mostRecentPayment.save();
+        }
+
+        // if (
+        //   mostRecentPayment &&
+        //   mostRecentPayment?.overpay &&
+        //   mostRecentPayment?.overpay > 0
+        // ) {
+        //   const overpayAmount = parseFloat(mostRecentPayment.overpay);
+        //   amount = parseFloat(amount) + parseFloat(overpayAmount); // Add the overpay to the current amount
+
+        //   // Reset the overpay to 0 and record the transaction in excessHistory
+        //   mostRecentPayment?.excessHistory.push({
+        //     initialOverpay: mostRecentPayment.overpay,
+        //     excessAmount: 0,
+        //     date: depositDate,
+        //     description: `Overpay of ${overpayAmount} transfered from last payment to the new payment`,
+        //   });
+        //   mostRecentPayment.overpay = 0;
+        //   await mostRecentPayment.save();
+        // }
       }
     }
     return parseFloat(amount).toFixed(2);

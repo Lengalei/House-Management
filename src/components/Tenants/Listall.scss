@@ -18,8 +18,16 @@
     max-width: 1000px;
     margin: 0 auto;
 
-    .btn{
+    .btn {
       background-color: var(--yellow);
+      padding: 5px;
+      margin: 2px 0px;
+      width: max-content;
+      .downloadSpan {
+        color: #aaa;
+        text-align: center;
+        font-weight: bold;
+      }
     }
 
     .title {
@@ -188,5 +196,28 @@
         }
       }
     }
+  }
+}
+.tenantPopupModal {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  transform: translate(-50% -50%);
+  width: 100%;
+  height: 90%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .downloadContent {
+    // background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: max-content;
+    height: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 }

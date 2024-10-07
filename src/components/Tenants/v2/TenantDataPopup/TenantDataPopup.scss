@@ -1,0 +1,124 @@
+.downloadDataPopupContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  border: 1px solid firebrick;
+}
+
+.downloadPopupContent {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 80%;
+  height: 80%;
+  overflow: scroll;
+  overflow-x: hidden;
+  max-width: max-content;
+  border: 1px solid firebrick;
+
+  // Responsive styling
+  @media (max-width: 600px) {
+    width: 90%;
+  }
+}
+
+.downloadPopupHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  margin-bottom: 5px;
+  border: 1px solid wheat;
+  border-radius: 13px;
+
+  .logo {
+    width: 25%;
+    height: auto;
+    margin-right: 15px;
+  }
+
+  .letterhead {
+    text-align: left;
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #2c3e50; // Darker color for headings
+    }
+
+    p {
+      margin: 2px 0;
+      font-size: 0.9rem;
+      color: #34495e; // Slightly lighter than the heading
+    }
+  }
+}
+
+.donwload-tenant-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  text-align: left;
+  background-color: #f9f9f9; // Light background for the table
+
+  thead {
+    background-color: #16a085; // Teal background for header
+    color: #ffffff;
+
+    th {
+      padding: 12px; // Increased padding for headers
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #dddddd; // Border for header cells
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #dddddd; // Bottom border for rows
+
+      &:hover {
+        background-color: #f1f1f1; // Light grey on hover
+      }
+
+      td {
+        padding: 10px;
+        font-size: 0.9rem;
+        color: #333333; // Dark text for readability
+        border: 1px solid #dddddd; // Border for cells
+      }
+    }
+  }
+}
+
+.download-btn,
+.closeDownloadbtn {
+  background-color: #2980b9; // Primary button color
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 5px 5px;
+
+  &:hover {
+    background-color: #1c6690; // Darker shade on hover
+  }
+}
+
+.closeDownloadbtn {
+  background-color: #e74c3c; // Close button color
+}
+
+.closeDownloadbtn:hover {
+  background-color: #c0392b; // Darker shade on hover
+}

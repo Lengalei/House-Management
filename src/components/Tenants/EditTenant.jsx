@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
-import { toast, ToastContainer } from "react-toastify";
-import { ThreeDots } from "react-loader-spinner";
-import "react-toastify/dist/ReactToastify.css";
-import "./Tenant.scss";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { toast, ToastContainer } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
+import 'react-toastify/dist/ReactToastify.css';
+import './Tenant.scss';
 
 function EditTenant() {
   const { _id } = useParams();
@@ -12,24 +12,24 @@ function EditTenant() {
 
   // Updated form data structure with houseDetails
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    nationalId: "",
-    phoneNo: "",
-    placementDate: "",
-    houseDeposit: "",
-    waterDeposit: "",
+    name: '',
+    email: '',
+    nationalId: '',
+    phoneNo: '',
+    placementDate: '',
+    houseDeposit: '',
+    waterDeposit: '',
     houseDetails: {
-      houseNo: "", // Nested inside houseDetails
+      houseNo: '', // Nested inside houseDetails
     },
-    rentPayable: "",
-    amountPaid: "",
-    emergencyContactNumber: "",
-    emergencyContactName: "",
+    rentPayable: '',
+    amountPaid: '',
+    emergencyContactNumber: '',
+    emergencyContactName: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTenant = async () => {
@@ -40,10 +40,10 @@ function EditTenant() {
         );
         const { data } = response;
         setFormData(data);
-        setError("");
+        setError('');
       } catch (error) {
-        console.error("Error fetching tenant:", error);
-        setError("Error fetching tenant data. Please try again.");
+        console.error('Error fetching tenant:', error);
+        setError('Error fetching tenant data. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -56,7 +56,7 @@ function EditTenant() {
     const { name, value } = e.target;
 
     // Special handling for houseDetails.houseNo
-    if (name === "houseNo") {
+    if (name === 'houseNo') {
       setFormData((prevFormData) => ({
         ...prevFormData,
         houseDetails: {
@@ -74,7 +74,7 @@ function EditTenant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
       const res = await apiRequest.put(
@@ -82,14 +82,14 @@ function EditTenant() {
         formData
       );
       if (res.status) {
-        toast.success("Tenant details updated successfully!");
+        toast.success('Tenant details updated successfully!');
         console.log(res.data);
         navigate(`/tenantProfile/${_id}`);
       }
     } catch (err) {
-      console.error("Error updating tenant:", err);
-      setError("Error updating tenant. Please try again.");
-      toast.error("Error updating tenant.");
+      console.error('Error updating tenant:', err);
+      setError('Error updating tenant. Please try again.');
+      toast.error('Error updating tenant.');
     } finally {
       setLoading(false);
     }
@@ -104,22 +104,49 @@ function EditTenant() {
   const [houses, setHouses] = useState([]);
   const [organizedData, setOrganizedData] = useState({});
 
-  const floors = [
-    { floorNumber: 0, name: "Ground Floor" },
-    { floorNumber: 1, name: "First Floor" },
-    { floorNumber: 2, name: "Second Floor" },
-    { floorNumber: 3, name: "Third Floor" },
-    { floorNumber: 4, name: "Fourth Floor" },
-    { floorNumber: 5, name: "Fifth Floor" },
-    { floorNumber: 6, name: "Sixth Floor" },
-    { floorNumber: 7, name: "Seventh Floor" },
-  ];
+  const [floors, setFloors] = useState([
+    { floorNumber: 0, floorName: 'Ground Floor' },
+    { floorNumber: 1, floorName: 'First Floor' },
+    { floorNumber: 2, floorName: 'Second Floor' },
+    { floorNumber: 3, floorName: 'Third Floor' },
+    { floorNumber: 4, floorName: 'Fourth Floor' },
+    { floorNumber: 5, floorName: 'Fifth Floor' },
+    { floorNumber: 6, floorName: 'Sixth Floor' },
+    { floorNumber: 7, floorName: 'Seventh Floor' },
+  ]);
 
+  const getFloorName = (floorNumber) => {
+    if (floorNumber === 0) return 'Ground Floor';
+
+    const ordinalSuffix = (n) => {
+      const s = ['th', 'st', 'nd', 'rd'];
+      const v = n % 100;
+      return s[(v - 20) % 10] || s[v] || s[0];
+    };
+
+    return `${floorNumber}${ordinalSuffix(floorNumber)} Floor`;
+  };
+  // Fetch available floors from backend
+  const fetchFloors = async () => {
+    setLoading(true);
+    try {
+      const response = await apiRequest.get('/v2/floors/getAllFloors');
+      const floorsData = response.data.map((floor) => ({
+        floorName: getFloorName(floor.floorNumber),
+        floorNumber: floor.floorNumber,
+      }));
+      setFloors(floorsData);
+    } catch (error) {
+      toast.error('Error fetching floors');
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const fetchHouses = async () => {
       setLoading(true);
       try {
-        const response = await apiRequest.get("/houses/getAllHouses");
+        const response = await apiRequest.get('/houses/getAllHouses');
         const houseData = response.data;
         setHouses(houseData);
 
@@ -141,12 +168,12 @@ function EditTenant() {
         setOrganizedData(organizedHouses);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching houses:", error);
-        toast.error(error.response.data.message || "Error Fetching Houses");
+        console.error('Error fetching houses:', error);
+        toast.error(error.response.data.message || 'Error Fetching Houses');
         setLoading(false);
       }
     };
-
+    fetchFloors();
     fetchHouses();
   }, []);
 
@@ -249,7 +276,7 @@ function EditTenant() {
                 className="house-selection"
                 onClick={() => setIsHousePopupVisible(true)}
               >
-                {selectedHouse ? selectedHouse : "Change House"}
+                {selectedHouse ? selectedHouse : 'Change House'}
               </div>
             </div>
             <div className="forminput">
@@ -290,7 +317,7 @@ function EditTenant() {
                     visible={true}
                   />
                 ) : (
-                  "Update"
+                  'Update'
                 )}
               </button>
             </div>
@@ -314,8 +341,8 @@ function EditTenant() {
                 key={apartment?._id}
                 className={`apartment-option ${
                   selectedApartment && selectedApartment?._id === apartment._id
-                    ? "selected"
-                    : ""
+                    ? 'selected'
+                    : ''
                 }`}
                 onClick={() => handleApartmentSelection(apartment)}
               >
@@ -332,11 +359,11 @@ function EditTenant() {
                     <div
                       key={floor?.floorNumber}
                       className={`floor-option ${
-                        selectedFloor === floor?.floorNumber ? "selected" : ""
+                        selectedFloor === floor?.floorNumber ? 'selected' : ''
                       }`}
                       onClick={() => handleFloorSelection(floor?.floorNumber)}
                     >
-                      {floor?.name}
+                      {floor?.floorName}
                     </div>
                   ))}
                 </div>
@@ -353,12 +380,12 @@ function EditTenant() {
                           className={`house-option ${
                             selectedHouse ===
                             `${selectedFloor}${house?.houseName.slice(-1)}`
-                              ? "selected"
-                              : ""
-                          } ${house?.isOccupied ? "occupied" : ""}`}
+                              ? 'selected'
+                              : ''
+                          } ${house?.isOccupied ? 'occupied' : ''}`}
                           onClick={() => handleHouseSelection(house)}
                         >
-                          {house?.houseName} {house?.isOccupied && "(Occupied)"}
+                          {house?.houseName} {house?.isOccupied && '(Occupied)'}
                         </div>
                       ))}
                     </div>
