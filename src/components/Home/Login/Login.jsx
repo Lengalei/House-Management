@@ -1,17 +1,17 @@
-import "./Login.scss";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import ForgotPassword from "../forgotPassword/ForgotPassword";
-import apiRequest from "../../../lib/apiRequest";
-import { useDispatch } from "react-redux";
-import { setAdmin } from "../../../features/Admin/adminSlice";
-import { TailSpin } from "react-loader-spinner";
-import { toast, ToastContainer } from "react-toastify";
+import './Login.scss';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import ForgotPassword from '../forgotPassword/ForgotPassword';
+import apiRequest from '../../../lib/apiRequest';
+import { useDispatch } from 'react-redux';
+import { setAdmin } from '../../../features/Admin/adminSlice';
+import { TailSpin } from 'react-loader-spinner';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isForgotPassword, setIsForgotPassword] = useState(false); // State to toggle between login and forgot password
 
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ function Login() {
   useEffect(() => {
     const checkIfthereIsAnUserLoggedIn = async () => {
       try {
-        const response = await apiRequest.get("/auth/getAdmins");
+        const response = await apiRequest.get('/auth/getAdmins');
         if (response.status) {
           // console.log('admins found: ', response.data);
           setAdminFromBc(response.data);
@@ -37,10 +37,10 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
-      const response = await apiRequest.post("/auth/login", {
+      const response = await apiRequest.post('/auth/login', {
         username,
         password,
         rememberMe: e.target.checkbox.checked, // Pass rememberMe option
@@ -49,15 +49,15 @@ function Login() {
       if (response.status) {
         // console.log('logged from login page', response.data);
         dispatch(setAdmin(response.data));
-        localStorage.setItem("adminData", JSON.stringify(response.data));
+        localStorage.setItem('adminData', JSON.stringify(response.data));
         setLoading(false);
-        toast.success("Success Login");
-        navigate("/");
+        toast.success('Success Login');
+        navigate('/');
       }
     } catch (err) {
       setLoading(false);
-      toast.error(error.response.data.message || "Failed To login!");
-      setError(err.response?.data?.message || "Failed to login.");
+      toast.error(error.response.data.message || 'Failed To login!');
+      setError(err.response?.data?.message || 'Failed to login.');
     }
   };
 
@@ -94,7 +94,7 @@ function Login() {
                 onClick={() => setIsForgotPassword(true)}
                 className="forgot-password-link"
               >
-                Forgot Password{" ?"}
+                Forgot Password{' ?'}
               </span>
             </div>
             <span>
@@ -104,8 +104,8 @@ function Login() {
                 </>
               ) : (
                 <h6>
-                  Don{"'"}t have an Account?{" "}
-                  <Link to={"/register"} className="forgot-password-link">
+                  Don{"'"}t have an Account?{' '}
+                  <Link to={'/register'} className="forgot-password-link">
                     Sign Up
                   </Link>
                 </h6>

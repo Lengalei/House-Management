@@ -1,6 +1,6 @@
 import { FaHouseUser } from 'react-icons/fa';
 import './Dashboard.scss';
-import Charts from './Charts';
+// import Charts from './Charts';
 import { useEffect, useState } from 'react';
 import apiRequest from '../../lib/apiRequest';
 

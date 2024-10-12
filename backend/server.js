@@ -6,6 +6,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Import middleware
+import verifyJWT from './middleware/jwtMiddleware.js';
+import verifyTokenRoute from './Routes/v2/routes/verifyToken.routes.js';
+
 //routes import
 import authRoutes from './Routes/auth.routes.js';
 import tenantRoutes from './Routes/tenant.routes.js';
@@ -38,6 +42,9 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Apply the JWT middleware globally (except for /api/auth)
+app.use(verifyJWT);
+
 //db connection
 mongoose
   .connect(process.env.DATABASE_URL)
@@ -55,6 +62,7 @@ mongoose
   });
 
 //routes
+app.use('/api/jwt', verifyTokenRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/landlords', landLordRoutes);

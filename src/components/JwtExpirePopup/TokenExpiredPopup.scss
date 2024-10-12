@@ -1,0 +1,43 @@
+// src/components/Popup/TokenExpiredPopup.scss
+.jwtExpirePopupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.856);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .popup-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .popup-container h2 {
+    margin-bottom: 1rem;
+  }
+
+  .popup-container p {
+    margin-bottom: 2rem;
+  }
+
+  .popup-container button {
+    padding: 0.5rem 1.5rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .popup-container button:hover {
+    background-color: #0056b3;
+  }
+}

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Dashboard from './components/Dashboard/Dashboard';
+// import Dashboard from './components/Dashboard/Dashboard';
 import NotFound from './components/underDeve/NotFound/NotFound.jsx';
 import Tenant from './components/Tenants/Tenant.jsx';
 import Listall from './components/Tenants/Listall.jsx';
@@ -39,10 +39,27 @@ import AdminPage from './components/Userprofile/AdminPage/AdminPage.jsx';
 import AdminEditPage from './components/Userprofile/AdminPage/EditAdmin/AdminEditPage.jsx';
 import InvoiceTable from './components/Userprofile/AdminPage/Invoices/InvoiceTable.jsx';
 import NewDashboard from './components/Dashboard/New Dashborad/NewDashboard.jsx';
+import { useEffect, useState } from 'react';
+import { checkTokenValidity } from './utils/checkAuth.js';
+import TokenExpiredPopup from './components/JwtExpirePopup/TokenExpiredPopup.jsx';
 
 function App() {
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const isValid = await checkTokenValidity();
+      if (!isValid) {
+        setShowPopup(true);
+      }
+    };
+    verifyToken();
+  }, []);
   return (
     <Router>
+      {showPopup && (
+        <TokenExpiredPopup showPopup={showPopup} setShowPopup={setShowPopup} />
+      )}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/login" element={<Login />} />

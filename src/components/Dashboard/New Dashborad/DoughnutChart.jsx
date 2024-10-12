@@ -1,29 +1,42 @@
-import React, { useState } from "react";
-import { Doughnut } from "react-chartjs-2";
-import "chart.js/auto";
+import React, { useEffect, useState } from 'react';
+import { Doughnut } from 'react-chartjs-2';
+import 'chart.js/auto';
+import apiRequest from '../../../lib/apiRequest';
 // import "./DoughnutChart.css";
 
 const DoughnutChart = () => {
-  const [month, setMonth] = useState("August");
-  const [year, setYear] = useState("2024");
+  const [month, setMonth] = useState('August');
+  const [year, setYear] = useState('2024');
+  const [totalPaid, setTotalPaid] = useState(15000);
 
-  const totalPaid = 15000;
   const totalUnpaid = 5000;
 
+  useEffect(() => {
+    //fetchAllPayments
+    const fetchAllPayments = async () => {
+      const response = await apiRequest.get('/v2/payments/getAllPayments');
+      if (response.status) {
+        // console.log('allPayments: ', response.data);
+        setTotalPaid(response.data);
+      }
+    };
+    fetchAllPayments();
+  }, []);
+
   const data = {
-    labels: ["Paid", "Unpaid"],
+    labels: ['Paid', 'Unpaid'],
     datasets: [
       {
         data: [totalPaid, totalUnpaid],
-        backgroundColor: ["#f39c12", "#e74c3c"],
-        hoverBackgroundColor: ["#f1c40f", "#c0392b"],
+        backgroundColor: ['#f39c12', '#e74c3c'],
+        hoverBackgroundColor: ['#f1c40f', '#c0392b'],
         borderWidth: 2,
       },
     ],
   };
 
   const options = {
-    cutout: "70%",
+    cutout: '70%',
     plugins: {
       legend: {
         display: false,
@@ -50,7 +63,7 @@ const DoughnutChart = () => {
       <div className="chart-wrapper">
         <Doughnut data={data} options={options} width={200} height={200} />
 
-        <input type="date" placeholder="Date" className="chartdate"/>
+        <input type="date" placeholder="Date" className="chartdate" />
       </div>
 
       <div className="totals-container">

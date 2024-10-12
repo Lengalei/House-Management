@@ -104,7 +104,7 @@ export const login = async (req, res) => {
 /* Logout */
 export const logout = (req, res) => {
   res
-    .cookie('HouseAdmintoken', '', { maxAge: new Date(0) })
+    .cookie('token', '', { maxAge: new Date(0) })
     .status(200)
     .json({ msg: 'success logout' });
 };

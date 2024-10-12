@@ -1,9 +1,9 @@
-import React from "react";
-import TopSumarry from "./TopSumarry";
-import "./NewDashboard.scss"
-import DoughnutChart from "./DoughnutChart";
-import CustomSlider from "./CustomSlider";
-import ImageSlider from "./ImageSlider";
+// import React from "react";
+import TopSumarry from './TopSumarry';
+import './NewDashboard.scss';
+import DoughnutChart from './DoughnutChart';
+// import CustomSlider from "./CustomSlider";
+import ImageSlider from './ImageSlider';
 
 function NewDashboard() {
   return (
@@ -11,11 +11,9 @@ function NewDashboard() {
       <TopSumarry />
 
       <div className="sum">
-        <DoughnutChart/>
+        <DoughnutChart />
 
-        
-          <ImageSlider/>
-       
+        <ImageSlider />
       </div>
     </div>
   );
